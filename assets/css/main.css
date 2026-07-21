@@ -794,7 +794,7 @@ body.admin-bar .nav-overlay {
 }
 
 .scrub-card {
-    flex: 0 0 clamp(260px, 34vw, 420px);
+    flex: 0 0 clamp(320px, 42vw, 560px);
     text-decoration: none;
     color: #fff;
     display: block;
@@ -1060,7 +1060,7 @@ body.admin-bar .nav-overlay {
     --ph-ink-rgb: 34, 32, 28;
 
     /* Fill colour per display line — tint these independently if you like.
-	   Defaults: all ink. e.g. --ph-rgb-1: 60, 74, 58; for forest. */
+       Defaults: all ink. e.g. --ph-rgb-1: 60, 74, 58; for forest. */
     --ph-rgb-1: var(--ph-ink-rgb);
     --ph-rgb-2: var(--ph-ink-rgb);
     --ph-rgb-4: var(--ph-ink-rgb);
@@ -1203,7 +1203,7 @@ body.admin-bar .nav-overlay {
     height: clamp(340px, 60vh, 680px);
     object-fit: cover;
     /* Landscape source into a portrait slot: hold the crop left of centre
-	   so the people stay in frame alongside the house. */
+       so the people stay in frame alongside the house. */
     object-position: 35% center;
 }
 
@@ -2608,7 +2608,7 @@ body.admin-bar .nav-overlay {
 
 @media (prefers-reduced-motion: no-preference) {
     /* Entrance is a real damped-spring, run per-pill via the Web Animations API in
-	   main.js (see the "Our Homes" filter block). Hidden here until JS springs them in. */
+       main.js (see the "Our Homes" filter block). Hidden here until JS springs them in. */
     .hm-filters.lh-spring-armed .hm-filter {
         opacity: 0;
     }
@@ -5565,10 +5565,6 @@ html {
     opacity: 1;
 }
 
-.scrub.masks-ready .scrub-card.is-revealed .sc-reveal {
-    animation: scRoofLift 1s var(--hero-ease) forwards;
-}
-
 @keyframes scRoofLift {
     from {
         transform: translateY(0);
@@ -5578,32 +5574,39 @@ html {
     }
 }
 
+/* The roof lifts with a long, gentle ease as the card scrolls in, so it glides
+   rather than snaps. (A true scroll-linked timeline fights the pinned sticky
+   stage, so this smooth triggered reveal is the reliable path.) */
+.scrub.masks-ready .scrub-card.is-revealed .sc-reveal {
+    animation: scRoofLift 1.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 .scrub.masks-ready .scrub-card:nth-child(1).is-revealed .sc-reveal {
-    animation-delay: 0s;
+    animation-delay: 0.02s;
 }
 
 .scrub.masks-ready .scrub-card:nth-child(2).is-revealed .sc-reveal {
-    animation-delay: 0.09s;
+    animation-delay: 0.12s;
 }
 
 .scrub.masks-ready .scrub-card:nth-child(3).is-revealed .sc-reveal {
-    animation-delay: 0.18s;
+    animation-delay: 0.22s;
 }
 
 .scrub.masks-ready .scrub-card:nth-child(4).is-revealed .sc-reveal {
-    animation-delay: 0.27s;
+    animation-delay: 0.32s;
 }
 
 .scrub.masks-ready .scrub-card:nth-child(5).is-revealed .sc-reveal {
-    animation-delay: 0.36s;
+    animation-delay: 0.42s;
 }
 
 .scrub.masks-ready .scrub-card:nth-child(6).is-revealed .sc-reveal {
-    animation-delay: 0.45s;
+    animation-delay: 0.52s;
 }
 
 .scrub.masks-ready .scrub-card:nth-child(7).is-revealed .sc-reveal {
-    animation-delay: 0.54s;
+    animation-delay: 0.62s;
 }
 
 @media (prefers-reduced-motion: reduce) {

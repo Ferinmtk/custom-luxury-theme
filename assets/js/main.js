@@ -1196,7 +1196,7 @@
             return;
         }
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
-            return; // photos show uncovered; CSS keeps the masks hidden
+            return; // photos show uncovered; CSS keeps masks hidden
         }
         scrub.classList.add('masks-ready');
         var io = new IntersectionObserver(function (entries) {
@@ -1206,9 +1206,28 @@
                     io.unobserve(entry.target);
                 }
             });
-        }, {threshold: 0.2, rootMargin: '0px 0px -8% 0px'});
+        }, {threshold: 0.15, rootMargin: '0px 0px -6% 0px'});
         cards.forEach(function (card) {
             io.observe(card);
+        });
+    })();
+
+    /* ---------- Re-decide layout when width crosses the 900px boundary ----------
+       The scrub decides pinned-vs-static once on load; a live re-init risks
+       double-bound handlers, so on an actual crossing we simply reload (debounced).
+       Real visitors never cross this; only resize-testing / tablet rotation does. */
+    (function () {
+        var wasNarrow = window.matchMedia('(max-width: 900px)').matches;
+        var timer;
+        window.addEventListener('resize', function () {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                var isNarrow = window.matchMedia('(max-width: 900px)').matches;
+                if (isNarrow !== wasNarrow) {
+                    wasNarrow = isNarrow;
+                    window.location.reload();
+                }
+            }, 250);
         });
     })();
 })();
