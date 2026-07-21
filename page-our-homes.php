@@ -204,7 +204,7 @@ if ( $ld_items ) {
                 <div class="hm-cta-copy" data-reveal>
                     <span class="eyebrow">Your turn</span>
                     <h2>Let&rsquo;s build <em>yours</em>.</h2>
-                    <a class="sh-btn" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Start the conversation &rarr;</a>
+                    <a class="sh-btn hm-cta-btn" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><span>Start the conversation</span><i aria-hidden="true">&rarr;</i></a>
                 </div>
             </div>
         </section>

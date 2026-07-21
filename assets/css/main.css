@@ -1893,16 +1893,19 @@ body.admin-bar .nav-overlay { top: 32px; }
 .our-homes-page .hm-more[hidden] { display: none; }
 
 /* Closing CTA — image lifts out of the band, straddling the cream above (Our Homes) */
-.our-homes-page .hm-cta { margin-top: clamp(8rem, 16vh, 12rem); }
+.our-homes-page .hm-cta { margin-top: 16rem; }
 .our-homes-page .hm-cta-in {
-	max-width: 940px;
-	padding-top: 0;
-	padding-bottom: clamp(3.5rem, 9vh, 6rem);
+	display: flow-root;
+	max-width: 1040px;
+	padding: 0 clamp(1.4rem, 5vw, 4rem) clamp(2.2rem, 4.5vh, 3.2rem);
 	text-align: center;
 }
+/* Centre the render on the cream/green seam: a -25% top margin lifts it by
+   exactly half its own height (aspect-ratio 16/8 => height = width / 2, and
+   margin % resolves against the container width, so -25% = half the height).
+   flow-root on the container stops the margin from collapsing away. */
 .our-homes-page .hm-cta-media {
-	margin: clamp(-160px, -12vw, -100px) auto clamp(2.4rem, 5vw, 3.6rem);
-	max-width: 880px;
+	margin: -25% auto clamp(1.6rem, 3.5vw, 2.6rem);
 	border-radius: 16px;
 	overflow: hidden;
 	box-shadow: 0 48px 90px -30px rgba(0, 0, 0, 0.62), 0 16px 34px -20px rgba(0, 0, 0, 0.42);
@@ -1915,7 +1918,48 @@ body.admin-bar .nav-overlay { top: 32px; }
 	object-fit: cover;
 }
 .our-homes-page .hm-cta-copy .eyebrow { margin: 0 0 0.9rem; }
-.our-homes-page .hm-cta-copy h2 { margin: 0 auto 2rem; }
+.our-homes-page .hm-cta-copy h2 { margin: 0 auto 1.7rem; }
+
+/* Fancy CTA button — brass fill slides in, arrow advances, gentle lift */
+.our-homes-page .hm-cta-btn {
+	position: relative;
+	overflow: hidden;
+	gap: 0.7em;
+	padding: 1.05rem 2.5rem;
+	border-radius: 999px;
+	font-size: 0.72rem;
+	letter-spacing: 0.22em;
+	background: var(--hero-white);
+	color: var(--hero-ink);
+	box-shadow: 0 14px 28px -14px rgba(0, 0, 0, 0.55);
+	transition: color 0.5s var(--hero-ease), transform 0.5s var(--hero-ease), box-shadow 0.5s var(--hero-ease);
+}
+.our-homes-page .hm-cta-btn::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: var(--brass);
+	transform: translateX(-101%);
+	transition: transform 0.55s var(--hero-ease);
+}
+.our-homes-page .hm-cta-btn > span,
+.our-homes-page .hm-cta-btn > i { position: relative; z-index: 1; }
+.our-homes-page .hm-cta-btn > i { font-style: normal; transition: transform 0.5s var(--hero-ease); }
+.our-homes-page .hm-cta-btn:hover,
+.our-homes-page .hm-cta-btn:focus-visible {
+	color: var(--hero-white);
+	gap: 0.7em;
+	transform: translateY(-3px);
+	box-shadow: 0 22px 36px -14px rgba(0, 0, 0, 0.6);
+}
+.our-homes-page .hm-cta-btn:hover::before,
+.our-homes-page .hm-cta-btn:focus-visible::before { transform: translateX(0); }
+.our-homes-page .hm-cta-btn:hover > i,
+.our-homes-page .hm-cta-btn:focus-visible > i { transform: translateX(4px); }
+
+@media (max-width: 640px) {
+	.our-homes-page .hm-cta { margin-top: clamp(8rem, 30vw, 12rem); }
+}
 
 /* ---------- Single home ---------- */
 
