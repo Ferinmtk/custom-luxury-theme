@@ -174,6 +174,7 @@
         var stage = scrub.querySelector('.scrub-stage');
         var track = document.getElementById('scrubTrack');
         var prog = scrub.querySelector('.scrub-progress i');
+        var progBar = scrub.querySelector('.scrub-progress');
         var isTouch = window.matchMedia('(max-width:900px)').matches;
 
         /* touch or reduced motion -> plain swipe rail, no pinning */
@@ -209,6 +210,9 @@
             trackX = -moveP * maxX;
             if (prog) {
                 prog.style.width = (moveP * 100) + '%';
+            }
+            if (progBar) {
+                progBar.classList.toggle('is-complete', moveP > 0.995);
             }
         }
 

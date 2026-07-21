@@ -133,9 +133,10 @@ get_header();
                     </div>
                     <div class="scrub-track" id="scrubTrack">
                         <?php
-                        foreach ($scrub_homes as $lh_home) :
+                        $scrub_last = array_key_last($scrub_homes);
+                        foreach ($scrub_homes as $scrub_i => $lh_home) :
                             $m = lh_home_meta($lh_home->ID);
-                            $bits = array();
+                            $bits   = array();
                             if ($m['location']) {
                                 $bits[] = $m['location'];
                             }
@@ -146,35 +147,48 @@ get_header();
                                 /* translators: %s: square footage */
                                 $bits[] = sprintf(__('%s sq ft', 'luxury-homes'), number_format_i18n($m['sqft']));
                             }
+                            $is_last  = ($scrub_i === $scrub_last);
+                            $home_url = get_permalink($lh_home);
                             ?>
-                            <a href="<?php echo esc_url(get_permalink($lh_home)); ?>" class="scrub-card">
-                                <div class="sc-frame">
-                                    <?php if ($m['style']) : ?>
-                                        <span class="sc-tag"><?php echo esc_html($m['style']); ?></span>
+                            <?php if ($is_last) : ?>
+                            <div class="scrub-card scrub-card--last">
+                        <?php else : ?>
+                            <a href="<?php echo esc_url($home_url); ?>" class="scrub-card">
+                        <?php endif; ?>
+                            <div class="sc-frame">
+                                <?php if ($m['style']) : ?>
+                                    <span class="sc-tag"><?php echo esc_html($m['style']); ?></span>
+                                <?php endif; ?>
+                                <?php
+                                echo lh_home_image($lh_home->ID, 'large', array(
+                                        'alt'      => get_the_title($lh_home),
+                                        'loading'  => 'lazy',
+                                        'decoding' => 'async',
+                                ));
+                                ?>
+                                <div class="sc-info">
+                                    <div class="sc-name"><?php echo esc_html(get_the_title($lh_home)); ?></div>
+                                    <?php if ($bits) : ?>
+                                        <div class="sc-meta"><?php echo esc_html(implode(' · ', $bits)); ?></div>
                                     <?php endif; ?>
-                                    <?php
-                                    echo lh_home_image($lh_home->ID, 'large', array(
-                                            'alt'      => get_the_title($lh_home),
-                                            'loading'  => 'lazy',
-                                            'decoding' => 'async',
-                                    ));
-                                    ?>
-                                    <div class="sc-info">
-                                        <div class="sc-name"><?php echo esc_html(get_the_title($lh_home)); ?></div>
-                                        <?php if ($bits) : ?>
-                                            <div class="sc-meta"><?php echo esc_html(implode(' · ', $bits)); ?></div>
-                                        <?php endif; ?>
+                                    <?php if ($is_last) : ?>
+                                        <span class="sc-actions">
+										<a class="sc-btn"
+                                           href="<?php echo esc_url($home_url); ?>"><?php esc_html_e('Tour this home', 'luxury-homes'); ?> &rarr;</a>
+										<a class="sc-morelink"
+                                           href="<?php echo esc_url(home_url('/our-homes/')); ?>"><?php esc_html_e('See all homes', 'luxury-homes'); ?> &rarr;</a>
+									</span>
+                                    <?php else : ?>
                                         <span class="sc-btn"><?php esc_html_e('Tour this home', 'luxury-homes'); ?> &rarr;</span>
-                                    </div>
+                                    <?php endif; ?>
                                 </div>
-                            </a>
-                        <?php endforeach; ?>
-                        <a href="<?php echo esc_url(home_url('/our-homes/')); ?>" class="scrub-card scrub-card--more">
-                            <div class="sc-frame sc-more">
-                                <span class="sc-more-label"><?php esc_html_e('See more', 'luxury-homes'); ?></span>
-                                <span class="sc-more-arrow" aria-hidden="true">&rarr;</span>
                             </div>
-                        </a>
+                            <?php if ($is_last) : ?>
+                            </div>
+                        <?php else : ?>
+                            </a>
+                        <?php endif; ?>
+                        <?php endforeach; ?>
                     </div>
                     <div class="scrub-progress"><i></i></div>
                 </div>

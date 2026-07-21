@@ -850,43 +850,43 @@ body.admin-bar .nav-overlay {
     background: linear-gradient(to top, rgba(20, 18, 12, 0.66), transparent 56%);
 }
 
-/* Final card in the track: a way out to the full archive. */
-.scrub-card--more .sc-more {
+/* Last card in the track doubles as the way into the full archive. */
+.scrub-card--last .sc-frame::after {
+    background: linear-gradient(to top, rgba(20, 18, 12, 0.8), rgba(20, 18, 12, 0.12) 46%, transparent 72%);
+}
+
+.sc-actions {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-top: 0.85rem;
+}
+
+.sc-actions .sc-btn {
+    margin-top: 0;
+}
+
+.sc-morelink {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.9rem;
-    background: transparent;
-    border: 1px solid rgba(27, 26, 22, 0.16);
-    box-shadow: none;
-    color: var(--hero-ink);
-}
-
-.scrub-card--more .sc-frame::after {
-    content: none;
-}
-
-.scrub-card--more:hover .sc-frame,
-.scrub-card--more:focus-visible .sc-frame {
-    transform: translateY(-7px);
-    border-color: rgba(27, 26, 22, 0.28);
-    box-shadow: 0 4px 10px rgba(20, 18, 12, 0.06), 0 26px 54px rgba(20, 18, 12, 0.18);
-}
-
-.sc-more-label {
-    font-size: 0.72rem;
-    letter-spacing: 0.2em;
+    gap: 0.5rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
+    color: #e7d9b4;
+    text-decoration: none;
+    transition: gap 0.3s var(--hero-ease), color 0.3s var(--hero-ease);
 }
 
-.sc-more-arrow {
-    font-size: 1.3rem;
-    transition: transform 0.45s var(--hero-ease);
+.sc-morelink:hover,
+.sc-morelink:focus-visible {
+    gap: 0.85rem;
+    color: #fff;
 }
 
-.scrub-card--more:hover .sc-more-arrow {
-    transform: translateX(6px);
+.scrub-card--last .sc-morelink {
+    align-self: center;
 }
 
 .scrub-card .sc-tag {
@@ -943,20 +943,29 @@ body.admin-bar .nav-overlay {
 }
 
 .scrub-progress {
+    display: block;
     position: absolute;
     left: clamp(1.4rem, 5vw, 3.5rem);
     right: clamp(1.4rem, 5vw, 3.5rem);
     bottom: clamp(2rem, 6vh, 3.5rem);
-    height: 1px;
-    background: rgba(27, 26, 22, 0.14);
+    height: 3px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(168, 131, 79, 0.22);
     z-index: 4;
+    transition: opacity 0.5s var(--hero-ease);
+}
+
+.scrub-progress.is-complete {
+    opacity: 0;
 }
 
 .scrub-progress i {
     display: block;
     height: 100%;
     width: 0;
-    background: var(--hero-forest);
+    border-radius: 999px;
+    background: var(--brass);
 }
 
 /* Fallback: plain swipe rail on touch / reduced motion */
