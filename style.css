@@ -1,0 +1,14 @@
+/*
+Theme Name: Luxury Homes
+Theme URI: https://example.com
+Author: Ferrin
+Description: Custom theme for a luxury custom home builder. Cinematic scroll-descent hero, portfolio carousel, ACF-ready content fields.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 7.0
+Requires PHP: 8.0
+License: GNU General Public License v2 or later
+Text Domain: luxury-homes
+*/
+
+/* Styles are enqueued from assets/css/main.css */

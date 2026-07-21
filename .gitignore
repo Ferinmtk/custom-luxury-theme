@@ -1,0 +1,10 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+# Build / vendor (none yet, future-proofing)
+node_modules/
+vendor/
