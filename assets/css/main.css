@@ -1805,11 +1805,12 @@ body.admin-bar .nav-overlay {
     width: 46px;
     height: 46px;
     border-radius: 12px;
-    background: var(--hero-ink);
-    color: var(--hero-white);
+    background: var(--tone, var(--hero-ink));
+    color: #fff;
     display: grid;
     place-items: center;
     margin-bottom: auto;
+    box-shadow: 0 8px 18px -10px var(--tone, rgba(28, 26, 22, 0.5));
 }
 
 .ways-card__icon svg {
@@ -1818,16 +1819,8 @@ body.admin-bar .nav-overlay {
     display: block;
 }
 
-.ways-card__opt {
-    margin-top: 1.4rem;
-    font-size: 0.68rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #8a8880;
-}
-
 .ways-card__title {
-    margin-top: 0.4rem;
+    margin-top: 0;
     font-family: var(--hero-display);
     font-weight: 400;
     font-size: 1.32rem;
@@ -1873,6 +1866,8 @@ body.admin-bar .nav-overlay {
 }
 
 .ways-btn {
+    position: relative;
+    overflow: hidden;
     display: inline-flex;
     align-items: center;
     gap: 0.6em;
@@ -1881,14 +1876,45 @@ body.admin-bar .nav-overlay {
     font-size: 0.72rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    padding: 1rem 2.2rem;
+    padding: 1rem 2.4rem;
     border-radius: 999px;
-    transition: background 0.3s var(--hero-ease), transform 0.3s var(--hero-ease);
+    box-shadow: 0 12px 26px -14px rgba(28, 26, 22, 0.5);
+    transition: transform 0.4s var(--hero-ease), box-shadow 0.4s var(--hero-ease);
 }
 
-.ways-btn:hover, .ways-btn:focus-visible {
-    background: #000;
-    transform: translateY(-2px);
+.ways-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--brass);
+    transform: translateX(-101%);
+    transition: transform 0.5s var(--hero-ease);
+}
+
+.ways-btn__label,
+.ways-btn__arrow {
+    position: relative;
+    z-index: 1;
+}
+
+.ways-btn__arrow {
+    transition: transform 0.4s var(--hero-ease);
+}
+
+.ways-btn:hover,
+.ways-btn:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 34px -14px rgba(28, 26, 22, 0.55);
+}
+
+.ways-btn:hover::before,
+.ways-btn:focus-visible::before {
+    transform: translateX(0);
+}
+
+.ways-btn:hover .ways-btn__arrow,
+.ways-btn:focus-visible .ways-btn__arrow {
+    transform: translateX(4px);
 }
 
 .ways-foot__call {
@@ -1900,6 +1926,59 @@ body.admin-bar .nav-overlay {
 .ways-foot__call a {
     color: var(--hero-ink);
     border-bottom: 1px solid rgba(27, 26, 22, 0.3);
+}
+
+/* Card cascade: the grid triggers the reveal; cards rise in one by one.
+   Flip (rotateY on __inner) is independent of this entrance (on the card). */
+.ways-grid[data-reveal] {
+    opacity: 1;
+    transform: none;
+}
+
+@keyframes waysCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(26px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .ways-grid .ways-card {
+        opacity: 0;
+    }
+
+    .ways-grid.is-visible .ways-card {
+        opacity: 1;
+        animation: waysCardIn 0.6s var(--hero-ease) backwards;
+    }
+
+    .ways-grid.is-visible .ways-card:nth-child(1) {
+        animation-delay: 0.04s;
+    }
+
+    .ways-grid.is-visible .ways-card:nth-child(2) {
+        animation-delay: 0.12s;
+    }
+
+    .ways-grid.is-visible .ways-card:nth-child(3) {
+        animation-delay: 0.20s;
+    }
+
+    .ways-grid.is-visible .ways-card:nth-child(4) {
+        animation-delay: 0.28s;
+    }
+
+    .ways-grid.is-visible .ways-card:nth-child(5) {
+        animation-delay: 0.36s;
+    }
+
+    .ways-grid.is-visible .ways-card:nth-child(6) {
+        animation-delay: 0.44s;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

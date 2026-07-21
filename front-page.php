@@ -325,12 +325,12 @@ get_header();
 
         // Front title + back message per option. Back copy is editable via ACF later.
         $lh_ways = array(
-                array('icon' => 'map-pin', 'title' => 'You own the land.', 'back' => 'Send us the parcel. We’ll walk it and tell you what it wants to become.'),
-                array('icon' => 'search', 'title' => 'You’re still looking for a site.', 'back' => 'Bring us three. We’ll tell you which one builds, and what it costs before you buy.'),
-                array('icon' => 'activity', 'title' => 'You have drawings already.', 'back' => 'Send the plans. We’ll price them honestly and flag what we’d change.'),
-                array('icon' => 'compass', 'title' => 'You don’t know where to start.', 'back' => 'Start with a walk. No plans, no pressure — just the land and a conversation.'),
-                array('icon' => 'shield', 'title' => 'You’ve been burned before.', 'back' => 'Fair. Ask us anything, call our last three clients, then decide.'),
-                array('icon' => 'eye', 'title' => 'You’re just looking.', 'back' => 'Look. Nothing here needs your email.', 'gold' => true),
+                array('icon' => 'map-pin', 'tone' => '#3f5a3c', 'title' => 'You own the land.', 'back' => 'Send us the parcel. We’ll walk it and tell you what it wants to become.'),
+                array('icon' => 'search', 'tone' => '#41697c', 'title' => 'You’re still looking for a site.', 'back' => 'Bring us three. We’ll tell you which one builds, and what it costs before you buy.'),
+                array('icon' => 'activity', 'tone' => '#a8834f', 'title' => 'You have drawings already.', 'back' => 'Send the plans. We’ll price them honestly and flag what we’d change.'),
+                array('icon' => 'compass', 'tone' => '#b5734a', 'title' => 'You don’t know where to start.', 'back' => 'Start with a walk. No plans, no pressure — just the land and a conversation.'),
+                array('icon' => 'shield', 'tone' => '#9a4b3a', 'title' => 'You’ve been burned before.', 'back' => 'Fair. Ask us anything, call our last three clients, then decide.'),
+                array('icon' => 'eye', 'tone' => '#8a7d68', 'title' => 'You’re just looking.', 'back' => 'Look. Nothing here needs your email.', 'gold' => true),
         );
         ?>
         <section class="ways" id="contact">
@@ -345,12 +345,12 @@ get_header();
                         $lh_gold = empty($lh_w['gold']) ? '' : ' ways-card--gold';
                         ?>
                         <a class="ways-card<?php echo esc_attr($lh_gold); ?>"
-                           href="<?php echo esc_url(home_url('/contact/')); ?>">
+                           href="<?php echo esc_url(home_url('/contact/')); ?>"
+                           style="--tone: <?php echo esc_attr($lh_w['tone']); ?>;">
 						<span class="ways-card__inner">
 							<span class="ways-card__front">
 								<span class="ways-card__icon"><?php echo lh_option_icon($lh_w['icon']); // phpcs:ignore
                                     ?></span>
-								<span class="ways-card__opt"><?php printf(esc_html__('Option %02d', 'luxury-homes'), (int)($lh_i + 1)); ?></span>
 								<span class="ways-card__title"><?php echo esc_html($lh_w['title']); ?></span>
 							</span>
 							<span class="ways-card__back">
@@ -364,9 +364,9 @@ get_header();
 
                 <div class="ways-foot" data-reveal>
                     <p class="ways-foot__line"><?php esc_html_e('Whichever one you are, the first conversation is the same.', 'luxury-homes'); ?></p>
-                    <a class="ways-btn"
-                       href="<?php echo esc_url(home_url('/contact/')); ?>"><?php esc_html_e('Start the conversation', 'luxury-homes'); ?>
-                        <span aria-hidden="true">&rarr;</span></a>
+                    <a class="ways-btn" href="<?php echo esc_url(home_url('/contact/')); ?>"><span
+                                class="ways-btn__label"><?php esc_html_e('Start the conversation', 'luxury-homes'); ?></span><span
+                                class="ways-btn__arrow" aria-hidden="true">&rarr;</span></a>
                     <p class="ways-foot__call"><?php
                         printf(
                         /* translators: %s: telephone link */
