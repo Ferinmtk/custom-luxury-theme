@@ -52,9 +52,6 @@ if ( $ld_items ) {
 
     <main id="main" class="homes-page our-homes-page">
 
-        <div class="hm-archbg" aria-hidden="true"><img class="hm-archbg-img" src="<?php echo lh_asset( 'img/blueprint.svg' ); ?>" alt="" loading="lazy" decoding="async"></div>
-
-
         <!-- 1. Intro -->
         <?php while ( have_posts() ) : the_post(); ?>
             <section class="homes-hero">
@@ -112,6 +109,7 @@ if ( $ld_items ) {
 
         <!-- 3 + 4. Style filters + grid -->
         <section class="homes-grid-wrap" aria-labelledby="homesGridHeading">
+            <div class="hm-archbg" aria-hidden="true"><img class="hm-archbg-img" src="<?php echo lh_asset( 'img/blueprint.svg' ); ?>" alt="" loading="lazy" decoding="async"></div>
             <?php if ( $rest ) : ?>
                 <header class="homes-grid-head" data-reveal>
                     <span class="eyebrow">Portfolio</span>
@@ -175,18 +173,18 @@ if ( $ld_items ) {
                     <span class="eyebrow">Why it&rsquo;s different</span>
                     <h2>Built the <em>hard</em> way, on purpose.</h2>
                 </header>
-                <div class="hm-values-grid">
-                    <div class="hm-value" data-reveal>
+                <div class="hm-values-grid" data-reveal>
+                    <div class="hm-value">
                         <span class="hm-value-num">01</span>
                         <h3>On-site</h3>
                         <p>Every home is stick-built on its own land with no factory panels and no shortcuts.</p>
                     </div>
-                    <div class="hm-value" data-reveal>
+                    <div class="hm-value">
                         <span class="hm-value-num">02</span>
                         <h3>One at a time</h3>
                         <p>We take on a limited number of homes each year, each with a dedicated team.</p>
                     </div>
-                    <div class="hm-value" data-reveal>
+                    <div class="hm-value">
                         <span class="hm-value-num">03</span>
                         <h3>Utah craft</h3>
                         <p>Master trades from the Wasatch, working stone, timber and glass by hand.</p>
