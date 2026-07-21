@@ -5,652 +5,206 @@
  */
 get_header();
 
-$all_homes = get_posts( array(
-	'post_type'      => 'home',
-	'posts_per_page' => -1,
-	'orderby'        => array( 'menu_order' => 'ASC', 'date' => 'DESC' ),
-) );
-
-// Featured = first flagged home, else the first home.
-$featured = null;
-$rest     = array();
-foreach ( $all_homes as $h ) {
-	if ( ! $featured && get_post_meta( $h->ID, '_home_featured', true ) ) {
-		$featured = $h;
-	} else {
-		$rest[] = $h;
-	}
-}
-if ( ! $featured && $rest ) {
-	$featured = array_shift( $rest );
-}
+$all_homes = function_exists( 'lh_get_homes' ) ? lh_get_homes() : array();
+list( $featured, $rest ) = function_exists( 'lh_split_featured' )
+        ? lh_split_featured( $all_homes )
+        : array( null, $all_homes );
 
 // Styles present in the grid, in canonical order.
 $present = array();
-foreach ( $rest as $h ) {
-	$s = lh_normalize_style( get_post_meta( $h->ID, '_home_style', true ) );
-	if ( $s ) { $present[ $s ] = true; }
+if ( function_exists( 'lh_normalize_style' ) ) {
+    foreach ( $rest as $h ) {
+        $s = lh_normalize_style( get_post_meta( $h->ID, '_home_style', true ) );
+        if ( $s ) { $present[ $s ] = true; }
+    }
 }
-$filter_styles = array_values( array_filter( lh_home_styles(), function ( $s ) use ( $present ) {
-	return isset( $present[ $s ] );
-} ) );
+$filter_styles = function_exists( 'lh_home_styles' )
+        ? array_values( array_filter( lh_home_styles(), function ( $s ) use ( $present ) {
+            return isset( $present[ $s ] );
+        } ) )
+        : array();
+
+// Portfolio structured data (schema.org ItemList) — helps search engines
+// surface the homes as a rich list.
+$ld_homes = $featured ? array_merge( array( $featured ), $rest ) : $rest;
+$ld_items = array();
+foreach ( $ld_homes as $ld_i => $ld_home ) {
+    $ld_item = array(
+            '@type'    => 'ListItem',
+            'position' => $ld_i + 1,
+            'url'      => get_permalink( $ld_home ),
+            'name'     => get_the_title( $ld_home ),
+    );
+    if ( function_exists( 'lh_home_image_url' ) ) {
+        $ld_img = lh_home_image_url( $ld_home->ID, 'full' );
+        if ( $ld_img ) { $ld_item['image'] = $ld_img; }
+    }
+    $ld_items[] = $ld_item;
+}
+if ( $ld_items ) {
+    echo '<script type="application/ld+json">' . wp_json_encode( array(
+                    '@context'        => 'https://schema.org',
+                    '@type'           => 'ItemList',
+                    'itemListElement' => $ld_items,
+            ) ) . '</script>' . "\n";
+}
 ?>
 
-<main id="main" class="homes-page">
+    <main id="main" class="homes-page our-homes-page">
 
-	<div class="hm-archbg" aria-hidden="true"><svg viewBox="0 0 1960 1500" fill="none" preserveAspectRatio="xMidYMid slice"><g fill="none" stroke="#1c1a16" stroke-linecap="round" stroke-linejoin="round">
-<line x1="0.0" y1="140.0" x2="1960.0" y2="40.0" stroke-width="0.5" stroke-dasharray="2 8"/>
-<line x1="0.0" y1="1040.0" x2="1960.0" y2="1260.0" stroke-width="0.5" stroke-dasharray="2 8"/>
-<line x1="360.0" y1="0.0" x2="1000.0" y2="1500.0" stroke-width="0.5" stroke-dasharray="2 8"/>
-<line x1="1960.0" y1="260.0" x2="700.0" y2="1500.0" stroke-width="0.5" stroke-dasharray="2 8"/>
-<line x1="120.0" y1="0.0" x2="520.0" y2="1500.0" stroke-width="0.5" stroke-dasharray="2 8"/>
-<path d="M 149.6 234.0 L 183.7 233.4 L 217.8 234.6 L 251.9 234.6 L 286.0 234.0 L 320.1 234.0 L 354.2 233.5 L 388.3 233.0 L 422.3 233.7 L 456.4 234.2 L 490.5 233.1 L 524.6 234.6 L 558.7 233.5 L 592.8 233.5 L 626.9 233.1 L 661.0 235.0 L 695.0 234.5 L 729.1 234.8 L 763.2 234.2 L 797.3 233.1 L 831.4 234.0" stroke-width="1.2"/>
-<path d="M 149.3 226.0 L 183.3 225.7 L 217.4 225.3 L 251.4 226.6 L 285.5 225.2 L 319.5 226.9 L 353.6 225.9 L 387.6 226.1 L 421.7 225.7 L 455.7 226.0 L 489.8 225.4 L 523.8 225.1 L 557.9 226.7 L 591.9 225.5 L 626.0 226.6 L 660.0 225.4 L 694.1 226.9 L 728.1 226.8 L 762.2 226.5 L 796.2 226.5 L 830.3 226.0" stroke-width="1.2"/>
-<path d="M 826.0 228.4 L 825.3 262.9 L 826.6 297.4 L 825.2 331.9 L 825.2 366.4 L 826.2 400.9 L 826.3 435.4 L 826.1 469.9 L 826.2 504.4 L 825.0 538.9 L 826.2 573.5 L 826.9 608.0 L 826.8 642.5 L 825.6 677.0 L 825.0 711.5 L 826.0 746.0 L 826.0 780.5 L 825.9 815.0 L 825.5 849.5 L 826.6 884.0 L 825.8 918.5 L 825.9 953.0 L 825.8 987.5 L 826.6 1022.0 L 826.7 1056.5 L 826.0 1091.0" stroke-width="1.2"/>
-<path d="M 834.0 228.0 L 834.4 262.5 L 834.8 297.0 L 834.9 331.6 L 833.4 366.1 L 833.4 400.6 L 834.3 435.2 L 833.6 469.7 L 833.6 504.2 L 833.2 538.8 L 833.1 573.3 L 834.2 607.8 L 833.0 642.4 L 833.1 676.9 L 833.8 711.4 L 833.2 746.0 L 834.0 780.5 L 834.2 815.0 L 834.5 849.6 L 833.2 884.1 L 834.7 918.6 L 834.9 953.2 L 833.4 987.7 L 833.5 1022.2 L 834.0 1056.8 L 834.0 1091.3" stroke-width="1.2"/>
-<path d="M 831.8 1086.0 L 797.7 1086.2 L 763.6 1086.7 L 729.5 1086.9 L 695.4 1086.3 L 661.2 1085.2 L 627.1 1085.0 L 593.0 1085.5 L 558.9 1086.0 L 524.8 1086.5 L 490.6 1085.1 L 456.5 1085.9 L 422.4 1085.5 L 388.3 1086.9 L 354.2 1086.6 L 320.0 1085.3 L 285.9 1085.4 L 251.8 1085.2 L 217.7 1085.8 L 183.6 1086.1 L 149.4 1086.0" stroke-width="1.2"/>
-<path d="M 831.3 1094.0 L 797.2 1094.4 L 763.1 1093.5 L 729.0 1095.0 L 694.9 1093.6 L 660.8 1093.1 L 626.7 1095.0 L 592.6 1093.8 L 558.5 1093.7 L 524.4 1093.3 L 490.3 1093.8 L 456.2 1094.5 L 422.1 1094.2 L 388.0 1093.1 L 353.9 1093.2 L 319.8 1094.7 L 285.7 1094.8 L 251.6 1094.8 L 217.5 1094.9 L 183.4 1094.1 L 149.3 1094.0" stroke-width="1.2"/>
-<path d="M 154.0 1091.9 L 154.1 1057.4 L 153.6 1022.9 L 154.0 988.4 L 153.4 954.0 L 153.3 919.5 L 153.4 885.0 L 153.8 850.5 L 154.4 816.0 L 154.1 781.5 L 153.1 747.0 L 154.4 712.5 L 154.7 678.1 L 154.5 643.6 L 154.6 609.1 L 153.0 574.6 L 153.9 540.1 L 153.1 505.6 L 154.5 471.1 L 153.4 436.6 L 154.4 402.2 L 153.5 367.7 L 154.4 333.2 L 153.6 298.7 L 153.1 264.2 L 154.0 229.7" stroke-width="1.2"/>
-<path d="M 146.0 1090.7 L 146.0 1056.2 L 146.1 1021.8 L 146.9 987.3 L 145.2 952.9 L 146.2 918.4 L 146.0 884.0 L 146.5 849.5 L 146.9 815.1 L 145.6 780.6 L 146.4 746.1 L 146.1 711.7 L 146.1 677.2 L 145.1 642.8 L 146.6 608.3 L 147.0 573.9 L 145.7 539.4 L 145.6 505.0 L 147.0 470.5 L 145.2 436.1 L 145.2 401.6 L 145.1 367.2 L 146.6 332.7 L 146.5 298.3 L 145.9 263.8 L 146.0 229.4" stroke-width="1.2"/>
-<path d="M 400.0 230.0 L 400.0 266.8 L 400.2 303.6 L 400.2 340.5 L 400.5 377.3 L 400.9 414.1 L 400.0 451.0" stroke-width="0.9"/>
-<path d="M 510.0 229.5 L 509.6 266.4 L 510.1 303.3 L 510.5 340.2 L 510.2 377.2 L 510.0 414.1 L 509.7 451.0 L 509.1 487.9 L 510.8 524.9 L 510.0 561.8" stroke-width="0.9"/>
-<path d="M 148.9 450.0 L 185.0 450.6 L 221.1 450.3 L 257.2 450.5 L 293.3 450.3 L 329.4 450.7 L 365.5 450.4 L 401.6 450.0" stroke-width="0.9"/>
-<path d="M 508.5 430.0 L 544.4 430.2 L 580.4 430.6 L 616.3 430.9 L 652.3 431.0 L 688.2 429.0 L 724.2 429.6 L 760.1 429.6 L 796.1 429.8 L 832.0 430.0" stroke-width="0.9"/>
-<path d="M 149.7 560.0 L 185.7 560.9 L 221.8 560.5 L 257.8 559.9 L 293.9 559.2 L 329.9 560.9 L 366.0 560.4 L 402.0 559.4 L 438.1 559.7 L 474.1 560.3 L 510.2 560.0" stroke-width="0.9"/>
-<path d="M 270.0 449.4 L 270.5 486.5 L 269.3 523.6 L 270.0 560.7" stroke-width="0.9"/>
-<path d="M 149.7 500.0 L 189.9 499.6 L 230.2 499.8 L 270.4 500.0" stroke-width="0.9"/>
-<path d="M 507.9 750.0 L 543.8 749.6 L 579.7 749.3 L 615.6 749.8 L 651.5 749.5 L 687.4 749.4 L 723.3 750.9 L 759.2 749.1 L 795.1 750.6 L 831.0 750.0" stroke-width="0.9"/>
-<path d="M 510.0 558.4 L 510.9 593.7 L 509.8 629.0 L 509.6 664.2 L 510.5 699.5 L 511.0 734.8 L 509.9 770.0 L 510.8 805.3 L 510.4 840.6 L 510.1 875.8 L 510.0 911.1" stroke-width="0.9"/>
-<path d="M 148.0 750.0 L 184.3 750.6 L 220.5 750.1 L 256.7 749.1 L 292.9 749.4 L 329.2 749.8 L 365.4 750.1 L 401.6 749.5 L 437.8 750.6 L 474.1 750.7 L 510.3 750.0" stroke-width="0.9"/>
-<path d="M 360.0 748.1 L 360.8 782.4 L 359.2 816.7 L 359.5 851.0 L 359.5 885.3 L 360.6 919.7 L 360.9 954.0 L 359.4 988.3 L 359.8 1022.6 L 359.8 1057.0 L 360.0 1091.3" stroke-width="0.9"/>
-<path d="M 490.0 908.2 L 490.3 944.7 L 490.4 981.2 L 489.7 1017.7 L 489.2 1054.1 L 490.0 1090.6" stroke-width="0.9"/>
-<path d="M 580.0 909.9 L 580.6 946.2 L 580.5 982.5 L 580.9 1018.8 L 580.9 1055.2 L 580.0 1091.5" stroke-width="0.9"/>
-<path d="M 358.9 910.0 L 397.0 909.2 L 435.2 910.9 L 473.3 910.1 L 511.4 910.0" stroke-width="0.9"/>
-<path d="M 150.6 442.9 L 146.3 448.5 L 140.9 452.8" stroke-width="0.35"/>
-<path d="M 165.3 443.7 L 160.6 448.1 L 155.9 452.5" stroke-width="0.35"/>
-<path d="M 179.0 443.7 L 174.4 448.7 L 168.9 452.8" stroke-width="0.35"/>
-<path d="M 193.3 442.7 L 188.4 448.3 L 182.6 453.1" stroke-width="0.35"/>
-<path d="M 207.2 442.6 L 201.5 447.3 L 197.2 453.4" stroke-width="0.35"/>
-<path d="M 220.6 442.5 L 216.3 448.6 L 210.5 453.2" stroke-width="0.35"/>
-<path d="M 234.5 443.0 L 229.6 447.9 L 225.1 453.2" stroke-width="0.35"/>
-<path d="M 248.3 442.6 L 244.1 448.4 L 239.2 453.4" stroke-width="0.35"/>
-<path d="M 263.6 443.1 L 257.6 447.6 L 252.8 453.2" stroke-width="0.35"/>
-<path d="M 276.6 443.9 L 271.9 448.0 L 267.4 452.3" stroke-width="0.35"/>
-<path d="M 291.3 443.4 L 286.6 447.8 L 281.8 452.0" stroke-width="0.35"/>
-<path d="M 304.9 444.0 L 300.5 448.7 L 295.0 452.3" stroke-width="0.35"/>
-<path d="M 319.4 443.2 L 314.6 448.5 L 308.6 452.8" stroke-width="0.35"/>
-<path d="M 332.4 443.3 L 327.3 447.9 L 323.0 453.2" stroke-width="0.35"/>
-<path d="M 347.0 443.6 L 342.2 448.1 L 337.3 452.6" stroke-width="0.35"/>
-<path d="M 360.4 443.2 L 355.4 447.2 L 351.3 452.1" stroke-width="0.35"/>
-<path d="M 374.9 442.8 L 369.2 447.2 L 364.9 453.1" stroke-width="0.35"/>
-<path d="M 388.6 443.4 L 384.2 448.1 L 380.0 453.0" stroke-width="0.35"/>
-<text x="275.0" y="325.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">GARAGE</text>
-<text x="275.0" y="340.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">36.2 m²</text>
-<path d="M 410.7 250.0 L 454.6 250.5 L 498.4 250.0" stroke-width="0.7"/>
-<path d="M 498.0 248.9 L 497.3 286.9 L 498.0 324.9 L 498.1 362.8 L 498.0 400.8" stroke-width="0.7"/>
-<path d="M 498.9 400.0 L 454.8 399.3 L 410.7 400.0" stroke-width="0.7"/>
-<path d="M 412.0 400.8 L 412.6 362.7 L 412.9 324.6 L 411.4 286.4 L 412.0 248.3" stroke-width="0.7"/>
-<path d="M 410.1 265.0 L 454.2 265.3 L 498.2 265.0" stroke-width="0.5"/>
-<path d="M 411.7 280.0 L 455.1 279.6 L 498.6 280.0" stroke-width="0.5"/>
-<path d="M 411.5 295.0 L 455.3 294.4 L 499.1 295.0" stroke-width="0.5"/>
-<path d="M 410.5 310.0 L 455.0 309.4 L 499.4 310.0" stroke-width="0.5"/>
-<path d="M 411.7 325.0 L 455.6 324.2 L 499.5 325.0" stroke-width="0.5"/>
-<path d="M 410.1 340.0 L 454.1 340.2 L 498.0 340.0" stroke-width="0.5"/>
-<path d="M 411.0 355.0 L 455.6 355.3 L 500.1 355.0" stroke-width="0.5"/>
-<path d="M 410.6 370.0 L 454.7 370.3 L 498.8 370.0" stroke-width="0.5"/>
-<path d="M 411.0 385.0 L 454.7 384.0 L 498.5 385.0" stroke-width="0.5"/>
-<path d="M 455.0 397.0 L 455.2 361.4 L 454.2 325.9 L 455.0 290.3 L 455.0 254.7" stroke-width="0.6"/>
-<path d="M 455.0 256 l -5 10 l 10 0 z" stroke-width="0.6"/>
-<text x="462.0" y="325.0" font-size="10" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">UP</text>
-<text x="455.0" y="425.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">HALL</text>
-<path d="M 519.6 240.0 L 557.3 239.4 L 594.9 239.1 L 632.5 239.4 L 670.2 239.3 L 707.8 240.2 L 745.4 240.7 L 783.1 239.4 L 820.7 240.0" stroke-width="0.6"/>
-<path d="M 820.0 238.8 L 819.5 252.9 L 820.0 266.9" stroke-width="0.6"/>
-<path d="M 820.4 266.0 L 782.7 266.5 L 745.0 265.8 L 707.3 266.8 L 669.6 266.6 L 631.9 265.8 L 594.2 265.4 L 556.5 266.0 L 518.8 266.0" stroke-width="0.6"/>
-<path d="M 520.0 266.0 L 520.8 252.7 L 520.0 239.3" stroke-width="0.6"/>
-<path d="M 539.2 280.0 L 562.6 280.8 L 586.1 280.0" stroke-width="0.7"/>
-<path d="M 586.0 278.7 L 586.8 303.4 L 586.0 328.0" stroke-width="0.7"/>
-<path d="M 588.1 326.0 L 563.3 326.7 L 538.4 326.0" stroke-width="0.7"/>
-<path d="M 540.0 327.5 L 540.6 303.3 L 540.0 279.1" stroke-width="0.7"/>
-<path d="M 558.4 294.9 L 557.4 296.3 L 556.5 297.6 L 555.1 299.0 L 553.3 299.3 L 551.6 298.4 L 550.0 297.9 L 548.9 296.7 L 547.4 295.6 L 547.1 293.8 L 547.4 292.1 L 547.8 290.4 L 548.3 288.6 L 550.1 287.9 L 551.6 286.9 L 553.5 286.9 L 555.2 287.4 L 556.8 288.3 L 557.8 289.7 L 558.4 291.3 L 559.0 293.0 L 558.5 294.6 L 557.8 296.2" stroke-width="0.5"/>
-<path d="M 575.5 299.0 L 573.6 298.9 L 571.9 298.5 L 570.4 297.8 L 569.0 297.0 L 567.3 296.0 L 567.3 294.1 L 566.8 292.3 L 567.8 290.8 L 568.3 289.0 L 569.8 288.0 L 571.3 287.0 L 573.1 287.0 L 574.8 287.4 L 576.3 288.3 L 577.8 289.3 L 579.0 290.8 L 579.2 292.6 L 578.8 294.4 L 578.0 295.9 L 577.4 297.8 L 575.8 298.8 L 573.8 298.5" stroke-width="0.5"/>
-<path d="M 550.3 307.3 L 552.1 306.9 L 554.0 306.5 L 555.8 307.2 L 556.8 308.8 L 558.7 309.7 L 558.6 311.6 L 558.8 313.4 L 559.2 315.3 L 557.4 316.4 L 556.4 317.8 L 554.9 318.8 L 553.1 318.7 L 551.5 318.5 L 549.6 318.3 L 548.3 317.0 L 547.2 315.5 L 546.7 313.7 L 546.7 311.8 L 547.3 310.0 L 548.5 308.5 L 549.9 307.2 L 551.8 307.1" stroke-width="0.5"/>
-<path d="M 571.2 307.3 L 572.9 306.4 L 574.8 307.1 L 576.3 308.1 L 577.8 309.1 L 578.3 310.8 L 578.5 312.5 L 578.7 314.2 L 577.9 315.7 L 576.8 316.9 L 575.5 317.9 L 574.1 318.8 L 572.3 319.3 L 570.8 318.0 L 569.0 317.7 L 568.3 316.0 L 567.2 314.6 L 567.2 312.8 L 567.4 311.1 L 567.9 309.3 L 569.4 308.3 L 571.0 307.5 L 572.7 306.7" stroke-width="0.5"/>
-<path d="M 629.7 276.0 L 655.6 277.0 L 681.5 276.0" stroke-width="0.7"/>
-<path d="M 680.0 274.6 L 679.3 290.1 L 680.0 305.5" stroke-width="0.7"/>
-<path d="M 680.3 304.0 L 654.1 303.7 L 627.9 304.0" stroke-width="0.7"/>
-<path d="M 630.0 304.6 L 629.7 290.3 L 630.0 276.0" stroke-width="0.7"/>
-<path d="M 647.9 295.0 L 646.3 295.5 L 644.6 295.4 L 642.7 295.9 L 641.5 294.4 L 640.0 293.5 L 639.2 291.9 L 638.6 290.1 L 638.8 288.2 L 639.9 286.6 L 641.4 285.7 L 642.6 284.2 L 644.4 284.5 L 646.3 283.6 L 647.7 284.9 L 649.1 286.0 L 650.0 287.4 L 650.8 288.9 L 651.3 290.7 L 650.9 292.6 L 649.8 294.1 L 648.4 295.3 L 646.5 295.5" stroke-width="0.5"/>
-<path d="M 662.5 295.2 L 661.0 294.4 L 659.4 293.3 L 658.6 291.5 L 659.5 289.7 L 658.9 287.7 L 659.9 286.0 L 661.6 285.1 L 663.0 284.1 L 664.9 283.7 L 666.5 284.6 L 668.3 284.8 L 670.0 285.8 L 670.9 287.5 L 671.5 289.3 L 670.4 291.0 L 670.5 292.9 L 669.2 294.2 L 668.1 295.7 L 666.1 295.5 L 664.4 296.0 L 662.8 295.1 L 660.9 294.9" stroke-width="0.5"/>
-<path d="M 792.4 240.0 L 806.5 240.3 L 820.7 240.0" stroke-width="0.6"/>
-<path d="M 820.0 239.9 L 820.1 276.3 L 819.9 312.8 L 820.3 349.2 L 819.8 385.7 L 820.0 422.1" stroke-width="0.6"/>
-<path d="M 820.9 420.0 L 806.6 420.4 L 792.4 420.0" stroke-width="0.6"/>
-<path d="M 794.0 420.5 L 793.3 384.0 L 793.8 347.5 L 793.6 311.0 L 793.5 274.5 L 794.0 238.0" stroke-width="0.6"/>
-<text x="670.0" y="380.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">KITCHEN</text>
-<text x="670.0" y="395.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">19.4 m²</text>
-<text x="670.0" y="590.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">LIVING</text>
-<text x="670.0" y="605.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">28.7 m²</text>
-<rect x="164.0" y="462.0" width="28.0" height="17.0" rx="4" stroke-width="0.6"/>
-<ellipse cx="178.0" cy="471.0" rx="8" ry="5" stroke-width="0.5"/>
-<path d="M 157.2 510.0 L 194.2 509.1 L 231.2 509.2 L 268.3 510.0" stroke-width="0.6"/>
-<path d="M 268.0 509.5 L 267.3 520.1 L 268.0 530.6" stroke-width="0.6"/>
-<path d="M 269.4 530.0 L 231.7 530.4 L 194.0 529.8 L 156.3 530.0" stroke-width="0.6"/>
-<path d="M 158.0 531.2 L 158.9 519.9 L 158.0 508.6" stroke-width="0.6"/>
-<text x="210.0" y="540.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">LDY</text>
-<path d="M 299.4 460.0 L 308.8 460.8 L 318.1 460.0" stroke-width="0.6"/>
-<path d="M 316.0 458.4 L 316.2 463.5 L 316.0 468.7" stroke-width="0.6"/>
-<path d="M 317.2 467.0 L 308.3 466.7 L 299.4 467.0" stroke-width="0.6"/>
-<path d="M 300.0 467.3 L 299.4 462.6 L 300.0 457.9" stroke-width="0.6"/>
-<ellipse cx="308.0" cy="476.0" rx="9" ry="12" stroke-width="0.6"/>
-<text x="335.0" y="530.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">WC</text>
-<path d="M 158.8 575.0 L 206.0 575.9 L 253.1 575.0" stroke-width="0.7"/>
-<path d="M 252.0 574.5 L 251.6 598.2 L 252.0 621.9" stroke-width="0.7"/>
-<path d="M 253.5 621.0 L 206.0 622.0 L 158.5 621.0" stroke-width="0.7"/>
-<path d="M 160.0 621.8 L 161.0 597.7 L 160.0 573.5" stroke-width="0.7"/>
-<rect x="166.0" y="581.0" width="80.0" height="34.0" rx="10" stroke-width="0.5"/>
-<path d="M 238.9 596.7 L 239.4 597.5 L 239.0 598.5 L 238.8 599.4 L 238.5 600.4 L 237.2 600.1 L 236.6 600.8 L 235.8 600.8 L 235.0 600.6 L 234.2 600.3 L 234.0 599.4 L 232.9 599.0 L 232.5 598.0 L 233.4 597.2 L 233.8 596.6 L 234.2 595.8 L 234.7 594.9 L 235.7 595.3 L 236.7 594.7 L 237.2 595.7 L 238.2 595.8 L 238.9 596.5 L 239.2 597.4" stroke-width="0.5"/>
-<rect x="270.0" y="575.0" width="28.0" height="17.0" rx="4" stroke-width="0.6"/>
-<ellipse cx="284.0" cy="584.0" rx="8" ry="5" stroke-width="0.5"/>
-<path d="M 269.8 635.0 L 278.8 635.7 L 287.9 635.0" stroke-width="0.6"/>
-<path d="M 286.0 634.6 L 286.1 639.2 L 286.0 643.8" stroke-width="0.6"/>
-<path d="M 286.1 642.0 L 277.8 641.7 L 269.6 642.0" stroke-width="0.6"/>
-<path d="M 270.0 642.9 L 270.3 638.6 L 270.0 634.2" stroke-width="0.6"/>
-<ellipse cx="278.0" cy="651.0" rx="9" ry="12" stroke-width="0.6"/>
-<text x="240.0" y="700.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">BATH</text>
-<text x="240.0" y="715.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">6.1 m²</text>
-<path d="M 329.5 575.0 L 366.5 574.7 L 403.4 574.2 L 440.4 575.0" stroke-width="0.7"/>
-<path d="M 440.0 573.6 L 440.0 620.2 L 440.0 666.8" stroke-width="0.7"/>
-<path d="M 440.2 665.0 L 403.2 664.0 L 366.1 665.0 L 329.1 665.0" stroke-width="0.7"/>
-<path d="M 330.0 665.8 L 329.2 620.0 L 330.0 574.3" stroke-width="0.7"/>
-<path d="M 333.1 579.0 L 368.0 579.8 L 402.9 579.6 L 437.8 579.0" stroke-width="0.5"/>
-<path d="M 436.0 577.6 L 435.6 586.2 L 436.0 594.7" stroke-width="0.5"/>
-<path d="M 436.6 593.0 L 402.2 593.1 L 367.8 592.4 L 333.4 593.0" stroke-width="0.5"/>
-<path d="M 334.0 594.7 L 334.9 586.5 L 334.0 578.2" stroke-width="0.5"/>
-<path d="M 385.0 594.6 L 384.5 628.7 L 385.0 662.7" stroke-width="0.4"/>
-<path d="M 449.4 575.0 L 477.7 574.5 L 506.1 575.0" stroke-width="0.7"/>
-<path d="M 504.0 573.0 L 503.4 619.5 L 504.0 666.0" stroke-width="0.7"/>
-<path d="M 506.1 665.0 L 477.8 664.4 L 449.5 665.0" stroke-width="0.7"/>
-<path d="M 450.0 666.2 L 450.3 620.4 L 450.0 574.6" stroke-width="0.7"/>
-<path d="M 448.8 583.0 L 477.0 583.8 L 505.1 583.0" stroke-width="0.4"/>
-<path d="M 449.7 574.7 L 458.1 620.5 L 468.3 665.9" stroke-width="0.4"/>
-<text x="420.0" y="710.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">BED 3</text>
-<text x="420.0" y="725.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">14.0 m²</text>
-<text x="670.0" y="830.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">DINING</text>
-<text x="670.0" y="845.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">15.2 m²</text>
-<path d="M 167.9 770.0 L 208.9 769.6 L 249.9 769.4 L 290.9 770.0" stroke-width="0.7"/>
-<path d="M 290.0 768.4 L 289.8 819.9 L 290.0 871.3" stroke-width="0.7"/>
-<path d="M 291.6 870.0 L 250.4 870.8 L 209.2 869.8 L 168.0 870.0" stroke-width="0.7"/>
-<path d="M 170.0 872.2 L 170.7 820.3 L 170.0 768.5" stroke-width="0.7"/>
-<path d="M 173.5 774.0 L 211.3 773.7 L 249.0 774.0 L 286.8 774.0" stroke-width="0.5"/>
-<path d="M 286.0 773.9 L 285.1 781.1 L 286.0 788.3" stroke-width="0.5"/>
-<path d="M 287.2 788.0 L 249.2 787.6 L 211.3 787.2 L 173.3 788.0" stroke-width="0.5"/>
-<path d="M 174.0 788.6 L 174.5 781.2 L 174.0 773.9" stroke-width="0.5"/>
-<path d="M 230.0 788.4 L 230.7 827.9 L 230.0 867.3" stroke-width="0.4"/>
-<path d="M 169.9 880.0 L 210.6 880.0 L 251.2 880.6 L 291.9 880.0" stroke-width="0.7"/>
-<path d="M 290.0 879.4 L 289.4 893.6 L 290.0 907.7" stroke-width="0.7"/>
-<path d="M 290.8 906.0 L 249.9 906.0 L 209.1 905.7 L 168.3 906.0" stroke-width="0.7"/>
-<path d="M 170.0 906.5 L 169.3 893.0 L 170.0 879.5" stroke-width="0.7"/>
-<path d="M 169.0 888.0 L 209.8 887.3 L 250.6 888.1 L 291.4 888.0" stroke-width="0.4"/>
-<path d="M 169.4 879.5 L 179.7 892.6 L 189.1 906.3" stroke-width="0.4"/>
-<text x="255.0" y="970.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">BED 2</text>
-<text x="255.0" y="985.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">16.8 m²</text>
-<path d="M 369.9 920.0 L 393.7 920.8 L 417.4 920.0" stroke-width="0.7"/>
-<path d="M 416.0 919.6 L 416.4 943.7 L 416.0 967.9" stroke-width="0.7"/>
-<path d="M 417.9 966.0 L 393.6 965.1 L 369.2 966.0" stroke-width="0.7"/>
-<path d="M 370.0 966.8 L 369.4 942.5 L 370.0 918.2" stroke-width="0.7"/>
-<path d="M 368.7 919.5 L 393.1 943.1 L 416.9 967.4" stroke-width="0.4"/>
-<path d="M 416.8 919.0 L 392.8 942.6 L 369.1 966.6" stroke-width="0.4"/>
-<path d="M 392.2 944.9 L 391.8 944.5 L 390.8 944.4 L 390.5 943.7 L 390.1 942.9 L 391.0 942.3 L 390.8 941.4 L 391.5 941.1 L 392.1 940.6 L 392.8 940.1 L 393.6 940.5 L 394.2 940.9 L 395.0 941.2 L 394.9 942.1 L 395.9 942.6 L 395.5 943.4 L 394.8 943.8 L 394.8 944.7 L 394.5 945.6 L 393.7 946.0 L 392.9 945.4 L 392.2 945.1 L 391.2 945.4" stroke-width="0.5"/>
-<path d="M 419.4 920.0 L 428.0 920.3 L 436.5 920.0" stroke-width="0.6"/>
-<path d="M 436.0 919.3 L 436.6 923.5 L 436.0 927.8" stroke-width="0.6"/>
-<path d="M 437.6 927.0 L 428.0 926.4 L 418.5 927.0" stroke-width="0.6"/>
-<path d="M 420.0 929.1 L 420.0 923.8 L 420.0 918.4" stroke-width="0.6"/>
-<ellipse cx="428.0" cy="936.0" rx="9" ry="12" stroke-width="0.6"/>
-<rect x="420.0" y="975.0" width="28.0" height="17.0" rx="4" stroke-width="0.6"/>
-<ellipse cx="434.0" cy="984.0" rx="8" ry="5" stroke-width="0.5"/>
-<text x="425.0" y="890.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">ENS</text>
-<path d="M 494.7 920.0 L 534.4 920.6 L 574.2 920.0" stroke-width="0.7"/>
-<path d="M 574.0 918.1 L 574.1 959.5 L 573.0 1000.8 L 574.0 1042.2" stroke-width="0.7"/>
-<path d="M 574.2 1040.0 L 534.5 1040.0 L 494.7 1040.0" stroke-width="0.7"/>
-<path d="M 496.0 1040.8 L 496.2 1000.0 L 495.0 959.1 L 496.0 918.2" stroke-width="0.7"/>
-<path d="M 494.6 928.0 L 534.6 928.5 L 574.7 928.0" stroke-width="0.4"/>
-<path d="M 495.9 918.4 L 501.6 959.2 L 507.2 999.9 L 514.0 1040.5" stroke-width="0.4"/>
-<text x="535.0" y="895.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">WIR</text>
-<path d="M 599.8 930.0 L 635.1 929.2 L 670.4 929.0 L 705.6 929.2 L 740.9 930.0" stroke-width="0.7"/>
-<path d="M 740.0 928.9 L 739.6 966.0 L 739.2 1003.2 L 740.0 1040.3" stroke-width="0.7"/>
-<path d="M 740.4 1040.0 L 704.9 1039.9 L 669.3 1039.7 L 633.7 1040.3 L 598.1 1040.0" stroke-width="0.7"/>
-<path d="M 600.0 1040.7 L 601.0 1003.3 L 600.6 966.0 L 600.0 928.6" stroke-width="0.7"/>
-<path d="M 603.8 934.0 L 648.1 934.4 L 692.5 933.5 L 736.8 934.0" stroke-width="0.5"/>
-<path d="M 736.0 933.0 L 736.1 941.2 L 736.0 949.4" stroke-width="0.5"/>
-<path d="M 738.2 948.0 L 692.8 948.1 L 647.4 948.8 L 602.0 948.0" stroke-width="0.5"/>
-<path d="M 604.0 949.8 L 604.1 941.1 L 604.0 932.4" stroke-width="0.5"/>
-<path d="M 670.0 948.1 L 669.5 992.6 L 670.0 1037.1" stroke-width="0.4"/>
-<text x="670.0" y="910.0" font-size="14" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">BED 1</text>
-<text x="670.0" y="925.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">22.4 m²</text>
-<path d="M 398.1 320.0 L 414.4 319.3 L 430.8 320.0" stroke-width="0.7"/>
-<path d="M 430.1 320.0 L 429.4 314.3 L 428.2 308.6 L 425.3 303.5 L 421.7 299.0 L 417.4 295.2 L 412.1 292.7 L 406.7 290.8 L 401.0 290.4" stroke-width="0.6"/>
-<path d="M 510.0 529.6 L 509.2 544.9 L 510.0 560.3" stroke-width="0.7"/>
-<path d="M 510.0 560.1 L 515.7 559.4 L 521.1 557.5 L 526.3 555.1 L 530.9 551.6 L 534.3 547.0 L 537.8 542.4 L 539.1 536.7 L 539.9 531.0" stroke-width="0.6"/>
-<path d="M 269.4 530.0 L 283.0 529.1 L 296.6 530.0" stroke-width="0.7"/>
-<path d="M 295.9 530.0 L 295.6 525.0 L 294.1 520.3 L 291.7 515.9 L 288.7 511.9 L 284.7 509.1 L 280.5 506.4 L 275.8 504.7 L 270.9 503.7" stroke-width="0.6"/>
-<path d="M 300.0 500.9 L 300.1 487.2 L 300.0 473.4" stroke-width="0.7"/>
-<path d="M 300.0 474.3 L 295.0 474.4 L 290.2 475.9 L 285.8 478.1 L 281.7 481.0 L 278.5 484.9 L 275.8 489.2 L 274.9 494.2 L 273.6 499.1" stroke-width="0.6"/>
-<path d="M 510.0 659.2 L 509.1 675.6 L 510.0 692.0" stroke-width="0.7"/>
-<path d="M 510.0 690.3 L 515.7 689.3 L 521.1 687.5 L 526.2 684.9 L 531.0 681.7 L 534.7 677.3 L 537.0 672.0 L 538.7 666.6 L 540.5 661.1" stroke-width="0.6"/>
-<path d="M 359.3 790.0 L 373.1 790.6 L 387.0 790.0" stroke-width="0.7"/>
-<path d="M 386.0 790.0 L 385.6 785.0 L 384.5 780.1 L 381.5 776.0 L 378.5 772.1 L 375.1 768.5 L 370.6 766.1 L 365.8 764.7 L 360.9 764.2" stroke-width="0.6"/>
-<path d="M 490.0 947.9 L 489.0 962.0 L 490.0 976.0" stroke-width="0.7"/>
-<path d="M 490.0 973.6 L 494.5 973.1 L 499.1 972.6 L 502.9 969.9 L 506.7 967.3 L 509.6 963.7 L 512.4 960.0 L 513.3 955.4 L 513.6 950.8" stroke-width="0.6"/>
-<path d="M 580.0 968.0 L 579.1 981.2 L 580.0 994.3" stroke-width="0.7"/>
-<path d="M 580.0 993.9 L 584.6 993.8 L 589.0 992.3 L 593.3 990.4 L 596.7 987.3 L 599.3 983.5 L 602.0 979.8 L 603.7 975.5 L 603.9 970.8" stroke-width="0.6"/>
-<path d="M 401.8 380.0 L 386.5 380.5 L 371.2 380.0" stroke-width="0.7"/>
-<path d="M 372.0 380.0 L 372.1 385.4 L 374.0 390.5 L 376.3 395.4 L 380.1 399.2 L 384.0 402.8 L 388.6 405.7 L 393.7 407.2 L 399.0 407.5" stroke-width="0.6"/>
-<path d="M 188.1 230.0 L 229.8 229.6 L 271.4 230.0" stroke-width="0.5"/>
-<path d="M 449.4 230.0 L 470.3 229.3 L 491.2 230.0" stroke-width="0.5"/>
-<path d="M 830.0 468.0 L 829.6 509.7 L 830.0 551.5" stroke-width="0.5"/>
-<path d="M 150.0 789.9 L 149.6 831.0 L 150.0 872.0" stroke-width="0.5"/>
-<path d="M 349.0 1090.0 L 389.7 1089.6 L 430.4 1089.1 L 471.2 1090.0" stroke-width="0.5"/>
-<path d="M 830.0 929.0 L 830.9 974.7 L 830.0 1020.5" stroke-width="0.5"/>
-<path d="M 149.9 208.0 L 186.0 208.4 L 222.0 207.9 L 258.0 208.2 L 294.1 207.6 L 330.1 209.0 L 366.1 208.6 L 402.2 208.0" stroke-width="0.6"/>
-<path d="M 145.8 203.8 L 149.9 208.3 L 155.0 211.8" stroke-width="0.8"/>
-<path d="M 395.5 203.6 L 400.5 207.4 L 404.4 212.5" stroke-width="0.8"/>
-<text x="275.0" y="204.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">4200</text>
-<path d="M 399.5 208.0 L 436.5 208.4 L 473.5 207.8 L 510.5 208.0" stroke-width="0.6"/>
-<path d="M 395.3 203.9 L 400.1 207.9 L 405.0 211.9" stroke-width="0.8"/>
-<path d="M 505.8 203.2 L 509.8 207.7 L 513.7 212.4" stroke-width="0.8"/>
-<text x="455.0" y="204.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">1900</text>
-<path d="M 508.6 208.0 L 544.5 207.2 L 580.3 208.9 L 616.1 208.9 L 652.0 207.9 L 687.8 207.2 L 723.7 208.0 L 759.5 208.9 L 795.4 207.0 L 831.2 208.0" stroke-width="0.6"/>
-<path d="M 505.3 203.3 L 510.0 207.4 L 513.7 212.5" stroke-width="0.8"/>
-<path d="M 826.3 203.7 L 830.1 208.1 L 834.0 212.6" stroke-width="0.8"/>
-<text x="670.0" y="204.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">5400</text>
-<path d="M 149.5 184.0 L 183.5 183.6 L 217.5 184.8 L 251.6 184.2 L 285.6 183.9 L 319.6 183.4 L 353.7 184.7 L 387.7 184.7 L 421.7 184.9 L 455.7 184.2 L 489.8 184.8 L 523.8 184.8 L 557.8 184.3 L 591.8 183.7 L 625.9 184.2 L 659.9 183.7 L 693.9 184.6 L 727.9 184.1 L 762.0 184.7 L 796.0 184.8 L 830.0 184.0" stroke-width="0.6"/>
-<path d="M 145.3 180.1 L 149.9 183.7 L 154.1 187.7" stroke-width="0.8"/>
-<path d="M 826.2 180.0 L 829.9 184.5 L 834.8 187.7" stroke-width="0.8"/>
-<text x="490.0" y="180.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">11500</text>
-<path d="M 126.0 228.3 L 126.1 265.4 L 125.8 302.4 L 125.1 339.5 L 127.0 376.5 L 126.8 413.6 L 126.0 450.6" stroke-width="0.6"/>
-<path d="M 130.8 226.4 L 125.3 229.5 L 121.1 233.8" stroke-width="0.8"/>
-<path d="M 130.3 445.5 L 125.8 450.3 L 121.2 454.8" stroke-width="0.8"/>
-<text x="122.0" y="340.0" font-size="11" text-anchor="middle" transform="rotate(-90 122.0 340.0)" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">3800</text>
-<path d="M 126.0 448.3 L 125.3 486.1 L 125.2 523.9 L 125.3 561.7 L 126.3 599.5 L 126.3 637.3 L 126.8 675.1 L 125.3 712.9 L 126.0 750.7" stroke-width="0.6"/>
-<path d="M 129.6 446.2 L 125.3 449.5 L 122.4 454.2" stroke-width="0.8"/>
-<path d="M 129.6 746.1 L 126.0 750.6 L 122.0 754.6" stroke-width="0.8"/>
-<text x="122.0" y="600.0" font-size="11" text-anchor="middle" transform="rotate(-90 122.0 600.0)" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">5100</text>
-<path d="M 126.0 748.5 L 126.9 782.7 L 126.2 816.9 L 125.1 851.0 L 126.9 885.2 L 126.7 919.4 L 125.7 953.6 L 125.5 987.8 L 126.1 1022.0 L 126.9 1056.2 L 126.0 1090.4" stroke-width="0.6"/>
-<path d="M 130.4 746.3 L 125.8 749.3 L 122.3 753.6" stroke-width="0.8"/>
-<path d="M 129.7 1085.7 L 125.6 1089.9 L 121.2 1093.8" stroke-width="0.8"/>
-<text x="122.0" y="920.0" font-size="11" text-anchor="middle" transform="rotate(-90 122.0 920.0)" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">4900</text>
-<path d="M 102.0 228.8 L 101.0 263.3 L 101.4 297.8 L 101.1 332.2 L 103.0 366.7 L 102.9 401.2 L 102.0 435.7 L 103.0 470.2 L 101.1 504.7 L 102.4 539.2 L 101.9 573.7 L 101.2 608.2 L 102.1 642.7 L 101.5 677.2 L 102.7 711.7 L 102.1 746.2 L 101.5 780.7 L 102.1 815.2 L 102.6 849.7 L 101.3 884.2 L 102.3 918.7 L 101.2 953.2 L 102.4 987.7 L 101.3 1022.2 L 102.8 1056.7 L 102.0 1091.2" stroke-width="0.6"/>
-<path d="M 106.6 225.0 L 101.4 228.9 L 97.5 234.2" stroke-width="0.8"/>
-<path d="M 107.0 1085.2 L 102.4 1089.3 L 98.1 1093.7" stroke-width="0.8"/>
-<text x="98.0" y="660.0" font-size="11" text-anchor="middle" transform="rotate(-90 98.0 660.0)" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">14600</text>
-<line x1="150.0" y1="170.0" x2="150.0" y2="238.0" stroke-width="0.4" stroke-dasharray="9 3 2 3"/>
-<path d="M 157.6 166.6 L 155.1 169.0 L 151.7 170.4 L 148.1 169.6 L 144.5 169.1 L 141.4 167.1 L 139.1 164.2 L 138.8 160.5 L 138.5 157.1 L 138.3 153.4 L 140.2 150.2 L 143.4 148.4 L 146.5 146.9 L 149.9 145.7 L 153.3 147.0 L 156.4 148.4 L 158.9 150.6 L 161.2 153.4 L 161.8 156.9 L 162.2 160.5 L 160.2 163.5 L 158.7 166.9 L 155.7 169.0" stroke-width="0.8"/>
-<text x="150.0" y="162.0" font-size="12" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">A</text>
-<line x1="400.0" y1="170.0" x2="400.0" y2="238.0" stroke-width="0.4" stroke-dasharray="9 3 2 3"/>
-<path d="M 391.5 166.6 L 389.2 163.8 L 388.7 160.2 L 387.5 156.7 L 389.0 153.4 L 390.8 150.3 L 393.2 147.6 L 396.8 147.0 L 400.2 146.3 L 403.5 147.1 L 407.0 147.9 L 409.2 150.8 L 411.4 153.6 L 412.2 157.1 L 412.3 160.8 L 410.1 163.8 L 408.1 166.7 L 405.4 169.1 L 401.8 169.8 L 398.4 169.5 L 394.8 169.1 L 391.7 167.2 L 389.7 164.1" stroke-width="0.8"/>
-<text x="400.0" y="162.0" font-size="12" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">B</text>
-<line x1="510.0" y1="170.0" x2="510.0" y2="238.0" stroke-width="0.4" stroke-dasharray="9 3 2 3"/>
-<path d="M 501.5 165.8 L 499.3 163.1 L 497.7 159.9 L 498.3 156.3 L 498.7 152.6 L 501.3 150.0 L 503.9 147.7 L 507.1 146.0 L 510.8 145.5 L 514.4 146.4 L 517.3 148.6 L 519.7 151.1 L 521.0 154.4 L 522.0 157.7 L 521.9 161.3 L 519.8 164.3 L 517.6 167.0 L 514.5 168.5 L 511.3 169.9 L 507.8 169.8 L 504.1 169.1 L 501.4 166.7 L 499.0 163.9" stroke-width="0.8"/>
-<text x="510.0" y="162.0" font-size="12" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">C</text>
-<line x1="830.0" y1="170.0" x2="830.0" y2="238.0" stroke-width="0.4" stroke-dasharray="9 3 2 3"/>
-<path d="M 833.7 169.3 L 830.2 170.2 L 826.8 169.0 L 823.4 168.1 L 820.7 165.8 L 819.5 162.4 L 818.4 159.2 L 817.9 155.6 L 819.8 152.5 L 821.4 149.4 L 824.5 147.5 L 827.8 146.3 L 831.4 145.6 L 834.7 147.1 L 838.1 148.5 L 840.4 151.3 L 841.6 154.8 L 841.5 158.3 L 841.2 161.7 L 840.2 165.3 L 837.1 167.3 L 834.2 169.3 L 830.7 169.6" stroke-width="0.8"/>
-<text x="830.0" y="162.0" font-size="12" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">D</text>
-<line x1="90.0" y1="230.0" x2="158.0" y2="230.0" stroke-width="0.4" stroke-dasharray="9 3 2 3"/>
-<path d="M 76.6 217.9 L 80.3 217.7 L 83.6 219.3 L 86.1 221.8 L 88.9 224.1 L 89.9 227.6 L 90.5 231.2 L 89.1 234.6 L 87.1 237.5 L 84.6 240.0 L 81.4 241.6 L 77.8 242.2 L 74.3 241.6 L 70.9 240.2 L 68.5 237.5 L 67.1 234.2 L 65.6 230.9 L 66.1 227.3 L 67.9 224.2 L 69.8 221.3 L 72.5 218.8 L 76.1 218.1 L 79.6 218.6" stroke-width="0.8"/>
-<text x="78.0" y="234.0" font-size="12" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">1</text>
-<line x1="90.0" y1="450.0" x2="158.0" y2="450.0" stroke-width="0.4" stroke-dasharray="9 3 2 3"/>
-<path d="M 86.1 440.8 L 87.9 443.9 L 89.8 447.0 L 90.4 450.6 L 89.4 454.1 L 88.1 457.5 L 85.1 459.7 L 81.8 460.8 L 78.5 462.2 L 74.9 462.0 L 71.4 460.6 L 68.7 458.1 L 66.6 455.1 L 65.7 451.6 L 66.2 448.0 L 67.8 444.8 L 69.6 442.0 L 72.4 440.0 L 75.4 437.8 L 79.1 437.7 L 82.7 438.4 L 85.7 440.4 L 87.9 443.3" stroke-width="0.8"/>
-<text x="78.0" y="454.0" font-size="12" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">2</text>
-<line x1="90.0" y1="560.0" x2="158.0" y2="560.0" stroke-width="0.4" stroke-dasharray="9 3 2 3"/>
-<path d="M 67.5 555.6 L 69.1 552.6 L 71.5 550.0 L 74.8 549.0 L 78.2 548.2 L 81.7 548.6 L 84.6 550.5 L 87.2 552.9 L 88.7 555.9 L 89.9 559.2 L 90.1 562.8 L 88.3 566.0 L 86.3 569.0 L 83.4 571.0 L 79.9 572.2 L 76.2 572.2 L 72.9 570.9 L 70.3 568.5 L 68.0 565.9 L 66.6 562.8 L 66.2 559.3 L 66.6 555.8 L 68.5 552.7" stroke-width="0.8"/>
-<text x="78.0" y="564.0" font-size="12" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">3</text>
-<line x1="90.0" y1="750.0" x2="158.0" y2="750.0" stroke-width="0.4" stroke-dasharray="9 3 2 3"/>
-<path d="M 75.2 761.3 L 71.7 760.6 L 68.7 758.5 L 66.9 755.2 L 66.5 751.7 L 65.9 748.1 L 66.9 744.6 L 69.2 741.8 L 71.9 739.5 L 75.2 737.9 L 78.8 738.1 L 82.4 738.6 L 85.1 740.8 L 88.2 742.9 L 89.5 746.3 L 89.6 749.8 L 89.7 753.4 L 88.4 756.8 L 85.7 759.1 L 82.6 760.8 L 79.3 762.2 L 75.6 762.4 L 72.1 761.1" stroke-width="0.8"/>
-<text x="78.0" y="754.0" font-size="12" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">4</text>
-<line x1="90.0" y1="910.0" x2="158.0" y2="910.0" stroke-width="0.4" stroke-dasharray="9 3 2 3"/>
-<path d="M 73.6 921.2 L 70.6 919.3 L 68.5 916.6 L 66.5 913.6 L 66.3 910.1 L 66.5 906.6 L 67.7 903.1 L 70.3 900.7 L 73.2 898.4 L 76.9 898.4 L 80.3 898.6 L 83.5 899.9 L 86.8 901.4 L 88.4 904.6 L 89.5 907.9 L 90.1 911.4 L 89.5 915.1 L 87.3 918.0 L 84.7 920.6 L 81.3 922.1 L 77.6 922.0 L 74.2 921.0 L 70.8 920.0" stroke-width="0.8"/>
-<text x="78.0" y="914.0" font-size="12" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">5</text>
-<line x1="90.0" y1="1090.0" x2="158.0" y2="1090.0" stroke-width="0.4" stroke-dasharray="9 3 2 3"/>
-<path d="M 80.3 1101.2 L 76.9 1101.8 L 73.3 1101.4 L 70.3 1099.4 L 68.1 1096.6 L 66.9 1093.3 L 66.4 1089.9 L 66.4 1086.4 L 68.1 1083.2 L 70.5 1080.6 L 73.5 1078.6 L 77.1 1077.9 L 80.7 1077.9 L 84.2 1079.1 L 86.7 1081.7 L 88.6 1084.7 L 89.8 1088.1 L 89.6 1091.6 L 88.5 1094.9 L 87.2 1098.2 L 84.2 1100.2 L 80.8 1101.1 L 77.4 1101.9" stroke-width="0.8"/>
-<text x="78.0" y="1094.0" font-size="12" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">6</text>
-<line x1="120.0" y1="660.0" x2="860.0" y2="660.0" stroke-width="0.5" stroke-dasharray="14 4 3 4"/>
-<path d="M 115.5 669.4 L 112.9 667.7 L 110.4 665.6 L 108.9 662.6 L 108.6 659.3 L 109.6 656.1 L 111.6 653.5 L 113.6 650.9 L 116.6 649.8 L 119.8 649.3 L 122.9 649.6 L 125.7 651.1 L 128.1 653.2 L 130.7 655.4 L 130.4 658.9 L 131.4 662.2 L 129.9 665.3 L 128.0 668.0 L 125.0 669.3 L 122.1 671.0 L 118.9 670.6 L 115.7 670.1 L 113.0 668.4" stroke-width="0.8"/>
-<text x="120.0" y="664.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">A</text>
-<path d="M 868.6 653.9 L 869.9 656.7 L 871.1 659.7 L 870.6 663.0 L 869.4 666.0 L 866.8 668.0 L 864.3 670.0 L 861.3 671.2 L 857.9 670.9 L 855.0 669.5 L 852.7 667.4 L 850.8 665.0 L 848.8 662.2 L 849.3 658.9 L 850.3 655.9 L 851.7 653.1 L 854.2 651.1 L 856.9 649.4 L 860.1 649.5 L 863.4 649.5 L 866.4 650.8 L 868.7 653.2 L 870.4 656.0" stroke-width="0.8"/>
-<text x="860.0" y="664.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">A</text>
-<text x="390.0" y="138.0" font-size="16" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">GROUND FLOOR PLAN</text>
-<text x="390.0" y="153.0" font-size="11" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">SCALE 1:100</text>
-<path d="M 1099.5 390.0 L 1134.9 390.7 L 1170.3 389.4 L 1205.7 390.0 L 1241.2 390.8 L 1276.6 390.3 L 1312.0 389.6 L 1347.4 389.7 L 1382.8 389.6 L 1418.3 390.5 L 1453.7 389.7 L 1489.1 390.7 L 1524.5 390.4 L 1560.0 390.7 L 1595.4 390.1 L 1630.8 389.6 L 1666.2 390.4 L 1701.6 390.0" stroke-width="1.2"/>
-<path d="M 1100.7 389.9 L 1095.6 395.7 L 1089.3 400.3" stroke-width="0.4"/>
-<path d="M 1124.4 388.5 L 1118.6 394.5 L 1113.0 400.7" stroke-width="0.4"/>
-<path d="M 1148.6 389.1 L 1142.7 394.8 L 1137.6 401.3" stroke-width="0.4"/>
-<path d="M 1172.7 389.1 L 1166.6 394.7 L 1161.4 401.2" stroke-width="0.4"/>
-<path d="M 1197.4 389.8 L 1191.6 395.6 L 1184.6 400.3" stroke-width="0.4"/>
-<path d="M 1220.6 389.0 L 1214.6 394.3 L 1209.8 401.0" stroke-width="0.4"/>
-<path d="M 1245.2 388.7 L 1239.8 395.0 L 1233.8 400.5" stroke-width="0.4"/>
-<path d="M 1268.6 388.6 L 1262.4 394.4 L 1256.5 400.4" stroke-width="0.4"/>
-<path d="M 1292.9 388.5 L 1287.7 394.9 L 1281.3 400.2" stroke-width="0.4"/>
-<path d="M 1316.2 389.3 L 1311.5 395.6 L 1305.9 401.1" stroke-width="0.4"/>
-<path d="M 1340.1 388.9 L 1334.6 394.9 L 1329.3 401.2" stroke-width="0.4"/>
-<path d="M 1364.6 389.9 L 1359.0 395.8 L 1352.7 401.1" stroke-width="0.4"/>
-<path d="M 1388.1 389.0 L 1381.7 394.5 L 1376.6 401.2" stroke-width="0.4"/>
-<path d="M 1413.5 389.8 L 1408.2 395.8 L 1401.7 400.7" stroke-width="0.4"/>
-<path d="M 1436.8 388.7 L 1431.5 395.3 L 1425.6 401.3" stroke-width="0.4"/>
-<path d="M 1461.3 389.9 L 1455.4 394.9 L 1449.8 400.1" stroke-width="0.4"/>
-<path d="M 1484.0 388.9 L 1478.9 395.3 L 1473.4 401.4" stroke-width="0.4"/>
-<path d="M 1509.3 388.8 L 1503.2 394.9 L 1497.4 401.2" stroke-width="0.4"/>
-<path d="M 1532.9 389.3 L 1527.3 395.0 L 1521.8 400.8" stroke-width="0.4"/>
-<path d="M 1556.7 388.5 L 1551.1 394.9 L 1545.7 401.4" stroke-width="0.4"/>
-<path d="M 1580.2 389.1 L 1575.0 395.0 L 1569.7 400.8" stroke-width="0.4"/>
-<path d="M 1605.2 388.6 L 1598.9 394.4 L 1593.9 401.4" stroke-width="0.4"/>
-<path d="M 1628.2 389.9 L 1623.3 395.5 L 1617.3 400.0" stroke-width="0.4"/>
-<path d="M 1652.8 389.7 L 1646.7 394.8 L 1641.1 400.3" stroke-width="0.4"/>
-<path d="M 1677.0 389.9 L 1670.3 395.0 L 1664.9 401.4" stroke-width="0.4"/>
-<path d="M 1119.9 280.0 L 1154.2 279.9 L 1188.5 279.1 L 1222.8 280.3 L 1257.1 279.3 L 1291.5 280.7 L 1325.8 279.2 L 1360.1 280.2 L 1394.4 280.1 L 1428.7 280.0" stroke-width="1.0"/>
-<path d="M 1428.0 279.7 L 1428.7 316.8 L 1428.8 353.8 L 1428.0 390.9" stroke-width="1.0"/>
-<path d="M 1428.5 390.0 L 1394.2 390.8 L 1359.9 389.4 L 1325.6 389.5 L 1291.3 389.2 L 1256.9 390.2 L 1222.6 389.1 L 1188.3 390.2 L 1154.0 389.7 L 1119.7 390.0" stroke-width="1.0"/>
-<path d="M 1120.0 390.3 L 1119.5 353.0 L 1119.4 315.8 L 1120.0 278.5" stroke-width="1.0"/>
-<path d="M 1398.9 240.0 L 1434.1 239.2 L 1469.3 240.6 L 1504.5 240.7 L 1539.8 240.5 L 1575.0 239.9 L 1610.2 240.8 L 1645.4 240.1 L 1680.6 240.0" stroke-width="1.0"/>
-<path d="M 1680.0 240.0 L 1679.7 277.6 L 1679.1 315.2 L 1679.7 352.8 L 1680.0 390.5" stroke-width="1.0"/>
-<path d="M 1680.7 390.0 L 1645.6 390.9 L 1610.5 389.1 L 1575.4 389.5 L 1540.3 389.0 L 1505.2 390.0 L 1470.0 389.7 L 1434.9 390.2 L 1399.8 390.0" stroke-width="1.0"/>
-<path d="M 1400.0 391.2 L 1400.9 352.9 L 1399.6 314.7 L 1399.5 276.5 L 1400.0 238.2" stroke-width="1.0"/>
-<path d="M 1197.0 289.3 L 1197.4 335.2 L 1197.0 381.2" stroke-width="0.4"/>
-<path d="M 1274.0 289.4 L 1273.5 335.6 L 1274.0 381.8" stroke-width="0.4"/>
-<path d="M 1351.0 287.9 L 1350.6 334.8 L 1351.0 381.7" stroke-width="0.4"/>
-<path d="M 1126.6 290.0 L 1163.5 290.9 L 1200.5 289.2 L 1237.4 289.7 L 1274.3 289.3 L 1311.2 290.4 L 1348.2 289.9 L 1385.1 289.6 L 1422.0 290.0" stroke-width="0.6"/>
-<path d="M 1420.0 288.9 L 1419.8 335.0 L 1420.0 381.1" stroke-width="0.6"/>
-<path d="M 1420.0 380.0 L 1383.4 379.8 L 1346.7 379.5 L 1310.1 380.1 L 1273.4 379.2 L 1236.8 379.5 L 1200.1 380.0 L 1163.5 379.9 L 1126.8 380.0" stroke-width="0.6"/>
-<path d="M 1128.0 380.6 L 1128.0 334.8 L 1128.0 288.9" stroke-width="0.6"/>
-<path d="M 1470.0 250.9 L 1469.9 294.6 L 1469.6 338.2 L 1470.0 381.9" stroke-width="0.4"/>
-<path d="M 1540.0 251.8 L 1539.8 295.0 L 1539.8 338.1 L 1540.0 381.2" stroke-width="0.4"/>
-<path d="M 1610.0 251.3 L 1609.6 294.8 L 1609.2 338.2 L 1610.0 381.6" stroke-width="0.4"/>
-<path d="M 1405.9 252.0 L 1444.2 251.7 L 1482.5 252.6 L 1520.8 252.8 L 1559.2 252.1 L 1597.5 252.1 L 1635.8 252.3 L 1674.1 252.0" stroke-width="0.6"/>
-<path d="M 1674.0 251.2 L 1674.4 294.2 L 1674.4 337.1 L 1674.0 380.1" stroke-width="0.6"/>
-<path d="M 1674.3 380.0 L 1635.8 379.3 L 1597.4 380.4 L 1559.0 379.4 L 1520.5 379.6 L 1482.1 380.8 L 1443.6 380.6 L 1405.2 380.0" stroke-width="0.6"/>
-<path d="M 1406.0 380.3 L 1406.6 337.1 L 1406.6 293.9 L 1406.0 250.7" stroke-width="0.6"/>
-<path d="M 1138.2 335.0 L 1159.9 335.3 L 1181.6 335.0" stroke-width="0.6"/>
-<path d="M 1180.0 334.8 L 1180.4 363.5 L 1180.0 392.1" stroke-width="0.6"/>
-<path d="M 1180.8 390.0 L 1160.0 390.0 L 1139.2 390.0" stroke-width="0.6"/>
-<path d="M 1140.0 391.1 L 1139.5 362.7 L 1140.0 334.2" stroke-width="0.6"/>
-<path d="M 1118.0 412.0 L 1153.2 413.0 L 1188.5 411.6 L 1223.7 411.0 L 1258.9 412.5 L 1294.2 412.3 L 1329.4 411.8 L 1364.6 412.8 L 1399.9 412.6 L 1435.1 412.1 L 1470.3 412.2 L 1505.6 411.8 L 1540.8 411.4 L 1576.0 411.6 L 1611.3 412.5 L 1646.5 412.0 L 1681.7 412.0" stroke-width="0.6"/>
-<path d="M 1115.7 407.4 L 1120.9 411.0 L 1125.0 415.7" stroke-width="0.8"/>
-<path d="M 1675.3 408.1 L 1679.6 412.5 L 1684.4 416.3" stroke-width="0.8"/>
-<text x="1400.0" y="408.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">12800</text>
-<text x="1120.0" y="232.0" font-size="13" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">NORTH ELEVATION</text>
-<path d="M 1098.6 670.0 L 1134.0 670.7 L 1169.5 669.9 L 1205.0 670.5 L 1240.4 669.6 L 1275.9 670.8 L 1311.3 669.0 L 1346.8 670.1 L 1382.2 670.5 L 1417.7 670.8 L 1453.1 670.1 L 1488.6 670.0 L 1524.1 670.2 L 1559.5 670.5 L 1595.0 669.7 L 1630.4 670.3 L 1665.9 669.5 L 1701.3 670.0" stroke-width="1.2"/>
-<path d="M 1100.1 669.9 L 1095.4 675.8 L 1089.7 680.6" stroke-width="0.4"/>
-<path d="M 1125.2 668.9 L 1119.4 674.7 L 1113.4 680.3" stroke-width="0.4"/>
-<path d="M 1149.4 668.7 L 1142.7 674.2 L 1136.9 680.6" stroke-width="0.4"/>
-<path d="M 1172.8 669.5 L 1167.3 675.9 L 1160.6 681.0" stroke-width="0.4"/>
-<path d="M 1196.1 669.3 L 1190.4 674.9 L 1184.8 680.7" stroke-width="0.4"/>
-<path d="M 1220.2 669.1 L 1215.2 675.2 L 1209.4 680.6" stroke-width="0.4"/>
-<path d="M 1244.9 668.7 L 1239.0 674.7 L 1233.2 680.9" stroke-width="0.4"/>
-<path d="M 1269.1 668.9 L 1263.6 675.2 L 1258.0 681.5" stroke-width="0.4"/>
-<path d="M 1292.1 668.9 L 1286.3 674.6 L 1280.8 680.6" stroke-width="0.4"/>
-<path d="M 1316.1 668.9 L 1310.5 675.1 L 1305.0 681.3" stroke-width="0.4"/>
-<path d="M 1341.4 669.4 L 1336.0 675.0 L 1330.0 680.1" stroke-width="0.4"/>
-<path d="M 1364.3 669.6 L 1358.6 674.8 L 1353.9 681.0" stroke-width="0.4"/>
-<path d="M 1389.4 669.4 L 1383.2 675.0 L 1377.2 680.8" stroke-width="0.4"/>
-<path d="M 1413.1 669.3 L 1408.2 675.6 L 1402.0 680.5" stroke-width="0.4"/>
-<path d="M 1437.1 668.5 L 1431.0 674.7 L 1425.1 681.1" stroke-width="0.4"/>
-<path d="M 1461.5 669.7 L 1455.4 675.2 L 1449.1 680.5" stroke-width="0.4"/>
-<path d="M 1484.3 668.8 L 1478.4 674.1 L 1473.5 680.4" stroke-width="0.4"/>
-<path d="M 1508.0 669.7 L 1502.7 675.8 L 1496.6 681.0" stroke-width="0.4"/>
-<path d="M 1532.2 669.0 L 1525.8 674.6 L 1520.7 681.6" stroke-width="0.4"/>
-<path d="M 1557.2 669.9 L 1550.9 675.2 L 1544.8 680.7" stroke-width="0.4"/>
-<path d="M 1580.0 670.0 L 1574.9 675.8 L 1569.2 681.0" stroke-width="0.4"/>
-<path d="M 1605.5 669.9 L 1599.7 676.3 L 1592.6 681.4" stroke-width="0.4"/>
-<path d="M 1629.3 669.0 L 1623.2 674.8 L 1617.3 680.7" stroke-width="0.4"/>
-<path d="M 1653.4 668.8 L 1647.8 675.2 L 1641.3 680.7" stroke-width="0.4"/>
-<path d="M 1676.9 668.7 L 1671.0 674.9 L 1665.0 680.9" stroke-width="0.4"/>
-<path d="M 1117.8 560.0 L 1152.4 560.6 L 1187.0 559.5 L 1221.6 560.3 L 1256.2 559.6 L 1290.8 560.5 L 1325.4 559.6 L 1360.0 560.9 L 1394.5 560.4 L 1429.1 560.0" stroke-width="1.0"/>
-<path d="M 1428.0 558.7 L 1429.0 596.0 L 1428.1 633.3 L 1428.0 670.6" stroke-width="1.0"/>
-<path d="M 1428.6 670.0 L 1394.3 669.0 L 1360.0 670.2 L 1325.6 669.5 L 1291.3 670.7 L 1256.9 670.8 L 1222.6 669.6 L 1188.2 670.1 L 1153.9 669.4 L 1119.5 670.0" stroke-width="1.0"/>
-<path d="M 1120.0 671.1 L 1120.4 633.9 L 1119.4 596.7 L 1120.0 559.5" stroke-width="1.0"/>
-<path d="M 1399.8 520.0 L 1434.8 520.6 L 1469.8 519.3 L 1504.9 519.6 L 1539.9 519.7 L 1575.0 519.4 L 1610.0 520.7 L 1645.1 520.7 L 1680.1 520.0" stroke-width="1.0"/>
-<path d="M 1680.0 518.5 L 1680.2 556.4 L 1680.9 594.3 L 1680.4 632.2 L 1680.0 670.0" stroke-width="1.0"/>
-<path d="M 1680.3 670.0 L 1645.2 670.2 L 1610.1 670.8 L 1575.0 669.9 L 1539.9 670.1 L 1504.8 669.5 L 1469.7 669.5 L 1434.6 670.5 L 1399.6 670.0" stroke-width="1.0"/>
-<path d="M 1400.0 671.6 L 1400.2 633.4 L 1399.7 595.2 L 1399.9 557.0 L 1400.0 518.8" stroke-width="1.0"/>
-<path d="M 1197.0 568.9 L 1197.9 614.8 L 1197.0 660.7" stroke-width="0.4"/>
-<path d="M 1274.0 568.1 L 1274.5 615.1 L 1274.0 662.1" stroke-width="0.4"/>
-<path d="M 1351.0 568.0 L 1350.4 614.8 L 1351.0 661.5" stroke-width="0.4"/>
-<path d="M 1127.1 570.0 L 1163.8 570.1 L 1200.4 570.6 L 1237.0 571.0 L 1273.6 570.7 L 1310.2 570.2 L 1346.8 569.2 L 1383.4 570.2 L 1420.0 570.0" stroke-width="0.6"/>
-<path d="M 1420.0 569.8 L 1420.3 615.3 L 1420.0 660.8" stroke-width="0.6"/>
-<path d="M 1421.9 660.0 L 1384.9 659.3 L 1347.9 660.2 L 1310.9 660.3 L 1274.0 659.8 L 1237.0 660.9 L 1200.0 659.7 L 1163.0 660.9 L 1126.0 660.0" stroke-width="0.6"/>
-<path d="M 1128.0 661.6 L 1128.0 615.1 L 1128.0 568.6" stroke-width="0.6"/>
-<path d="M 1470.0 530.3 L 1470.2 573.7 L 1470.3 617.0 L 1470.0 660.4" stroke-width="0.4"/>
-<path d="M 1540.0 531.5 L 1540.1 574.9 L 1540.3 618.3 L 1540.0 661.7" stroke-width="0.4"/>
-<path d="M 1610.0 531.2 L 1609.0 574.7 L 1609.9 618.2 L 1610.0 661.7" stroke-width="0.4"/>
-<path d="M 1404.9 532.0 L 1443.5 532.4 L 1482.1 532.7 L 1520.7 531.4 L 1559.3 532.7 L 1597.8 531.1 L 1636.4 531.4 L 1675.0 532.0" stroke-width="0.6"/>
-<path d="M 1674.0 530.0 L 1674.5 573.6 L 1674.1 617.2 L 1674.0 660.8" stroke-width="0.6"/>
-<path d="M 1675.2 660.0 L 1636.5 659.6 L 1597.7 659.1 L 1559.0 659.8 L 1520.3 659.6 L 1481.5 659.4 L 1442.8 659.2 L 1404.0 660.0" stroke-width="0.6"/>
-<path d="M 1406.0 661.0 L 1405.9 617.9 L 1406.9 574.8 L 1406.0 531.6" stroke-width="0.6"/>
-<path d="M 1139.1 615.0 L 1160.0 615.5 L 1180.9 615.0" stroke-width="0.6"/>
-<path d="M 1180.0 614.0 L 1179.3 643.0 L 1180.0 672.1" stroke-width="0.6"/>
-<path d="M 1180.6 670.0 L 1159.2 669.6 L 1137.8 670.0" stroke-width="0.6"/>
-<path d="M 1140.0 670.6 L 1140.3 642.1 L 1140.0 613.5" stroke-width="0.6"/>
-<path d="M 1119.5 692.0 L 1154.7 692.1 L 1189.8 692.1 L 1225.0 692.7 L 1260.1 692.6 L 1295.2 692.6 L 1330.4 691.7 L 1365.5 692.5 L 1400.7 692.8 L 1435.8 691.2 L 1471.0 692.5 L 1506.1 691.9 L 1541.3 691.8 L 1576.4 692.3 L 1611.6 692.6 L 1646.7 692.8 L 1681.9 692.0" stroke-width="0.6"/>
-<path d="M 1115.2 687.0 L 1119.8 691.9 L 1124.9 696.3" stroke-width="0.8"/>
-<path d="M 1675.0 687.5 L 1679.1 692.1 L 1683.6 696.2" stroke-width="0.8"/>
-<text x="1400.0" y="688.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">12800</text>
-<text x="1120.0" y="512.0" font-size="13" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">EAST ELEVATION</text>
-<path d="M 1100.0 950.0 L 1135.4 949.0 L 1170.8 950.6 L 1206.2 950.2 L 1241.6 949.8 L 1277.0 950.3 L 1312.4 949.2 L 1347.8 949.3 L 1383.2 950.4 L 1418.6 950.4 L 1454.0 950.2 L 1489.4 949.9 L 1524.8 949.4 L 1560.2 949.3 L 1595.6 950.9 L 1631.0 949.6 L 1666.4 949.8 L 1701.9 950.0" stroke-width="1.2"/>
-<path d="M 1100.8 950.0 L 1095.7 955.7 L 1089.5 960.3" stroke-width="0.4"/>
-<path d="M 1125.4 949.7 L 1119.1 954.7 L 1113.5 960.4" stroke-width="0.4"/>
-<path d="M 1149.3 949.0 L 1143.8 955.6 L 1137.0 960.9" stroke-width="0.4"/>
-<path d="M 1173.0 948.5 L 1167.4 955.5 L 1160.6 961.4" stroke-width="0.4"/>
-<path d="M 1197.1 948.5 L 1190.7 953.8 L 1185.6 960.5" stroke-width="0.4"/>
-<path d="M 1220.4 949.8 L 1214.5 955.0 L 1208.9 960.5" stroke-width="0.4"/>
-<path d="M 1244.4 949.6 L 1238.5 954.9 L 1233.1 960.7" stroke-width="0.4"/>
-<path d="M 1268.9 949.6 L 1263.9 955.5 L 1257.7 960.1" stroke-width="0.4"/>
-<path d="M 1293.1 949.5 L 1287.0 954.3 L 1282.0 960.0" stroke-width="0.4"/>
-<path d="M 1317.0 949.7 L 1311.5 956.2 L 1304.8 961.4" stroke-width="0.4"/>
-<path d="M 1340.3 948.9 L 1334.6 954.7 L 1328.8 960.4" stroke-width="0.4"/>
-<path d="M 1364.5 949.4 L 1358.4 955.0 L 1352.7 960.9" stroke-width="0.4"/>
-<path d="M 1389.4 948.6 L 1383.4 954.5 L 1377.0 960.1" stroke-width="0.4"/>
-<path d="M 1413.5 949.3 L 1407.7 955.1 L 1402.0 961.0" stroke-width="0.4"/>
-<path d="M 1437.1 949.1 L 1431.9 955.4 L 1425.6 960.6" stroke-width="0.4"/>
-<path d="M 1460.7 949.2 L 1455.0 954.5 L 1449.8 960.1" stroke-width="0.4"/>
-<path d="M 1485.0 948.8 L 1479.1 954.4 L 1473.3 960.1" stroke-width="0.4"/>
-<path d="M 1508.5 948.6 L 1502.9 954.7 L 1497.7 961.3" stroke-width="0.4"/>
-<path d="M 1532.5 949.1 L 1526.9 954.5 L 1521.9 960.4" stroke-width="0.4"/>
-<path d="M 1556.1 949.1 L 1549.9 954.9 L 1544.6 961.5" stroke-width="0.4"/>
-<path d="M 1581.3 949.5 L 1576.0 955.6 L 1569.4 960.4" stroke-width="0.4"/>
-<path d="M 1604.1 949.9 L 1599.1 955.4 L 1593.7 960.5" stroke-width="0.4"/>
-<path d="M 1628.7 948.7 L 1622.7 954.3 L 1617.4 960.7" stroke-width="0.4"/>
-<path d="M 1652.7 948.9 L 1646.9 955.4 L 1640.5 961.4" stroke-width="0.4"/>
-<path d="M 1677.3 948.6 L 1671.1 954.1 L 1665.6 960.2" stroke-width="0.4"/>
-<path d="M 1118.5 840.0 L 1153.2 841.0 L 1187.8 840.0 L 1222.4 840.4 L 1257.0 839.3 L 1291.7 840.6 L 1326.3 839.9 L 1360.9 839.4 L 1395.5 839.9 L 1430.2 840.0" stroke-width="1.0"/>
-<path d="M 1428.0 838.0 L 1427.5 876.0 L 1428.3 914.0 L 1428.0 952.0" stroke-width="1.0"/>
-<path d="M 1428.4 950.0 L 1394.0 949.7 L 1359.6 949.4 L 1325.3 949.8 L 1290.9 950.6 L 1256.5 950.0 L 1222.2 949.7 L 1187.8 950.8 L 1153.4 950.3 L 1119.0 950.0" stroke-width="1.0"/>
-<path d="M 1120.0 950.5 L 1119.9 913.5 L 1119.6 876.5 L 1120.0 839.5" stroke-width="1.0"/>
-<path d="M 1398.8 800.0 L 1434.1 800.7 L 1469.4 800.5 L 1504.6 799.9 L 1539.9 800.1 L 1575.2 800.6 L 1610.4 799.4 L 1645.7 799.7 L 1681.0 800.0" stroke-width="1.0"/>
-<path d="M 1680.0 799.0 L 1680.3 837.1 L 1679.7 875.2 L 1679.8 913.4 L 1680.0 951.5" stroke-width="1.0"/>
-<path d="M 1681.3 950.0 L 1646.0 949.7 L 1610.7 950.4 L 1575.5 950.4 L 1540.2 949.2 L 1504.9 950.2 L 1469.6 950.8 L 1434.4 949.8 L 1399.1 950.0" stroke-width="1.0"/>
-<path d="M 1400.0 950.8 L 1400.8 912.9 L 1399.6 874.9 L 1400.6 836.9 L 1400.0 798.9" stroke-width="1.0"/>
-<path d="M 1197.0 849.4 L 1196.9 894.9 L 1197.0 940.3" stroke-width="0.4"/>
-<path d="M 1274.0 849.0 L 1273.4 895.1 L 1274.0 941.3" stroke-width="0.4"/>
-<path d="M 1351.0 848.8 L 1351.0 895.0 L 1351.0 941.2" stroke-width="0.4"/>
-<path d="M 1127.5 850.0 L 1164.3 850.7 L 1201.1 850.1 L 1237.9 849.0 L 1274.7 850.8 L 1311.5 851.0 L 1348.3 849.4 L 1385.1 850.4 L 1421.9 850.0" stroke-width="0.6"/>
-<path d="M 1420.0 848.0 L 1419.5 894.7 L 1420.0 941.4" stroke-width="0.6"/>
-<path d="M 1421.3 940.0 L 1384.6 939.7 L 1347.9 940.8 L 1311.2 940.9 L 1274.5 940.6 L 1237.7 940.8 L 1201.0 940.2 L 1164.3 940.8 L 1127.6 940.0" stroke-width="0.6"/>
-<path d="M 1128.0 941.9 L 1127.2 895.6 L 1128.0 849.4" stroke-width="0.6"/>
-<path d="M 1470.0 811.3 L 1469.0 854.3 L 1470.3 897.3 L 1470.0 940.3" stroke-width="0.4"/>
-<path d="M 1540.0 811.9 L 1539.9 854.6 L 1539.3 897.4 L 1540.0 940.1" stroke-width="0.4"/>
-<path d="M 1610.0 811.2 L 1610.0 854.4 L 1610.4 897.6 L 1610.0 940.9" stroke-width="0.4"/>
-<path d="M 1405.3 812.0 L 1443.8 811.7 L 1482.3 811.1 L 1520.8 811.8 L 1559.3 812.8 L 1597.8 812.1 L 1636.3 811.5 L 1674.9 812.0" stroke-width="0.6"/>
-<path d="M 1674.0 810.8 L 1674.5 854.3 L 1674.8 897.7 L 1674.0 941.2" stroke-width="0.6"/>
-<path d="M 1674.5 940.0 L 1635.9 940.0 L 1597.3 939.8 L 1558.8 939.3 L 1520.2 940.7 L 1481.6 939.4 L 1443.0 940.3 L 1404.4 940.0" stroke-width="0.6"/>
-<path d="M 1406.0 941.5 L 1405.5 897.6 L 1406.4 853.7 L 1406.0 809.8" stroke-width="0.6"/>
-<path d="M 1137.9 895.0 L 1159.7 894.6 L 1181.5 895.0" stroke-width="0.6"/>
-<path d="M 1180.0 894.6 L 1179.7 922.7 L 1180.0 950.8" stroke-width="0.6"/>
-<path d="M 1181.1 950.0 L 1160.0 949.5 L 1138.9 950.0" stroke-width="0.6"/>
-<path d="M 1140.0 950.2 L 1139.8 922.2 L 1140.0 894.2" stroke-width="0.6"/>
-<path d="M 1118.5 972.0 L 1153.6 972.7 L 1188.7 971.5 L 1223.8 972.1 L 1259.0 972.1 L 1294.1 971.5 L 1329.2 972.0 L 1364.3 971.1 L 1399.5 972.9 L 1434.6 971.5 L 1469.7 972.8 L 1504.8 972.8 L 1540.0 971.8 L 1575.1 971.3 L 1610.2 971.6 L 1645.3 972.9 L 1680.5 972.0" stroke-width="0.6"/>
-<path d="M 1116.4 968.1 L 1119.5 972.8 L 1123.9 976.1" stroke-width="0.8"/>
-<path d="M 1675.8 967.0 L 1680.4 971.1 L 1684.5 975.5" stroke-width="0.8"/>
-<text x="1400.0" y="968.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">12800</text>
-<text x="1120.0" y="792.0" font-size="13" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">SOUTH ELEVATION</text>
-<path d="M 1090.0 239.6 L 1089.2 275.1 L 1089.9 310.7 L 1090.1 346.2 L 1090.4 381.8 L 1089.7 417.3 L 1090.3 452.9 L 1091.0 488.4 L 1090.7 523.9 L 1089.4 559.5 L 1089.6 595.0 L 1089.6 630.6 L 1090.1 666.1 L 1089.8 701.7 L 1091.0 737.2 L 1089.7 772.8 L 1089.3 808.3 L 1089.8 843.8 L 1090.0 879.4 L 1089.6 914.9 L 1090.0 950.5" stroke-width="0.6"/>
-<path d="M 1094.8 235.8 L 1090.3 240.0 L 1086.3 244.5" stroke-width="0.8"/>
-<path d="M 1095.0 946.4 L 1090.9 951.3 L 1085.6 954.9" stroke-width="0.8"/>
-<text x="1086.0" y="595.0" font-size="11" text-anchor="middle" transform="rotate(-90 1086.0 595.0)" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">9200</text>
-<path d="M 1118.5 1120.0 L 1133.2 1120.4 L 1147.8 1120.0" stroke-width="1.0"/>
-<path d="M 1146.0 1119.5 L 1146.7 1157.5 L 1146.8 1195.5 L 1146.8 1233.6 L 1146.0 1271.6" stroke-width="1.0"/>
-<path d="M 1148.0 1270.0 L 1133.5 1270.4 L 1119.0 1270.0" stroke-width="1.0"/>
-<path d="M 1120.0 1271.3 L 1120.4 1233.5 L 1119.0 1195.6 L 1120.3 1157.8 L 1120.0 1119.9" stroke-width="1.0"/>
-<path d="M 1123 1126 L 1143 1135 L 1123 1144 L 1143 1153 L 1123 1162 L 1143 1171 L 1123 1180 L 1143 1189 L 1123 1198 L 1143 1207 L 1123 1216 L 1143 1225 L 1123 1234 L 1143 1243 L 1123 1252 L 1143 1261 L 1123 1270" stroke-width="0.5"/>
-<path d="M 1113.6 1270.0 L 1133.2 1270.3 L 1152.8 1270.0" stroke-width="1.0"/>
-<path d="M 1152.0 1269.3 L 1152.1 1283.7 L 1152.0 1298.1" stroke-width="1.0"/>
-<path d="M 1153.8 1296.0 L 1133.1 1296.7 L 1112.3 1296.0" stroke-width="1.0"/>
-<path d="M 1114.0 1296.5 L 1114.2 1282.8 L 1114.0 1269.1" stroke-width="1.0"/>
-<path d="M 1114.6 1269.5 L 1110.8 1283.7 L 1106.0 1297.6" stroke-width="0.35"/>
-<path d="M 1121.4 1269.4 L 1116.3 1283.2 L 1112.4 1297.3" stroke-width="0.35"/>
-<path d="M 1128.2 1269.6 L 1124.7 1283.2 L 1119.6 1296.4" stroke-width="0.35"/>
-<path d="M 1135.6 1268.2 L 1132.1 1282.8 L 1126.9 1296.9" stroke-width="0.35"/>
-<path d="M 1142.0 1268.7 L 1137.0 1283.1 L 1133.5 1298.0" stroke-width="0.35"/>
-<path d="M 1149.3 1269.9 L 1145.6 1283.7 L 1140.6 1297.0" stroke-width="0.35"/>
-<text x="1160.0" y="1160.0" font-size="11" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">R-30 BATT</text>
-<path d="M 1145.5 1160.0 L 1152.8 1161.0 L 1160.1 1160.0" stroke-width="0.4"/>
-<text x="1160.0" y="1210.0" font-size="11" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">2x6 @ 16" o.c.</text>
-<path d="M 1144.7 1210.0 L 1152.2 1210.7 L 1159.7 1210.0" stroke-width="0.4"/>
-<text x="1114.0" y="1112.0" font-size="12" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">WALL DETAIL</text>
-<path d="M 1147.0 1073.3 L 1148.6 1077.6 L 1148.6 1082.3 L 1147.6 1086.9 L 1145.1 1091.0 L 1141.4 1094.2 L 1136.8 1095.5 L 1132.0 1096.6 L 1127.4 1095.2 L 1123.1 1092.9 L 1120.0 1089.3 L 1117.7 1085.1 L 1116.9 1080.4 L 1117.2 1075.6 L 1119.5 1071.4 L 1122.8 1068.0 L 1126.7 1065.6 L 1131.2 1064.3 L 1135.9 1064.5 L 1140.5 1065.8 L 1144.7 1068.2 L 1147.6 1072.1 L 1148.4 1076.9" stroke-width="0.8"/>
-<path d="M 1116.1 1080.0 L 1132.9 1079.4 L 1149.7 1080.0" stroke-width="0.6"/>
-<text x="1133.0" y="1077.0" font-size="11" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">3</text>
-<text x="1133.0" y="1092.0" font-size="9" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">A-401</text>
-<path d="M 1761.4 1178.4 L 1761.4 1179.2 L 1762.2 1179.5 L 1761.9 1180.1 L 1762.5 1180.9 L 1762.0 1181.5 L 1760.9 1181.3 L 1760.6 1181.9 L 1760.0 1181.7 L 1759.5 1181.9 L 1758.6 1182.2 L 1758.0 1181.7 L 1757.6 1181.1 L 1757.9 1180.2 L 1757.7 1179.6 L 1758.0 1178.9 L 1758.6 1178.6 L 1758.7 1177.6 L 1759.6 1178.2 L 1760.3 1177.3 L 1760.7 1178.3 L 1761.6 1178.1 L 1761.8 1178.8" stroke-width="0.7"/>
-<path d="M 1752.9 1180.0 L 1760.6 1181.0 L 1768.2 1180.0" stroke-width="0.5"/>
-<path d="M 1760.0 1171.6 L 1760.9 1180.3 L 1760.0 1188.9" stroke-width="0.5"/>
-<path d="M 1780.9 1061.4 L 1801.1 1067.0 L 1820.1 1075.8 L 1837.4 1087.8 L 1852.0 1102.8 L 1863.8 1120.1 L 1872.7 1139.0 L 1878.1 1159.2" stroke-width="0.6"/>
-<text x="1830.0" y="1090.0" font-size="11" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">R 6000</text>
-<path d="M 1598.9 1150.0 L 1650.1 1150.5 L 1701.4 1150.0" stroke-width="0.7"/>
-<path d="M 1700.0 1152.0 L 1700.5 1133.2 L 1700.0 1114.3" stroke-width="0.7"/>
-<path d="M 1599.0 1150.3 L 1632.7 1138.3 L 1666.3 1126.1 L 1700.2 1114.5" stroke-width="0.8"/>
-<text x="1645.0" y="1163.0" font-size="10" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">12</text>
-<text x="1706.0" y="1132.0" font-size="10" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">4</text>
-<text x="1600.0" y="1136.0" font-size="10" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">4:12</text>
-<path d="M 1803.4 311.2 L 1800.3 306.0 L 1799.8 300.0 L 1801.1 294.2 L 1803.8 289.1 L 1807.6 284.7 L 1812.7 281.8 L 1818.3 280.4 L 1824.3 280.2 L 1829.7 282.7 L 1834.3 286.3 L 1837.5 291.1 L 1840.0 296.5 L 1840.3 302.6 L 1838.5 308.3 L 1834.8 313.0 L 1830.5 317.0 L 1825.0 318.9 L 1819.2 319.7 L 1813.5 318.5 L 1808.2 316.1 L 1803.8 312.1 L 1801.1 306.7" stroke-width="0.8"/>
-<path d="M 1820 284 L 1814 305 L 1820 300 L 1826 305 z" stroke-width="0.7"/>
-<text x="1820.0" y="316.0" font-size="13" text-anchor="middle" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">N</text>
-<path d="M 980.4 140.6 L 983.1 141.2 L 985.3 142.8 L 987.3 144.5 L 988.6 146.9 L 989.2 149.6 L 989.0 152.3 L 988.0 154.9 L 986.0 156.7 L 983.9 158.5 L 981.2 158.9 L 978.5 159.3 L 976.0 158.0 L 973.5 156.8 L 972.6 154.2 L 970.7 152.1 L 971.6 149.3 L 971.1 146.5 L 972.7 144.2 L 975.2 143.0 L 977.4 141.6 L 979.9 141.3 L 982.5 141.5" stroke-width="0.6"/>
-<path d="M 965.5 150.0 L 980.3 149.7 L 995.1 150.0" stroke-width="0.5"/>
-<path d="M 980.0 135.9 L 979.6 151.0 L 980.0 166.1" stroke-width="0.5"/>
-<text x="996.0" y="154.0" font-size="10" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">N 40°38'</text>
-<path d="M 1900.9 909.4 L 1898.3 908.2 L 1895.4 908.4 L 1894.0 905.9 L 1892.3 904.0 L 1891.7 901.5 L 1890.7 898.9 L 1892.1 896.5 L 1893.3 894.2 L 1895.3 892.5 L 1897.6 891.2 L 1900.3 890.6 L 1902.9 891.4 L 1905.0 893.1 L 1906.8 894.9 L 1908.7 896.8 L 1908.9 899.5 L 1908.7 902.2 L 1907.3 904.4 L 1905.8 906.5 L 1904.0 908.6 L 1901.3 909.5 L 1898.6 908.7" stroke-width="0.6"/>
-<path d="M 1885.1 900.0 L 1900.4 900.4 L 1915.7 900.0" stroke-width="0.5"/>
-<path d="M 1900.0 885.7 L 1899.1 900.3 L 1900.0 914.8" stroke-width="0.5"/>
-<text x="1916.0" y="904.0" font-size="10" text-anchor="start" stroke="none" fill="#1c1a16" font-family="'Architects Daughter',cursive">111°29'</text>
-</g></svg></div>
+        <div class="hm-archbg" aria-hidden="true"><img class="hm-archbg-img" src="<?php echo lh_asset( 'img/blueprint.svg' ); ?>" alt="" loading="lazy" decoding="async"></div>
 
 
-	<!-- 1. Intro -->
-	<?php while ( have_posts() ) : the_post(); ?>
-		<section class="homes-hero">
-			<div class="homes-hero-in">
-				<span class="eyebrow"><?php echo esc_html( lh_field( 'homes_eyebrow', 'Portfolio' ) ); ?></span>
-				<h1><?php the_title(); ?></h1>
-				<?php if ( trim( get_the_content() ) ) : ?>
-					<div class="homes-intro"><?php the_content(); ?></div>
-				<?php else : ?>
-					<div class="homes-intro"><p>Every home here was drawn from its land and stick-built on-site. One family, one site, one home at a time.</p></div>
-				<?php endif; ?>
-			</div>
-		</section>
-	<?php endwhile; ?>
+        <!-- 1. Intro -->
+        <?php while ( have_posts() ) : the_post(); ?>
+            <section class="homes-hero">
+                <div class="homes-hero-in">
+                    <span class="eyebrow"><?php echo esc_html( lh_field( 'homes_eyebrow', 'Portfolio' ) ); ?></span>
+                    <h1><?php the_title(); ?></h1>
+                    <?php if ( trim( get_the_content() ) ) : ?>
+                        <div class="homes-intro"><?php the_content(); ?></div>
+                    <?php else : ?>
+                        <div class="homes-intro"><p>Every home here was drawn from its land and stick-built on-site. One family, one site, one home at a time.</p></div>
+                    <?php endif; ?>
+                    <?php if ( $all_homes ) : ?>
+                        <p class="homes-count"><?php printf(
+                                    esc_html( _n( '%s home, built one at a time.', '%s homes, built one at a time.', count( $all_homes ), 'luxury-homes' ) ),
+                                    esc_html( number_format_i18n( count( $all_homes ) ) )
+                            ); ?></p>
+                    <?php endif; ?>
+                </div>
+            </section>
+        <?php endwhile; ?>
 
-	<!-- 2. Featured home -->
-	<?php if ( $featured ) :
-		$fm = lh_home_meta( $featured->ID );
-		$fspec = array();
-		if ( $fm['beds'] ) { $fspec[] = $fm['beds'] . ' beds'; }
-		if ( $fm['baths'] ) { $fspec[] = $fm['baths'] . ' baths'; }
-		if ( $fm['sqft'] ) { $fspec[] = number_format_i18n( (float) $fm['sqft'] ) . ' sq ft'; }
-		if ( $fm['year'] ) { $fspec[] = 'Completed ' . $fm['year']; }
-		?>
-		<section class="hm-feature-wrap">
-			<a class="hm-feature" href="<?php echo esc_url( get_permalink( $featured ) ); ?>" data-reveal>
-				<div class="frame">
-					<?php echo lh_home_image( $featured->ID, 'full', array( 'alt' => get_the_title( $featured ) ) ); ?>
-				</div>
-				<div class="hm-feature-copy">
-					<span class="eyebrow">Featured<?php echo $fm['location'] ? ' · ' . esc_html( $fm['location'] ) : ''; ?></span>
-					<h2><?php echo esc_html( get_the_title( $featured ) ); ?></h2>
-					<?php if ( $fspec ) : ?>
-						<div class="spec"><?php echo esc_html( implode( ' · ', $fspec ) ); ?></div>
-					<?php endif; ?>
-					<span class="view">View gallery &rarr;</span>
-				</div>
-			</a>
-		</section>
-	<?php endif; ?>
+        <!-- 2. Featured home -->
+        <?php if ( $featured ) :
+            $fm = lh_home_meta( $featured->ID );
+            $fspec = array();
+            if ( $fm['beds'] ) { $fspec[] = $fm['beds'] . ' beds'; }
+            if ( $fm['baths'] ) { $fspec[] = $fm['baths'] . ' baths'; }
+            if ( $fm['sqft'] ) { $fspec[] = number_format_i18n( (float) $fm['sqft'] ) . ' sq ft'; }
+            if ( $fm['year'] ) { $fspec[] = 'Completed ' . $fm['year']; }
+            ?>
+            <section class="hm-feature-wrap">
+                <a class="hm-feature" href="<?php echo esc_url( get_permalink( $featured ) ); ?>" data-reveal>
+                    <div class="frame">
+                        <?php
+                        $feat_img = function_exists( 'lh_home_image' ) ? lh_home_image( $featured->ID, 'full', array(
+                                'alt'           => get_the_title( $featured ),
+                                'loading'       => 'eager',
+                                'fetchpriority' => 'high',
+                                'decoding'      => 'async',
+                                'sizes'         => '(min-width: 1240px) 1240px, 100vw',
+                        ) ) : '';
+                        echo '' !== $feat_img ? $feat_img : '<span class="home-ph" aria-hidden="true"></span>';
+                        ?>
+                    </div>
+                    <div class="hm-feature-copy">
+                        <span class="eyebrow">Featured<?php echo $fm['location'] ? ' · ' . esc_html( $fm['location'] ) : ''; ?></span>
+                        <h2><?php echo esc_html( get_the_title( $featured ) ); ?></h2>
+                        <?php if ( $fspec ) : ?>
+                            <div class="spec"><?php echo esc_html( implode( ' · ', $fspec ) ); ?></div>
+                        <?php endif; ?>
+                        <span class="view">View gallery &rarr;</span>
+                    </div>
+                </a>
+            </section>
+        <?php endif; ?>
 
-	<!-- 3 + 4. Style filters + grid -->
-	<section class="homes-grid-wrap">
-		<?php if ( $rest ) : ?>
-			<?php if ( $filter_styles ) : ?>
-				<div class="hm-filters" id="hmFilters" role="group" aria-label="Filter homes by style" data-reveal>
-					<button type="button" class="hm-filter is-active" data-filter="*" aria-pressed="true">All</button>
-					<?php foreach ( $filter_styles as $s ) : ?>
-						<button type="button" class="hm-filter" data-filter="<?php echo esc_attr( $s ); ?>" aria-pressed="false"><?php echo esc_html( $s ); ?></button>
-					<?php endforeach; ?>
-				</div>
-			<?php endif; ?>
+        <!-- 3 + 4. Style filters + grid -->
+        <section class="homes-grid-wrap" aria-labelledby="homesGridHeading">
+            <?php if ( $rest ) : ?>
+                <header class="homes-grid-head" data-reveal>
+                    <span class="eyebrow">Portfolio</span>
+                    <h2 id="homesGridHeading">Selected <em>homes</em></h2>
+                </header>
+                <?php if ( $filter_styles ) : ?>
+                    <div class="hm-filters" id="hmFilters" role="group" aria-label="Filter homes by style" data-reveal>
+                        <button type="button" class="hm-filter is-active" data-filter="*" aria-pressed="true">All</button>
+                        <?php foreach ( $filter_styles as $s ) : ?>
+                            <button type="button" class="hm-filter" data-filter="<?php echo esc_attr( $s ); ?>" aria-pressed="false"><?php echo esc_html( $s ); ?></button>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
 
-			<div class="homes-grid" id="homesGrid">
-				<?php foreach ( $rest as $post ) : setup_postdata( $post );
-					$meta = lh_home_meta( $post->ID ); ?>
-					<a class="home-card" href="<?php echo esc_url( get_permalink( $post ) ); ?>" data-style="<?php echo esc_attr( $meta['style'] ); ?>" data-reveal>
-						<div class="frame">
-							<?php if ( $meta['style'] ) : ?>
-								<span class="home-tag"><?php echo esc_html( $meta['style'] ); ?></span>
-							<?php endif; ?>
-							<?php echo lh_home_image( $post->ID, 'large', array( 'alt' => get_the_title( $post ) ) ); ?>
-						</div>
-						<div class="meta">
-							<?php if ( $meta['location'] ) : ?>
-								<div class="loc"><?php echo esc_html( $meta['location'] ); ?></div>
-							<?php endif; ?>
-							<h3><?php echo esc_html( get_the_title( $post ) ); ?></h3>
-							<?php if ( $meta['year'] ) : ?>
-								<div class="spec"><?php echo esc_html( $meta['year'] ); ?></div>
-							<?php endif; ?>
-							<span class="view">View gallery &rarr;</span>
-						</div>
-					</a>
-				<?php endforeach; wp_reset_postdata(); ?>
-			</div>
-		<?php else : ?>
-			<p class="homes-empty">Homes are coming soon. In the meantime, <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">tell us about yours</a>.</p>
-		<?php endif; ?>
-	</section>
+                <p id="hmStatus" class="screen-reader-text" role="status" aria-live="polite"></p>
 
-	<!-- 5. Value-prop strip -->
-	<section class="hm-values">
-		<div class="hm-values-in">
-			<div class="hm-value">
-				<h3>On-site</h3>
-				<p>Every home is stick-built on its own land with no factory panels and no shortcuts.</p>
-			</div>
-			<div class="hm-value">
-				<h3>One at a time</h3>
-				<p>We take on a limited number of homes each year, each with a dedicated team.</p>
-			</div>
-			<div class="hm-value">
-				<h3>Utah craft</h3>
-				<p>Master trades from the Wasatch, working stone, timber and glass by hand.</p>
-			</div>
-		</div>
-	</section>
+                <div class="homes-grid" id="homesGrid">
+                    <?php foreach ( $rest as $post ) : setup_postdata( $post );
+                        $meta = lh_home_meta( $post->ID ); ?>
+                        <a class="home-card" href="<?php echo esc_url( get_permalink( $post ) ); ?>" data-style="<?php echo esc_attr( $meta['style'] ); ?>" data-reveal>
+                            <div class="frame">
+                                <?php if ( $meta['style'] ) : ?>
+                                    <span class="home-tag"><?php echo esc_html( $meta['style'] ); ?></span>
+                                <?php endif; ?>
+                                <?php
+                                $card_img = function_exists( 'lh_home_image' ) ? lh_home_image( $post->ID, 'large', array(
+                                        'alt'      => get_the_title( $post ),
+                                        'loading'  => 'lazy',
+                                        'decoding' => 'async',
+                                        'sizes'    => '(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw',
+                                ) ) : '';
+                                echo '' !== $card_img ? $card_img : '<span class="home-ph" aria-hidden="true"></span>';
+                                ?>
+                            </div>
+                            <div class="meta">
+                                <?php if ( $meta['location'] ) : ?>
+                                    <div class="loc"><?php echo esc_html( $meta['location'] ); ?></div>
+                                <?php endif; ?>
+                                <h3><?php echo esc_html( get_the_title( $post ) ); ?></h3>
+                                <?php if ( $meta['year'] ) : ?>
+                                    <div class="spec"><?php echo esc_html( $meta['year'] ); ?></div>
+                                <?php endif; ?>
+                                <span class="view">View gallery &rarr;</span>
+                            </div>
+                        </a>
+                    <?php endforeach; wp_reset_postdata(); ?>
+                </div>
 
-	<!-- 6. Closing CTA -->
-	<section class="hm-cta">
-		<div class="hm-cta-in">
-			<span class="eyebrow">Your turn</span>
-			<h2>Let&rsquo;s build <em>yours</em>.</h2>
-			<a class="sh-btn" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Start the conversation &rarr;</a>
-		</div>
-	</section>
+                <div class="hm-more-wrap">
+                    <button type="button" class="hm-more" id="hmMore" hidden>Load more</button>
+                </div>
+            <?php else : ?>
+                <p class="homes-empty">Homes are coming soon. In the meantime, <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">tell us about yours</a>.</p>
+            <?php endif; ?>
+        </section>
 
-</main>
+        <!-- 5. Value-prop strip -->
+        <section class="hm-values">
+            <div class="hm-values-in">
+                <header class="hm-values-head" data-reveal>
+                    <span class="eyebrow">Why it&rsquo;s different</span>
+                    <h2>Built the <em>hard</em> way, on purpose.</h2>
+                </header>
+                <div class="hm-values-grid">
+                    <div class="hm-value" data-reveal>
+                        <span class="hm-value-num">01</span>
+                        <h3>On-site</h3>
+                        <p>Every home is stick-built on its own land with no factory panels and no shortcuts.</p>
+                    </div>
+                    <div class="hm-value" data-reveal>
+                        <span class="hm-value-num">02</span>
+                        <h3>One at a time</h3>
+                        <p>We take on a limited number of homes each year, each with a dedicated team.</p>
+                    </div>
+                    <div class="hm-value" data-reveal>
+                        <span class="hm-value-num">03</span>
+                        <h3>Utah craft</h3>
+                        <p>Master trades from the Wasatch, working stone, timber and glass by hand.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Closing CTA -->
+        <section class="hm-cta">
+            <div class="hm-cta-in">
+                <span class="eyebrow">Your turn</span>
+                <h2>Let&rsquo;s build <em>yours</em>.</h2>
+                <a class="sh-btn" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Start the conversation &rarr;</a>
+            </div>
+        </section>
+
+    </main>
 
 <?php get_footer(); ?>

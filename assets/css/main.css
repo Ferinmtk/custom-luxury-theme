@@ -86,7 +86,7 @@ a { color: inherit; text-decoration: none; }
 	border: 0.5px solid rgba(255, 255, 255, 0.5);
 	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 8px 26px rgba(28, 26, 23, 0.10);
 	transition: background 0.4s var(--hero-ease), border-color 0.4s var(--hero-ease),
-		box-shadow 0.4s var(--hero-ease);
+	box-shadow 0.4s var(--hero-ease);
 }
 
 /* Inverted theme — over imagery and dark sections */
@@ -651,11 +651,11 @@ body.admin-bar .nav-overlay { top: 32px; }
 	border-radius: 3px;
 	/* Floating: a faint contact shadow, then a wide, soft cast far below. */
 	box-shadow:
-		0 1px 2px rgba(20, 18, 12, 0.04),
-		0 10px 20px rgba(20, 18, 12, 0.06),
-		0 30px 60px rgba(20, 18, 12, 0.16);
+			0 1px 2px rgba(20, 18, 12, 0.04),
+			0 10px 20px rgba(20, 18, 12, 0.06),
+			0 30px 60px rgba(20, 18, 12, 0.16);
 	transition: transform 0.55s var(--hero-ease), box-shadow 0.55s var(--hero-ease),
-		border-color 0.55s var(--hero-ease);
+	border-color 0.55s var(--hero-ease);
 }
 
 .scrub-card:hover .sc-frame,
@@ -663,9 +663,9 @@ body.admin-bar .nav-overlay { top: 32px; }
 	transform: translateY(-10px);
 	border-color: rgba(27, 26, 22, 0.16);
 	box-shadow:
-		0 2px 4px rgba(20, 18, 12, 0.05),
-		0 18px 34px rgba(20, 18, 12, 0.10),
-		0 52px 90px rgba(20, 18, 12, 0.30);
+			0 2px 4px rgba(20, 18, 12, 0.05),
+			0 18px 34px rgba(20, 18, 12, 0.10),
+			0 52px 90px rgba(20, 18, 12, 0.30);
 }
 
 .scrub-card img {
@@ -1457,8 +1457,8 @@ body.admin-bar .nav-overlay { top: 32px; }
 	background: var(--hero-white);
 	/* soft, light, layered — no heavy dark box */
 	box-shadow:
-		0 1px 2px rgba(28, 26, 22, 0.05),
-		0 10px 24px -12px rgba(28, 26, 22, 0.18);
+			0 1px 2px rgba(28, 26, 22, 0.05),
+			0 10px 24px -12px rgba(28, 26, 22, 0.18);
 	transition: transform 0.5s var(--hero-ease), box-shadow 0.5s var(--hero-ease);
 }
 
@@ -1466,8 +1466,8 @@ body.admin-bar .nav-overlay { top: 32px; }
 .home-card:focus-visible {
 	transform: translateY(-6px);
 	box-shadow:
-		0 2px 4px rgba(28, 26, 22, 0.06),
-		0 26px 46px -18px rgba(28, 26, 22, 0.28);
+			0 2px 4px rgba(28, 26, 22, 0.06),
+			0 26px 46px -18px rgba(28, 26, 22, 0.28);
 }
 
 .home-card .frame { overflow: hidden; position: relative; aspect-ratio: 4 / 5; border-radius: inherit; }
@@ -1726,6 +1726,175 @@ body.admin-bar .nav-overlay { top: 32px; }
 	color: rgba(250, 249, 246, 0.3);
 }
 
+/* =========================================================
+   OUR HOMES — page-scoped visual treatment
+   Scoped to .our-homes-page so About / How-We-Build are untouched.
+   ========================================================= */
+
+/* Blueprint watermark fades in from the top so it never crowds
+   the floating header or the hero title. */
+.our-homes-page .hm-archbg {
+	-webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 360px);
+	mask-image: linear-gradient(to bottom, transparent 0, #000 360px);
+}
+
+/* Hero — a little more air and scale */
+.our-homes-page .homes-hero { padding-top: 10.5rem; padding-bottom: 4.5rem; }
+.our-homes-page .homes-hero h1 { font-size: clamp(2.7rem, 6vw, 5rem); letter-spacing: -0.01em; }
+.our-homes-page .homes-intro { font-size: 1.05rem; }
+
+/* Titled editorial entrance for the grid */
+.our-homes-page .homes-grid-head {
+	max-width: 1240px;
+	margin: 0 auto clamp(1.4rem, 3vw, 2.2rem);
+	display: flex;
+	align-items: baseline;
+	gap: 0.4rem 1.4rem;
+	flex-wrap: wrap;
+}
+.our-homes-page .homes-grid-head .eyebrow {
+	flex: 0 0 100%;
+	font-size: 0.7rem;
+	font-weight: 500;
+	letter-spacing: 0.3em;
+	text-transform: uppercase;
+	color: var(--hero-forest);
+	margin: 0;
+}
+.our-homes-page .homes-grid-head h2 {
+	font-family: var(--hero-display);
+	font-weight: 400;
+	font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+	line-height: 1.05;
+	margin: 0;
+	color: var(--hero-ink);
+}
+.our-homes-page .homes-grid-head h2 em { font-style: italic; }
+.our-homes-page .homes-grid-head::after {
+	content: '';
+	flex: 1 1 60px;
+	min-width: 40px;
+	height: 1px;
+	align-self: center;
+	background: linear-gradient(to right, rgba(27, 26, 22, 0.18), transparent);
+}
+
+/* Value strip → numbered showcase band */
+.our-homes-page .hm-values-in {
+	display: block;
+	border-top: 1px solid rgba(27, 26, 22, 0.12);
+	border-bottom: none;
+	padding-bottom: clamp(3rem, 8vh, 5.5rem);
+}
+.our-homes-page .hm-values-head {
+	margin-bottom: clamp(2rem, 5vh, 3.2rem);
+	max-width: 40ch;
+}
+.our-homes-page .hm-values-head .eyebrow {
+	display: block;
+	margin: 0 0 0.7rem;
+	font-size: 0.7rem;
+	font-weight: 500;
+	letter-spacing: 0.3em;
+	text-transform: uppercase;
+	color: var(--hero-forest);
+}
+.our-homes-page .hm-values-head h2 {
+	font-family: var(--hero-display);
+	font-weight: 400;
+	font-size: clamp(1.8rem, 4vw, 3rem);
+	line-height: 1.05;
+	margin: 0;
+	color: var(--hero-ink);
+	text-wrap: balance;
+}
+.our-homes-page .hm-values-head h2 em { font-style: italic; }
+
+.our-homes-page .hm-values-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: clamp(1.4rem, 3vw, 2.2rem);
+}
+.our-homes-page .hm-value {
+	position: relative;
+	padding: 2rem 1.7rem 1.9rem;
+	border-radius: 12px;
+	background: rgba(255, 255, 255, 0.5);
+	border: 1px solid rgba(27, 26, 22, 0.07);
+	transition: transform 0.5s var(--hero-ease), box-shadow 0.5s var(--hero-ease),
+	border-color 0.5s var(--hero-ease);
+}
+.our-homes-page .hm-value:hover {
+	transform: translateY(-5px);
+	border-color: rgba(60, 74, 58, 0.28);
+	box-shadow: 0 1px 2px rgba(28, 26, 22, 0.05), 0 20px 38px -18px rgba(28, 26, 22, 0.24);
+}
+.our-homes-page .hm-value-num {
+	display: block;
+	font-family: var(--hero-display);
+	font-weight: 400;
+	font-size: 2.4rem;
+	line-height: 1;
+	color: var(--hero-forest);
+	opacity: 0.26;
+	margin-bottom: 0.9rem;
+	font-variant-numeric: tabular-nums;
+	transition: opacity 0.5s var(--hero-ease);
+}
+.our-homes-page .hm-value:hover .hm-value-num { opacity: 0.55; }
+.our-homes-page .hm-value h3 {
+	font-family: var(--hero-display);
+	font-weight: 400;
+	font-size: 1.45rem;
+	margin: 0 0 0.55rem;
+	color: var(--hero-ink);
+}
+.our-homes-page .hm-value h3::before { content: none; }
+.our-homes-page .hm-value p {
+	margin: 0;
+	color: var(--hero-ink-soft);
+	font-size: 0.95rem;
+	max-width: 34ch;
+}
+
+/* Hero count line */
+.our-homes-page .homes-count {
+	margin: 1.5rem 0 0;
+	font-size: 0.72rem;
+	font-weight: 500;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: var(--hero-forest);
+}
+
+/* Load more */
+.our-homes-page .hm-more-wrap {
+	max-width: 1240px;
+	margin: clamp(2rem, 5vh, 3.5rem) auto 0;
+	text-align: center;
+}
+.our-homes-page .hm-more {
+	font-family: var(--hero-sans);
+	font-size: 0.72rem;
+	font-weight: 500;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--hero-ink);
+	background: transparent;
+	border: 1px solid rgba(27, 26, 22, 0.28);
+	border-radius: 999px;
+	padding: 0.9rem 2rem;
+	cursor: pointer;
+	transition: background 0.4s var(--hero-ease), border-color 0.4s var(--hero-ease), color 0.4s var(--hero-ease);
+}
+.our-homes-page .hm-more:hover,
+.our-homes-page .hm-more:focus-visible {
+	background: var(--hero-forest);
+	border-color: var(--hero-forest);
+	color: var(--hero-white);
+}
+.our-homes-page .hm-more[hidden] { display: none; }
+
 /* ---------- Single home ---------- */
 
 .sh-hero { position: relative; height: min(78vh, 760px); min-height: 420px; overflow: hidden; background: #0e120e; }
@@ -1947,10 +2116,10 @@ body.admin-bar .nav-overlay { top: 32px; }
 .hwb-page {
 	background-color: var(--hero-white);
 	background-image:
-		linear-gradient(rgba(27, 26, 22, 0.04) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(27, 26, 22, 0.04) 1px, transparent 1px),
-		linear-gradient(rgba(27, 26, 22, 0.018) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(27, 26, 22, 0.018) 1px, transparent 1px);
+			linear-gradient(rgba(27, 26, 22, 0.04) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(27, 26, 22, 0.04) 1px, transparent 1px),
+			linear-gradient(rgba(27, 26, 22, 0.018) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(27, 26, 22, 0.018) 1px, transparent 1px);
 	background-size: 144px 144px, 144px 144px, 24px 24px, 24px 24px;
 }
 
@@ -2677,13 +2846,13 @@ body.admin-bar .nav-overlay { top: 32px; }
 .si-wrap{
 	background-color:#faf9f6;
 	background-image:
-		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.05'/%3E%3C/svg%3E"),
-		radial-gradient(58% 48% at 18% 12%, rgba(255,252,244,.55), transparent 60%),
-		radial-gradient(52% 46% at 88% 26%, rgba(198,184,161,.38), transparent 62%),
-		radial-gradient(60% 54% at 74% 88%, rgba(255,250,242,.45), transparent 60%),
-		radial-gradient(46% 42% at 10% 82%, rgba(190,176,152,.34), transparent 60%),
-		radial-gradient(40% 60% at 50% 50%, rgba(214,201,178,.20), transparent 70%),
-		linear-gradient(180deg, rgba(255,253,247,.5), rgba(28,26,21,.06));
+			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.05'/%3E%3C/svg%3E"),
+			radial-gradient(58% 48% at 18% 12%, rgba(255,252,244,.55), transparent 60%),
+			radial-gradient(52% 46% at 88% 26%, rgba(198,184,161,.38), transparent 62%),
+			radial-gradient(60% 54% at 74% 88%, rgba(255,250,242,.45), transparent 60%),
+			radial-gradient(46% 42% at 10% 82%, rgba(190,176,152,.34), transparent 60%),
+			radial-gradient(40% 60% at 50% 50%, rgba(214,201,178,.20), transparent 70%),
+			linear-gradient(180deg, rgba(255,253,247,.5), rgba(28,26,21,.06));
 	background-size:200px 200px, cover, cover, cover, cover, cover, cover;
 	background-blend-mode:overlay, normal, normal, normal, normal, normal, normal;
 	box-shadow:inset 0 14px 30px -20px rgba(28,26,21,.28), inset 0 -14px 30px -20px rgba(28,26,21,.20);
@@ -2730,4 +2899,4 @@ html{overflow-x:clip}
 .homes-page > section{position:relative;z-index:1}
 /* faint drawing, single (no tiling), confined to the top/hero — never behind the dense card copy */
 .hm-archbg{position:absolute;top:0;left:0;width:100%;z-index:0;pointer-events:none;opacity:.07;overflow:hidden}
-.hm-archbg svg{display:block;width:100%;height:auto;stroke:#1c1a16}
+.hm-archbg svg,.hm-archbg img{display:block;width:100%;height:auto;stroke:#1c1a16}

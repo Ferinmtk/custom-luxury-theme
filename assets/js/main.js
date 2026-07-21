@@ -378,24 +378,40 @@
 		var bar = document.getElementById('hmFilters');
 		if (!grid) { return; }
 		var cards = Array.prototype.slice.call(grid.querySelectorAll('.home-card'));
+		var moreBtn = document.getElementById('hmMore');
+		var status = document.getElementById('hmStatus');
+		var BATCH = 9;
+		var filterVal = '*';
+		var revealed = BATCH;
 
-		function applyRhythm(visible) {
+		function slug(s) {
+			return String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+		}
+
+		function applyRhythm(shown) {
 			cards.forEach(function (c) { c.classList.remove('is-wide'); });
-			visible.forEach(function (c, i) {
+			shown.forEach(function (c, i) {
 				if (i % 4 === 0) { c.classList.add('is-wide'); } // editorial rhythm: wide, 3 standard, wide...
 			});
 		}
 
-		function setFilter(val) {
-			var visible = [];
+		// Render the grid for the current filter + reveal count.
+		// force=true guarantees newly shown cards aren't left transparent
+		// (used for filter changes and Load more, where the scroll-reveal
+		// observer never fired because the card was display:none).
+		function render(force) {
+			var matched = cards.filter(function (card) {
+				return filterVal === '*' || card.dataset.style === filterVal;
+			});
+			var shown = matched.slice(0, revealed);
 			cards.forEach(function (card) {
-				var show = val === '*' || card.dataset.style === val;
-				if (show) { visible.push(card); }
+				var show = shown.indexOf(card) !== -1;
 				if (reducedMotion) {
 					card.classList.toggle('is-hidden', !show);
 					card.classList.remove('is-faded');
 				} else if (show) {
 					card.classList.remove('is-hidden');
+					if (force) { card.classList.add('is-visible'); }
 					requestAnimationFrame(function () {
 						requestAnimationFrame(function () { card.classList.remove('is-faded'); });
 					});
@@ -406,10 +422,56 @@
 					}, 320);
 				}
 			});
-			applyRhythm(visible);
+			applyRhythm(shown);
+
+			if (moreBtn) {
+				var remaining = matched.length - shown.length;
+				moreBtn.hidden = remaining <= 0;
+				if (remaining > 0) { moreBtn.textContent = 'Load more (' + remaining + ')'; }
+			}
+			if (status) {
+				var n = matched.length;
+				status.textContent = 'Showing ' + Math.min(revealed, n) + ' of ' + n + ' ' +
+					(n === 1 ? 'home' : 'homes') + (filterVal === '*' ? '' : ' in ' + filterVal);
+			}
 		}
 
-		applyRhythm(cards);
+		function setFilter(val) {
+			filterVal = val;
+			revealed = BATCH;
+			render(true);
+		}
+
+		function syncURL() {
+			if (!window.history || !history.replaceState) { return; }
+			try {
+				var url = new URL(window.location.href);
+				if (filterVal === '*') { url.searchParams.delete('style'); }
+				else { url.searchParams.set('style', slug(filterVal)); }
+				history.replaceState(null, '', url);
+			} catch (e) {}
+		}
+
+		// Deep link: apply ?style=<slug> from the URL on load.
+		if (bar) {
+			try {
+				var q = new URL(window.location.href).searchParams.get('style');
+				if (q) {
+					Array.prototype.slice.call(bar.querySelectorAll('.hm-filter')).forEach(function (b) {
+						if (b.dataset.filter !== '*' && slug(b.dataset.filter) === q) {
+							bar.querySelectorAll('.hm-filter').forEach(function (o) {
+								o.classList.remove('is-active'); o.setAttribute('aria-pressed', 'false');
+							});
+							b.classList.add('is-active');
+							b.setAttribute('aria-pressed', 'true');
+							filterVal = b.dataset.filter;
+						}
+					});
+				}
+			} catch (e) {}
+		}
+
+		render(filterVal !== '*');
 
 		if (bar) {
 			var canSpring = !reducedMotion && typeof bar.animate === 'function' && 'IntersectionObserver' in window;
@@ -462,6 +524,14 @@
 				btn.classList.add('is-active');
 				btn.setAttribute('aria-pressed', 'true');
 				setFilter(btn.dataset.filter);
+				syncURL();
+			});
+		}
+
+		if (moreBtn) {
+			moreBtn.addEventListener('click', function () {
+				revealed += BATCH;
+				render(true);
 			});
 		}
 	})();

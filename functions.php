@@ -12,47 +12,47 @@ define( 'LH_VERSION', '1.24.4' );
  * `home` CPT degrade to empty output rather than fatalling.
  */
 add_action( 'admin_notices', function () {
-	if ( function_exists( 'lhc_bootstrapped' ) ) {
-		return;
-	}
-	echo '<div class="notice notice-warning"><p><strong>Luxury Homes:</strong> '
-		. 'the <em>Luxury Homes Core</em> plugin is not active. The Homes post type, '
-		. 'contact form and chat concierge are disabled until it is installed and activated.'
-		. '</p></div>';
+    if ( function_exists( 'lhc_bootstrapped' ) ) {
+        return;
+    }
+    echo '<div class="notice notice-warning"><p><strong>Luxury Homes:</strong> '
+        . 'the <em>Luxury Homes Core</em> plugin is not active. The Homes post type, '
+        . 'contact form and chat concierge are disabled until it is installed and activated.'
+        . '</p></div>';
 } );
 
 add_action( 'after_setup_theme', function () {
-	add_theme_support( 'title-tag' );
-	add_theme_support( 'post-thumbnails' );
-	add_theme_support( 'html5', array( 'search-form', 'gallery', 'caption', 'style', 'script' ) );
-	register_nav_menus( array(
-		'primary' => __( 'Primary Menu', 'luxury-homes' ),
-	) );
-	add_image_size( 'lh-portfolio', 900, 1125, true ); // 4:5 portrait cards
+    add_theme_support( 'title-tag' );
+    add_theme_support( 'post-thumbnails' );
+    add_theme_support( 'html5', array( 'search-form', 'gallery', 'caption', 'style', 'script' ) );
+    register_nav_menus( array(
+        'primary' => __( 'Primary Menu', 'luxury-homes' ),
+    ) );
+    add_image_size( 'lh-portfolio', 900, 1125, true ); // 4:5 portrait cards
 } );
 
 add_action( 'wp_enqueue_scripts', function () {
-	// Fonts: Fraunces (hero display) + Marcellus (site display) + Inter (body, incl. 300 for hero).
-	wp_enqueue_style(
-		'lh-fonts',
-		'https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500;600&family=Marcellus&family=Space+Grotesk:wght@400;500&display=swap',
-		array(),
-		null
-	);
-	wp_enqueue_style( 'lh-main', get_template_directory_uri() . '/assets/css/main.css', array( 'lh-fonts' ), LH_VERSION );
-	wp_enqueue_script( 'lh-main', get_template_directory_uri() . '/assets/js/main.js', array(), LH_VERSION, true );
+    // Fonts: Fraunces (hero display) + Marcellus (site display) + Inter (body, incl. 300 for hero).
+    wp_enqueue_style(
+        'lh-fonts',
+        'https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500;600&family=Marcellus&family=Space+Grotesk:wght@400;500&display=swap',
+        array(),
+        null
+    );
+    wp_enqueue_style( 'lh-main', get_template_directory_uri() . '/assets/css/main.css', array( 'lh-fonts' ), LH_VERSION );
+    wp_enqueue_script( 'lh-main', get_template_directory_uri() . '/assets/js/main.js', array(), LH_VERSION, true );
 } );
 
 // Preconnect to Google Fonts (matches approved hero prototype head).
 add_filter( 'wp_resource_hints', function ( $urls, $relation_type ) {
-	if ( 'preconnect' === $relation_type ) {
-		$urls[] = 'https://fonts.googleapis.com';
-		$urls[] = array(
-			'href' => 'https://fonts.gstatic.com',
-			'crossorigin',
-		);
-	}
-	return $urls;
+    if ( 'preconnect' === $relation_type ) {
+        $urls[] = 'https://fonts.googleapis.com';
+        $urls[] = array(
+            'href' => 'https://fonts.gstatic.com',
+            'crossorigin',
+        );
+    }
+    return $urls;
 }, 10, 2 );
 
 /**
@@ -61,36 +61,36 @@ add_filter( 'wp_resource_hints', function ( $urls, $relation_type ) {
  * matching field names on the front page override defaults.
  */
 function lh_field( $name, $default = '' ) {
-	if ( function_exists( 'get_field' ) ) {
-		$value = get_field( $name );
-		if ( $value !== null && $value !== '' && $value !== false ) {
-			return $value;
-		}
-	}
-	return $default;
+    if ( function_exists( 'get_field' ) ) {
+        $value = get_field( $name );
+        if ( $value !== null && $value !== '' && $value !== false ) {
+            return $value;
+        }
+    }
+    return $default;
 }
 
 /** Site pages for navigation (header, overlay, footer). */
 function lh_nav_items() {
-	return array(
-		'our-homes'    => array( 'label' => 'Our Homes',    'url' => home_url( '/our-homes/' ) ),
-		'how-we-build' => array( 'label' => 'How We Build', 'url' => home_url( '/how-we-build/' ) ),
-		'about'        => array( 'label' => 'About',        'url' => home_url( '/about/' ) ),
-		'contact'      => array( 'label' => 'Contact',      'url' => home_url( '/contact/' ) ),
-	);
+    return array(
+        'our-homes'    => array( 'label' => 'Our Homes',    'url' => home_url( '/our-homes/' ) ),
+        'how-we-build' => array( 'label' => 'How We Build', 'url' => home_url( '/how-we-build/' ) ),
+        'about'        => array( 'label' => 'About',        'url' => home_url( '/about/' ) ),
+        'contact'      => array( 'label' => 'Contact',      'url' => home_url( '/contact/' ) ),
+    );
 }
 
 /** Print a nav list with current-page markers. */
 function lh_nav_list( $class, $exclude = array() ) {
-	echo '<ul class="' . esc_attr( $class ) . '">';
-	foreach ( lh_nav_items() as $slug => $item ) {
-		if ( in_array( $slug, (array) $exclude, true ) ) { continue; }
-		$current = is_page( $slug ) || ( 'our-homes' === $slug && is_singular( 'home' ) );
-		echo '<li' . ( $current ? ' class="is-current"' : '' ) . '>';
-		echo '<a href="' . esc_url( $item['url'] ) . '"' . ( $current ? ' aria-current="page"' : '' ) . '>' . esc_html( $item['label'] ) . '</a>';
-		echo '</li>';
-	}
-	echo '</ul>';
+    echo '<ul class="' . esc_attr( $class ) . '">';
+    foreach ( lh_nav_items() as $slug => $item ) {
+        if ( in_array( $slug, (array) $exclude, true ) ) { continue; }
+        $current = is_page( $slug ) || ( 'our-homes' === $slug && is_singular( 'home' ) );
+        echo '<li' . ( $current ? ' class="is-current"' : '' ) . '>';
+        echo '<a href="' . esc_url( $item['url'] ) . '"' . ( $current ? ' aria-current="page"' : '' ) . '>' . esc_html( $item['label'] ) . '</a>';
+        echo '</li>';
+    }
+    echo '</ul>';
 }
 
 /**
@@ -105,14 +105,14 @@ function lh_nav_list( $class, $exclude = array() ) {
  * Filter with 'lh_company' to override without touching options.
  */
 function lh_company() {
-	$name = trim( (string) lh_field( 'company_name', '' ) );
-	if ( '' === $name ) {
-		$name = trim( (string) get_bloginfo( 'name' ) );
-	}
-	if ( '' === $name ) {
-		$name = 'Tester';
-	}
-	return apply_filters( 'lh_company', $name );
+    $name = trim( (string) lh_field( 'company_name', '' ) );
+    if ( '' === $name ) {
+        $name = trim( (string) get_bloginfo( 'name' ) );
+    }
+    if ( '' === $name ) {
+        $name = 'Tester';
+    }
+    return apply_filters( 'lh_company', $name );
 }
 
 /**
@@ -121,35 +121,35 @@ function lh_company() {
  * Returns '' when nothing usable is available.
  */
 function lh_field_image( $field, $fallback_asset = '', $size = 'large', $attr = array() ) {
-	$value = function_exists( 'get_field' ) ? get_field( $field ) : null;
+    $value = function_exists( 'get_field' ) ? get_field( $field ) : null;
 
-	if ( is_array( $value ) && ! empty( $value['ID'] ) ) {
-		$value = $value['ID'];
-	}
-	if ( is_numeric( $value ) && (int) $value > 0 ) {
-		$img = wp_get_attachment_image( (int) $value, $size, false, $attr );
-		if ( $img ) { return $img; }
-	}
+    if ( is_array( $value ) && ! empty( $value['ID'] ) ) {
+        $value = $value['ID'];
+    }
+    if ( is_numeric( $value ) && (int) $value > 0 ) {
+        $img = wp_get_attachment_image( (int) $value, $size, false, $attr );
+        if ( $img ) { return $img; }
+    }
 
-	$url = is_string( $value ) && '' !== $value ? $value : '';
-	if ( '' === $url && '' !== $fallback_asset ) {
-		$path = get_template_directory() . '/assets/' . ltrim( $fallback_asset, '/' );
-		if ( file_exists( $path ) ) {
-			$url = lh_asset( $fallback_asset );
-		}
-	}
-	if ( '' === $url ) { return ''; }
+    $url = is_string( $value ) && '' !== $value ? $value : '';
+    if ( '' === $url && '' !== $fallback_asset ) {
+        $path = get_template_directory() . '/assets/' . ltrim( $fallback_asset, '/' );
+        if ( file_exists( $path ) ) {
+            $url = lh_asset( $fallback_asset );
+        }
+    }
+    if ( '' === $url ) { return ''; }
 
-	$out = '<img src="' . esc_url( $url ) . '"';
-	foreach ( $attr as $k => $v ) {
-		$out .= ' ' . esc_attr( $k ) . '="' . esc_attr( $v ) . '"';
-	}
-	return $out . '>';
+    $out = '<img src="' . esc_url( $url ) . '"';
+    foreach ( $attr as $k => $v ) {
+        $out .= ' ' . esc_attr( $k ) . '="' . esc_attr( $v ) . '"';
+    }
+    return $out . '>';
 }
 
 /** Theme asset URL helper. */
 function lh_asset( $path ) {
-	return esc_url( get_template_directory_uri() . '/assets/' . ltrim( $path, '/' ) );
+    return esc_url( get_template_directory_uri() . '/assets/' . ltrim( $path, '/' ) );
 }
 
 /**
@@ -158,12 +158,12 @@ function lh_asset( $path ) {
  * once real project photos arrive.
  */
 function lh_default_portfolio() {
-	return array(
-		array( 'image' => lh_asset( 'img/project-1.jpg' ), 'title' => 'The Ridgeline Residence', 'location' => 'Cherry Hills' ),
-		array( 'image' => lh_asset( 'img/project-2.jpg' ), 'title' => 'Stonebrook Court',        'location' => 'Castle Pines' ),
-		array( 'image' => lh_asset( 'img/project-3.jpg' ), 'title' => 'The Meridian House',      'location' => 'Boulder' ),
-		array( 'image' => lh_asset( 'img/project-4.jpg' ), 'title' => 'Willow & Vine',           'location' => 'Greenwood Village' ),
-	);
+    return array(
+        array( 'image' => lh_asset( 'img/project-1.jpg' ), 'title' => 'The Ridgeline Residence', 'location' => 'Cherry Hills' ),
+        array( 'image' => lh_asset( 'img/project-2.jpg' ), 'title' => 'Stonebrook Court',        'location' => 'Castle Pines' ),
+        array( 'image' => lh_asset( 'img/project-3.jpg' ), 'title' => 'The Meridian House',      'location' => 'Boulder' ),
+        array( 'image' => lh_asset( 'img/project-4.jpg' ), 'title' => 'Willow & Vine',           'location' => 'Greenwood Village' ),
+    );
 }
 
 /**
@@ -171,12 +171,12 @@ function lh_default_portfolio() {
  * Tiles load client-side from CARTO/OpenStreetMap (no API key).
  */
 add_action( 'wp_enqueue_scripts', function () {
-	if ( ! ( is_page( 'contact' ) || is_page_template( 'page-contact.php' ) ) ) {
-		return;
-	}
-	wp_enqueue_style( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4' );
-	wp_enqueue_script( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true );
-	$init = <<<'JS'
+    if ( ! ( is_page( 'contact' ) || is_page_template( 'page-contact.php' ) ) ) {
+        return;
+    }
+    wp_enqueue_style( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4' );
+    wp_enqueue_script( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true );
+    $init = <<<'JS'
 (function(){
   var el=document.getElementById('si-map'); if(!el||!window.L) return;
   var map=L.map(el,{scrollWheelZoom:false,zoomControl:true});
@@ -191,12 +191,119 @@ add_action( 'wp_enqueue_scripts', function () {
   map.on('blur',function(){map.scrollWheelZoom.disable();});
 })();
 JS;
-	wp_add_inline_script( 'leaflet', $init );
+    wp_add_inline_script( 'leaflet', $init );
 } );
 
 /** Our Homes page only: architect-handwriting font for the drawn backdrop. */
 add_action( 'wp_enqueue_scripts', function () {
-	if ( is_page( 'our-homes' ) || is_page_template( 'page-our-homes.php' ) ) {
-		wp_enqueue_style( 'lh-architect-font', 'https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap', array(), null );
-	}
+    if ( is_page( 'our-homes' ) || is_page_template( 'page-our-homes.php' ) ) {
+        wp_enqueue_style( 'lh-architect-font', 'https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap', array(), null );
+    }
 } );
+
+/**
+ * ---------------------------------------------------------------------------
+ * Our Homes portfolio helpers (shared by the template and the <head> hooks so
+ * preload / Open Graph always match what actually renders).
+ * ---------------------------------------------------------------------------
+ */
+
+/**
+ * All published homes in portfolio order. Statically cached per request and
+ * bounded (filter 'lh_homes_per_page' to raise) so a large CPT can't run away.
+ */
+function lh_get_homes() {
+    static $cache = null;
+    if ( null !== $cache ) {
+        return $cache;
+    }
+    if ( ! post_type_exists( 'home' ) ) {
+        $cache = array();
+        return $cache;
+    }
+    $cache = get_posts( array(
+        'post_type'      => 'home',
+        'posts_per_page' => (int) apply_filters( 'lh_homes_per_page', 60 ),
+        'orderby'        => array( 'menu_order' => 'ASC', 'date' => 'DESC' ),
+    ) );
+    return $cache;
+}
+
+/**
+ * Split homes into array( $featured, $rest ).
+ * Featured = first flagged with _home_featured, else the first home.
+ */
+function lh_split_featured( array $homes ) {
+    $featured = null;
+    $rest     = array();
+    foreach ( $homes as $h ) {
+        if ( ! $featured && get_post_meta( $h->ID, '_home_featured', true ) ) {
+            $featured = $h;
+        } else {
+            $rest[] = $h;
+        }
+    }
+    if ( ! $featured && $rest ) {
+        $featured = array_shift( $rest );
+    }
+    return array( $featured, $rest );
+}
+
+/**
+ * Best available image URL for a home, matching what the templates display.
+ * Prefers the exact <img> the plugin renders; falls back to the featured image.
+ */
+function lh_home_image_url( $id, $size = 'large' ) {
+    if ( function_exists( 'lh_home_image' ) ) {
+        $html = lh_home_image( $id, $size, array() );
+        if ( is_string( $html ) && preg_match( '/src=[\'"]([^\'"]+)[\'"]/', $html, $m ) ) {
+            return $m[1];
+        }
+    }
+    if ( has_post_thumbnail( $id ) ) {
+        $url = get_the_post_thumbnail_url( $id, $size );
+        if ( $url ) {
+            return $url;
+        }
+    }
+    return '';
+}
+
+/**
+ * Our Homes <head>: preload the LCP hero image and emit Open Graph / Twitter
+ * tags (skipped when a dedicated SEO plugin is already handling them).
+ */
+add_action( 'wp_head', function () {
+    if ( ! ( is_page( 'our-homes' ) || is_page_template( 'page-our-homes.php' ) ) ) {
+        return;
+    }
+
+    list( $featured, ) = lh_split_featured( lh_get_homes() );
+    $img = $featured ? lh_home_image_url( $featured->ID, 'full' ) : '';
+
+    if ( $img ) {
+        printf( "<link rel=\"preload\" as=\"image\" href=\"%s\" fetchpriority=\"high\">\n", esc_url( $img ) );
+    }
+
+    // Don't duplicate OG tags if a SEO plugin owns them.
+    if ( defined( 'WPSEO_VERSION' ) || class_exists( 'RankMath' ) || defined( 'SEOPRESS_VERSION' ) || defined( 'AIOSEO_VERSION' ) ) {
+        return;
+    }
+
+    $title = function_exists( 'wp_get_document_title' ) ? wp_get_document_title() : get_the_title();
+    $desc  = 'Custom homes drawn from the land and stick-built on-site, one family at a time.';
+
+    echo "<meta property=\"og:type\" content=\"website\">\n";
+    printf( "<meta property=\"og:title\" content=\"%s\">\n", esc_attr( $title ) );
+    printf( "<meta property=\"og:description\" content=\"%s\">\n", esc_attr( $desc ) );
+    printf( "<meta property=\"og:url\" content=\"%s\">\n", esc_url( home_url( '/our-homes/' ) ) );
+    if ( $img ) {
+        printf( "<meta property=\"og:image\" content=\"%s\">\n", esc_url( $img ) );
+    }
+    echo "<meta name=\"twitter:card\" content=\"summary_large_image\">\n";
+    printf( "<meta name=\"twitter:title\" content=\"%s\">\n", esc_attr( $title ) );
+    printf( "<meta name=\"twitter:description\" content=\"%s\">\n", esc_attr( $desc ) );
+    if ( $img ) {
+        printf( "<meta name=\"twitter:image\" content=\"%s\">\n", esc_url( $img ) );
+    }
+}, 5 );
