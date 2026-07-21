@@ -339,3 +339,24 @@ function lh_social_icon($name)
     );
     return isset($icons[$name]) ? $icons[$name] : '';
 }
+
+/**
+ * Inline UI icons for the "Start where you are" option cards (Feather-style,
+ * stroke = currentColor). Returns '' for unknown names.
+ */
+function lh_option_icon($name)
+{
+    $common = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
+    $paths  = array(
+        'map-pin'  => '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+        'search'   => '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+        'activity' => '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+        'compass'  => '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+        'shield'   => '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+        'eye'      => '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+    );
+    if (!isset($paths[$name])) {
+        return '';
+    }
+    return '<svg ' . $common . '>' . $paths[$name] . '</svg>';
+}
