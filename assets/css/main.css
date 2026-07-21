@@ -1892,34 +1892,30 @@ body.admin-bar .nav-overlay { top: 32px; }
 }
 .our-homes-page .hm-more[hidden] { display: none; }
 
-/* Closing CTA — plan render + copy split (Our Homes only) */
+/* Closing CTA — image lifts out of the band, straddling the cream above (Our Homes) */
+.our-homes-page .hm-cta { margin-top: clamp(8rem, 16vh, 12rem); }
 .our-homes-page .hm-cta-in {
-	display: grid;
-	grid-template-columns: 1.05fr 1fr;
-	align-items: center;
-	gap: clamp(2rem, 5vw, 4.5rem);
-	text-align: left;
+	max-width: 940px;
+	padding-top: 0;
+	padding-bottom: clamp(3.5rem, 9vh, 6rem);
+	text-align: center;
 }
 .our-homes-page .hm-cta-media {
-	margin: 0;
-	border-radius: 14px;
+	margin: clamp(-160px, -12vw, -100px) auto clamp(2.4rem, 5vw, 3.6rem);
+	max-width: 880px;
+	border-radius: 16px;
 	overflow: hidden;
-	box-shadow: 0 30px 60px -26px rgba(0, 0, 0, 0.55);
+	box-shadow: 0 48px 90px -30px rgba(0, 0, 0, 0.62), 0 16px 34px -20px rgba(0, 0, 0, 0.42);
 }
 .our-homes-page .hm-cta-media img {
 	display: block;
 	width: 100%;
-	height: 100%;
-	aspect-ratio: 3 / 2;
+	height: auto;
+	aspect-ratio: 16 / 8;
 	object-fit: cover;
 }
 .our-homes-page .hm-cta-copy .eyebrow { margin: 0 0 0.9rem; }
-.our-homes-page .hm-cta-copy h2 { margin: 0 0 2rem; }
-@media (max-width: 760px) {
-	.our-homes-page .hm-cta-in { grid-template-columns: 1fr; text-align: center; }
-	.our-homes-page .hm-cta-media { order: -1; }
-	.our-homes-page .hm-cta-copy h2 { margin-left: auto; margin-right: auto; }
-}
+.our-homes-page .hm-cta-copy h2 { margin: 0 auto 2rem; }
 
 /* ---------- Single home ---------- */
 
