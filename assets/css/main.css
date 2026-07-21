@@ -1270,7 +1270,12 @@ body.admin-bar .nav-overlay {
     --hww-sans: "Archivo", system-ui, sans-serif;
 
     background: radial-gradient(120% 90% at 50% 30%, var(--hww-bg-1) 0%, var(--hww-bg-2) 100%);
-    padding: clamp(3.5rem, 9vh, 6.875rem) clamp(1.25rem, 7vw, 6.25rem) clamp(3rem, 7vh, 5.625rem);
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(2rem, 4vh, 3.5rem) clamp(1.25rem, 7vw, 6.25rem);
     text-align: center;
     font-family: var(--hww-sans);
 }
@@ -1300,11 +1305,11 @@ body.admin-bar .nav-overlay {
 .hww-headline {
     font-family: var(--hww-serif);
     font-weight: 300;
-    font-size: clamp(2.25rem, 6vw, 5.375rem);
+    font-size: clamp(2rem, 5vw, 3.9rem);
     line-height: 1.12;
     color: var(--hww-ivory);
     max-width: 1040px;
-    margin: clamp(1.75rem, 4vh, 3rem) auto 0;
+    margin: clamp(0.5rem, 2vh, 1.4rem) auto 0;
     text-wrap: balance;
 }
 
@@ -1315,9 +1320,9 @@ body.admin-bar .nav-overlay {
 
 .hww-svg {
     display: block;
-    width: 100%;
+    width: min(960px, 100%);
     height: auto;
-    margin-top: 24px;
+    margin-top: clamp(0.5rem, 2vh, 1.25rem);
 }
 
 .hww-caps {
@@ -1346,9 +1351,9 @@ body.admin-bar .nav-overlay {
 
 .hww-quote-block {
     max-width: 680px;
-    margin: clamp(2.5rem, 6vh, 4.5rem) auto 0;
+    margin: clamp(1.25rem, 3vh, 2.25rem) auto 0;
     border-top: 1px solid rgba(194, 165, 94, 0.18);
-    padding-top: clamp(2rem, 5vh, 3.25rem);
+    padding-top: clamp(1.1rem, 2.5vh, 1.75rem);
 }
 
 .hww-quote {
@@ -1358,7 +1363,7 @@ body.admin-bar .nav-overlay {
 .hww-quote p {
     font-family: var(--hww-serif);
     font-style: italic;
-    font-size: clamp(1.15rem, 2vw, 1.6875rem);
+    font-size: clamp(1.05rem, 1.7vw, 1.45rem);
     line-height: 1.5;
     color: var(--hww-ivory);
     margin: 0;
@@ -1378,11 +1383,11 @@ body.admin-bar .nav-overlay {
    read as a button rather than a caption. Label sits at 7.07:1 on the gold. */
 .hww-cta {
     display: inline-block;
-    margin-top: clamp(2rem, 5vh, 3.25rem);
+    margin-top: clamp(1.25rem, 3vh, 2.25rem);
     background: var(--hww-gold);
     border: 1px solid var(--hww-gold);
     border-radius: 999px;
-    padding: 19px 44px;
+    padding: 15px 40px;
     font-size: 12px;
     font-weight: 500;
     letter-spacing: 0.2em;
@@ -1778,9 +1783,23 @@ body.admin-bar .nav-overlay {
     transform-style: preserve-3d;
 }
 
-.ways-card:hover .ways-card__inner,
-.ways-card:focus-visible .ways-card__inner {
+.ways-card:focus-visible .ways-card__inner,
+.ways-card.is-flipped .ways-card__inner {
     transform: rotateY(180deg);
+}
+
+@media (hover: hover) {
+    .ways-card {
+        transition: transform 0.5s var(--hero-ease);
+    }
+
+    .ways-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .ways-card:hover .ways-card__inner {
+        transform: rotateY(180deg);
+    }
 }
 
 .ways-card__front,
@@ -1809,7 +1828,7 @@ body.admin-bar .nav-overlay {
     color: #fff;
     display: grid;
     place-items: center;
-    margin-bottom: auto;
+    margin-bottom: 1.1rem;
     box-shadow: 0 8px 18px -10px var(--tone, rgba(28, 26, 22, 0.5));
 }
 
@@ -1820,12 +1839,28 @@ body.admin-bar .nav-overlay {
 }
 
 .ways-card__title {
-    margin-top: 0;
+    margin: 0;
     font-family: var(--hero-display);
     font-weight: 400;
     font-size: 1.32rem;
     line-height: 1.15;
     color: var(--hero-ink);
+}
+
+.ways-card__hint {
+    margin-top: auto;
+    align-self: flex-start;
+    font-size: 1.15rem;
+    line-height: 1;
+    color: rgba(27, 26, 22, 0.22);
+    transition: transform 0.4s var(--hero-ease), color 0.4s var(--hero-ease);
+}
+
+@media (hover: hover) {
+    .ways-card:hover .ways-card__hint {
+        transform: translateX(5px);
+        color: var(--tone);
+    }
 }
 
 .ways-card__back {

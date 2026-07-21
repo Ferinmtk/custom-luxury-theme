@@ -325,12 +325,12 @@ get_header();
 
         // Front title + back message per option. Back copy is editable via ACF later.
         $lh_ways = array(
-                array('icon' => 'map-pin', 'tone' => '#3f5a3c', 'title' => 'You own the land.', 'back' => 'Send us the parcel. We’ll walk it and tell you what it wants to become.'),
-                array('icon' => 'search', 'tone' => '#41697c', 'title' => 'You’re still looking for a site.', 'back' => 'Bring us three. We’ll tell you which one builds, and what it costs before you buy.'),
-                array('icon' => 'activity', 'tone' => '#a8834f', 'title' => 'You have drawings already.', 'back' => 'Send the plans. We’ll price them honestly and flag what we’d change.'),
-                array('icon' => 'compass', 'tone' => '#b5734a', 'title' => 'You don’t know where to start.', 'back' => 'Start with a walk. No plans, no pressure — just the land and a conversation.'),
-                array('icon' => 'shield', 'tone' => '#9a4b3a', 'title' => 'You’ve been burned before.', 'back' => 'Fair. Ask us anything, call our last three clients, then decide.'),
-                array('icon' => 'eye', 'tone' => '#8a7d68', 'title' => 'You’re just looking.', 'back' => 'Look. Nothing here needs your email.', 'gold' => true),
+                array('icon' => 'map-pin', 'tone' => '#3a6033', 'title' => 'You own the land.', 'back' => 'Send us the parcel. We’ll walk it and tell you what it wants to become.'),
+                array('icon' => 'search', 'tone' => '#347391', 'title' => 'You’re still looking for a site.', 'back' => 'Bring us three. We’ll tell you which one builds, and what it costs before you buy.'),
+                array('icon' => 'activity', 'tone' => '#b3812a', 'title' => 'You have drawings already.', 'back' => 'Send the plans. We’ll price them honestly and flag what we’d change.'),
+                array('icon' => 'compass', 'tone' => '#c46c36', 'title' => 'You don’t know where to start.', 'back' => 'Start with a walk. No plans, no pressure — just the land and a conversation.'),
+                array('icon' => 'shield', 'tone' => '#b03e2c', 'title' => 'You’ve been burned before.', 'back' => 'Fair. Ask us anything, call our last three clients, then decide.'),
+                array('icon' => 'eye', 'tone' => '#93794b', 'title' => 'You’re just looking.', 'back' => 'Look. Nothing here needs your email.', 'gold' => true),
         );
         ?>
         <section class="ways" id="contact">
@@ -352,6 +352,7 @@ get_header();
 								<span class="ways-card__icon"><?php echo lh_option_icon($lh_w['icon']); // phpcs:ignore
                                     ?></span>
 								<span class="ways-card__title"><?php echo esc_html($lh_w['title']); ?></span>
+								<span class="ways-card__hint" aria-hidden="true">&rarr;</span>
 							</span>
 							<span class="ways-card__back">
 								<span class="ways-card__msg"><?php echo esc_html($lh_w['back']); ?></span>
