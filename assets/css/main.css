@@ -3290,3 +3290,22 @@ html{overflow-x:clip}
 /* faint drawing, single (no tiling), confined to the top/hero — never behind the dense card copy */
 .hm-archbg{position:absolute;top:0;left:0;width:100%;z-index:0;pointer-events:none;opacity:.07;overflow:hidden}
 .hm-archbg svg,.hm-archbg img{display:block;width:100%;height:auto;stroke:#1c1a16}
+
+/* Mobile: stack Homes-by-style cards vertically. 900px matches the JS
+   that adds .is-static (max-width:900px), so the stack applies when the pin is off. */
+@media (max-width: 900px) {
+	.scrub.is-static .scrub-track {
+		flex-direction: column;
+		width: auto;
+		overflow-x: visible;
+		scroll-snap-type: none;
+		gap: 1.1rem;
+	}
+	.scrub.is-static .scrub-card,
+	.scrub.is-static .scrub-card:nth-child(even) {
+		flex: 0 0 auto;
+		width: 100%;
+		margin-top: 0;
+	}
+	.scrub.is-static .sc-frame { aspect-ratio: 3 / 2; }
+}
