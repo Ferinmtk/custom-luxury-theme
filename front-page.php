@@ -344,7 +344,7 @@ get_header();
                 array('icon' => 'activity', 'tone' => '#b3812a', 'title' => 'You have drawings already.', 'back' => 'Send the plans. We’ll price them honestly and flag what we’d change.'),
                 array('icon' => 'compass', 'tone' => '#c46c36', 'title' => 'You don’t know where to start.', 'back' => 'Start with a walk. No plans, no pressure — just the land and a conversation.'),
                 array('icon' => 'shield', 'tone' => '#b03e2c', 'title' => 'You’ve been burned before.', 'back' => 'Fair. Ask us anything, call our last three clients, then decide.'),
-                array('icon' => 'eye', 'tone' => '#93794b', 'title' => 'You’re just looking.', 'back' => 'Look. Nothing here needs your email.', 'gold' => true),
+                array('icon' => 'eye', 'tone' => '#93794b', 'title' => 'You’re just looking.', 'back' => 'Look. Nothing here needs your email.', 'gold' => true, 'link' => '/our-homes/'),
         );
         ?>
         <section class="ways" id="contact">
@@ -359,7 +359,7 @@ get_header();
                         $lh_gold = empty($lh_w['gold']) ? '' : ' ways-card--gold';
                         ?>
                         <a class="ways-card<?php echo esc_attr($lh_gold); ?>"
-                           href="<?php echo esc_url(home_url('/contact/')); ?>"
+                           href="<?php echo esc_url(home_url(isset($lh_w['link']) ? $lh_w['link'] : '/contact/')); ?>"
                            style="--tone: <?php echo esc_attr($lh_w['tone']); ?>;">
 						<span class="ways-card__inner">
 							<span class="ways-card__front">
