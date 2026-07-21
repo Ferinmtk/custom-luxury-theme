@@ -59,15 +59,14 @@ if ( $ld_items ) {
         <?php while ( have_posts() ) : the_post(); ?>
             <section class="homes-hero">
                 <div class="homes-hero-in">
-                    <span class="eyebrow"><?php echo esc_html( lh_field( 'homes_eyebrow', 'Portfolio' ) ); ?></span>
-                    <h1><?php the_title(); ?></h1>
+                    <h1 data-reveal><?php the_title(); ?></h1>
                     <?php if ( trim( get_the_content() ) ) : ?>
-                        <div class="homes-intro"><?php the_content(); ?></div>
+                        <div class="homes-intro" data-reveal><?php the_content(); ?></div>
                     <?php else : ?>
-                        <div class="homes-intro"><p>Every home here was drawn from its land and stick-built on-site. One family, one site, one home at a time.</p></div>
+                        <div class="homes-intro" data-reveal><p>Every home here was drawn from its land and stick-built on-site. One family, one site, one home at a time.</p></div>
                     <?php endif; ?>
                     <?php if ( $all_homes ) : ?>
-                        <p class="homes-count"><?php printf(
+                        <p class="homes-count" data-reveal><?php printf(
                                     esc_html( _n( '%s home, built one at a time.', '%s homes, built one at a time.', count( $all_homes ), 'luxury-homes' ) ),
                                     esc_html( number_format_i18n( count( $all_homes ) ) )
                             ); ?></p>
@@ -199,9 +198,14 @@ if ( $ld_items ) {
         <!-- 6. Closing CTA -->
         <section class="hm-cta">
             <div class="hm-cta-in">
-                <span class="eyebrow">Your turn</span>
-                <h2>Let&rsquo;s build <em>yours</em>.</h2>
-                <a class="sh-btn" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Start the conversation &rarr;</a>
+                <figure class="hm-cta-media" data-reveal>
+                    <img src="<?php echo lh_asset( 'img/cta-planning.jpg' ); ?>" alt="A modern custom home rendered above its architectural plans" loading="lazy" decoding="async" width="1024" height="682">
+                </figure>
+                <div class="hm-cta-copy" data-reveal>
+                    <span class="eyebrow">Your turn</span>
+                    <h2>Let&rsquo;s build <em>yours</em>.</h2>
+                    <a class="sh-btn" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Start the conversation &rarr;</a>
+                </div>
             </div>
         </section>
 
