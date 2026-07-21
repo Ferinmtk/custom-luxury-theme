@@ -1320,7 +1320,7 @@ body.admin-bar .nav-overlay {
 
 .hww-svg {
     display: block;
-    width: min(960px, 100%);
+    width: min(1360px, 100%);
     height: auto;
     margin-top: clamp(0.5rem, 2vh, 1.25rem);
 }
