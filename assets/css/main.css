@@ -4243,11 +4243,33 @@ body.admin-bar .nav-overlay {
     max-width: 1240px;
     margin: 0 auto;
     padding: clamp(3.5rem, 10vh, 6rem) clamp(1.4rem, 7vw, 6rem);
+    display: flex;
+    align-items: center;
+    gap: clamp(1.8rem, 5vw, 4rem);
+}
+
+.ab-quote-shot {
+    flex: 0 0 clamp(180px, 22vw, 300px);
+    margin: 0;
 }
 
 .ab-quote blockquote {
     margin: 0;
-    max-width: 30ch;
+    flex: 1 1 auto;
+    max-width: 34ch;
+}
+
+@media (max-width: 720px) {
+    .ab-quote-in {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.6rem;
+    }
+
+    .ab-quote-shot {
+        flex: 0 0 auto;
+        width: 200px;
+    }
 }
 
 .ab-quote p {
