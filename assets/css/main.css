@@ -52,6 +52,28 @@
     --hero-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Accessibility: skip link — visually hidden until focused, then pinned
+   top-left above everything. Every page has <main id="main">. */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 1000;
+    background: var(--hero-ink, #1b1a16);
+    color: #fff;
+    padding: .7rem 1.1rem;
+    font-family: var(--nav-sans, sans-serif);
+    font-size: .8rem;
+    letter-spacing: .04em;
+    border-radius: 0 0 6px;
+    text-decoration: none
+}
+
+.skip-link:focus {
+    left: 0
+}
+
+
 * {
     box-sizing: border-box;
 }
@@ -3991,13 +4013,18 @@ body.admin-bar .nav-overlay {
 }
 
 /* ========== [PAGE: ABOUT] ==========
+   Team-led About page. See page-about.php for structure and ACF fields.
+   =================================================== */
 
-   The page is the team. Everything else is support.
+/* ========== [PAGE: ABOUT] ==========
 
-   The four portraits were shot separately on four different backdrops. They
-   have been cut out and re-composited onto a single warm studio sweep, which
-   is what makes them read as one set. Any replacement headshot must get the
-   same treatment or it will stand out immediately.
+   The page is the team. One person per full-width row, alternating sides.
+
+   Portraits were shot separately on four different backdrops, then cut out and
+   re-composited onto one shared studio sweep (see assets/img/team/README.txt).
+   Because no two portraits ever sit side by side in this layout, differences in
+   how tightly each was originally cropped are not visible. Any replacement
+   headshot must get the same backdrop treatment.
    =================================================== */
 
 .about-page {
@@ -4047,7 +4074,7 @@ body.admin-bar .nav-overlay {
 /* ---------- 2. The team ---------- */
 
 .ab-team {
-    padding: clamp(2rem, 5vh, 3.5rem) clamp(1.4rem, 7vw, 6rem) clamp(4rem, 10vh, 7rem);
+    padding: clamp(2rem, 5vh, 3.5rem) clamp(1.4rem, 7vw, 6rem) clamp(3rem, 8vh, 5rem);
 }
 
 .ab-team-in {
@@ -4063,7 +4090,6 @@ body.admin-bar .nav-overlay {
     gap: 0.8rem 3rem;
     padding-bottom: 1.2rem;
     border-bottom: 1px solid var(--hero-ink);
-    margin-bottom: clamp(2rem, 5vh, 3rem);
 }
 
 .ab-team-head h2 {
@@ -4081,47 +4107,55 @@ body.admin-bar .nav-overlay {
     color: var(--hero-ink-soft);
 }
 
-.ab-roster {
+.ab-rows {
     list-style: none;
     margin: 0;
     padding: 0;
+}
+
+.ab-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
-    gap: clamp(1.5rem, 3vw, 2.6rem);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: clamp(1.6rem, 5vw, 4.5rem);
+    align-items: center;
+    padding: clamp(2.6rem, 7vh, 4.5rem) 0;
+    border-bottom: 1px solid var(--ab-rule);
 }
 
-.ab-member {
+.ab-row:last-child {
+    border-bottom: 0;
+}
+
+/* Alternate: even rows put the portrait on the right. */
+.ab-row:nth-child(even) .ab-row-shot {
+    order: 2;
+}
+
+.ab-row-shot {
     margin: 0;
 }
 
-.ab-member figure {
-    margin: 0;
-}
-
-/* Reveal staggers across the row so the four land in sequence, not as a block. */
-.ab-member[data-reveal] {
-    transition-delay: calc(var(--i, 0) * 90ms);
-}
-
-.ab-member img,
-.ab-member .ab-ph {
+.ab-row-shot img,
+.ab-row-shot .ab-ph {
     width: 100%;
+    max-width: 440px;
     aspect-ratio: 4 / 5;
     object-fit: cover;
     object-position: center top;
-    background: linear-gradient(155deg, #3c4a3a, #2c3a2c);
-
-    /* Portraits are pre-composited onto one studio backdrop (see the README in
-       assets/img/team), so no grayscale unifying filter is needed. */
-    transition: transform 0.55s var(--hero-ease);
 }
 
-.ab-member .ab-ph {
+.ab-row:nth-child(even) .ab-row-shot img,
+.ab-row:nth-child(even) .ab-row-shot .ab-ph {
+    margin-left: auto;
+}
+
+.ab-row-shot .ab-ph {
     display: block;
     position: relative;
+    background: linear-gradient(155deg, #3c4a3a, #2c3a2c);
 }
 
-.ab-member .ab-ph::after {
+.ab-row-shot .ab-ph::after {
     content: 'ADU America';
     position: absolute;
     inset: 0;
@@ -4134,54 +4168,113 @@ body.admin-bar .nav-overlay {
     color: rgba(250, 249, 246, 0.32);
 }
 
-.ab-member:hover img,
-.ab-member:focus-within img {
-    transform: translateY(-5px);
+.ab-row-copy {
+    max-width: 46ch;
 }
 
-.ab-member figcaption {
-    padding-top: 0.95rem;
+/* The count is real information here: four people, four worries, in order. */
+.ab-no {
+    display: block;
+    font-family: var(--nav-sans);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    color: var(--brass);
 }
 
 .ab-name {
-    display: block;
     font-family: var(--hero-display);
     font-weight: 400;
-    font-size: 1.18rem;
-    line-height: 1.2;
+    font-size: clamp(1.6rem, 3vw, 2.3rem);
+    line-height: 1.1;
+    margin: 0.9rem 0 0;
     color: var(--hero-ink);
 }
 
-/* The playful titles are the best thing on the page — give them the accent. */
+/* The playful titles are the best copy on the site — give them the accent. */
 .ab-title {
     display: block;
-    margin-top: 0.4rem;
+    margin-top: 0.5rem;
     font-family: var(--nav-sans);
-    font-size: 0.62rem;
+    font-size: 0.66rem;
     font-weight: 500;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--brass);
 }
 
-.ab-line {
-    margin: 0.75rem 0 0;
-    font-size: 0.9rem;
-    line-height: 1.6;
+.ab-bio {
+    margin: 1.1rem 0 0;
+    color: var(--hero-ink-soft);
+    font-size: 1rem;
+    line-height: 1.72;
+}
+
+@media (max-width: 780px) {
+    .ab-row {
+        grid-template-columns: 1fr;
+        gap: 1.4rem;
+    }
+
+    /* Photo always leads on a phone, whichever side it takes on desktop. */
+    .ab-row:nth-child(even) .ab-row-shot {
+        order: 0;
+    }
+
+    .ab-row-shot img,
+    .ab-row-shot .ab-ph,
+    .ab-row:nth-child(even) .ab-row-shot img {
+        max-width: 320px;
+        margin-left: 0;
+    }
+}
+
+/* ---------- 3. Quote ---------- */
+
+.ab-quote {
+    background: #f2efe7;
+}
+
+.ab-quote-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: clamp(3.5rem, 10vh, 6rem) clamp(1.4rem, 7vw, 6rem);
+}
+
+.ab-quote blockquote {
+    margin: 0;
+    max-width: 30ch;
+}
+
+.ab-quote p {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.4rem, 3.1vw, 2.4rem);
+    line-height: 1.24;
+    margin: 0;
+    color: var(--hero-ink);
+}
+
+.ab-quote cite {
+    display: block;
+    margin-top: 1.4rem;
+    font-style: normal;
+    font-family: var(--nav-sans);
+    font-size: 0.64rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
     color: var(--hero-ink-soft);
 }
 
-/* ---------- 3. Reach + record ---------- */
+/* ---------- 4. Reach ---------- */
 
 .ab-reach {
-    padding: 0 clamp(1.4rem, 7vw, 6rem) clamp(4rem, 10vh, 7rem);
+    padding: clamp(3rem, 8vh, 5rem) clamp(1.4rem, 7vw, 6rem);
 }
 
 .ab-reach-in {
     max-width: 1240px;
     margin: 0 auto;
-    padding-top: clamp(2.2rem, 5vh, 3.2rem);
-    border-top: 1px solid var(--ab-rule);
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
     gap: clamp(2rem, 5vw, 4rem);
@@ -4245,13 +4338,944 @@ body.admin-bar .nav-overlay {
     color: var(--hero-ink-soft);
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .ab-member[data-reveal] {
-        transition-delay: 0s;
+
+/* ---------- The plate ----------
+   Builders set a small brass maker's plate into the mechanical room of a
+   finished house: the house number and everyone whose hands were on it.
+   Nobody but the owner ever sees it. It proves the continuity the team
+   section claims, so it sits directly after those four names.
+
+   Rendered entirely in CSS — no image asset. The brushed grain, bevel and
+   moving sheen are gradients; the engraving is a dark fill with one light
+   edge beneath it, which is what reads as incised. */
+
+.ab-plate-sec {
+    padding: clamp(2.5rem, 6vh, 4rem) clamp(1.4rem, 7vw, 6rem);
+}
+
+.ab-plate-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    border-top: 1px solid var(--ab-rule);
+    padding-top: clamp(2rem, 4vh, 2.8rem);
+    display: flex;
+    align-items: center;
+    gap: clamp(1.8rem, 5vw, 4.5rem);
+}
+
+.ab-plate-copy {
+    flex: 1 1 auto;
+    max-width: 42ch;
+}
+
+.ab-plate-copy h2 {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.4rem, 2.8vw, 2.1rem);
+    line-height: 1.14;
+    margin: 0.9rem 0 1rem;
+}
+
+.ab-plate-copy p {
+    margin: 0 0 0.9rem;
+    color: var(--hero-ink-soft);
+}
+
+.ab-plate-copy p:last-child {
+    margin-bottom: 0;
+    color: var(--hero-ink);
+}
+
+.ab-plate-stage {
+    flex: 0 0 clamp(200px, 26vw, 330px);
+    margin: 0;
+    perspective: 1100px;
+}
+
+.ab-plate {
+    --rx: 0deg;
+    --ry: 0deg;
+    --sx: 30%;
+
+    position: relative;
+    width: 100%;
+    aspect-ratio: 14 / 18;
+    padding: clamp(1.2rem, 2.4vw, 1.9rem);
+    border-radius: 4px;
+    overflow: hidden;
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    transition: transform 0.5s var(--hero-ease);
+    background-image: repeating-linear-gradient(101deg,
+    rgba(255, 255, 255, 0.05) 0 1px,
+    rgba(0, 0, 0, 0.04) 1px 2.5px),
+    linear-gradient(157deg,
+            #e2c48f 0%, #b28c55 26%, #8d6c3d 52%, #c6a066 72%, #7c5e33 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 246, 226, 0.55),
+    inset 0 0 0 1px rgba(58, 41, 15, 0.3),
+    inset 0 -2px 3px rgba(52, 36, 12, 0.4),
+    0 34px 54px -28px rgba(60, 45, 20, 0.5),
+    0 6px 16px rgba(60, 45, 20, 0.16);
+}
+
+.ab-plate-sheen {
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    background: linear-gradient(112deg,
+    transparent 34%,
+    rgba(255, 249, 235, 0.34) 47%,
+    rgba(255, 249, 235, 0.12) 53%,
+    transparent 64%);
+    transform: translateX(calc((var(--sx) - 50%) * 0.55));
+    transition: transform 0.6s var(--hero-ease);
+}
+
+.ab-plate-face {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    color: #4a3413;
+}
+
+.ab-plate-face p,
+.ab-plate-face li,
+.ab-plate-face span {
+    text-shadow: 0 1px 0 rgba(255, 244, 219, 0.42);
+}
+
+.ab-plate-maker {
+    margin: 0;
+    font-family: var(--nav-sans);
+    font-size: 0.54rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    opacity: 0.82;
+}
+
+.ab-plate-no {
+    margin: 0.75rem 0 0;
+    font-family: var(--hero-display);
+    font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+    line-height: 1;
+}
+
+.ab-plate-no sup {
+    font-size: 0.5em;
+    vertical-align: 0.7em;
+}
+
+.ab-plate-line {
+    display: block;
+    width: 42%;
+    height: 1px;
+    margin: 0.9rem auto;
+    background: rgba(74, 52, 19, 0.4);
+    box-shadow: 0 1px 0 rgba(255, 244, 219, 0.38);
+}
+
+.ab-plate-roster {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.38rem;
+}
+
+.ab-plate-roster li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.7rem;
+    font-family: var(--nav-sans);
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.ab-plate-roster b {
+    font-weight: 500;
+}
+
+.ab-plate-roster i {
+    font-style: normal;
+    opacity: 0.6;
+    letter-spacing: 0.16em;
+}
+
+.ab-plate-raised {
+    margin: auto 0 0;
+    font-family: var(--nav-sans);
+    font-size: 0.52rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    opacity: 0.72;
+}
+
+.ab-screw {
+    position: absolute;
+    z-index: 3;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, transparent 44%, rgba(52, 36, 12, 0.75) 44% 56%, transparent 56%),
+    radial-gradient(circle at 34% 30%, #f1dcb0, #9d7a45 58%, #5e451f 100%);
+    box-shadow: inset 0 1px 1px rgba(255, 248, 232, 0.5), 0 1px 2px rgba(40, 27, 8, 0.5);
+}
+
+.ab-screw-tl {
+    top: .7rem;
+    left: .7rem;
+    rotate: 22deg;
+}
+
+.ab-screw-tr {
+    top: .7rem;
+    right: .7rem;
+    rotate: -54deg;
+}
+
+.ab-screw-bl {
+    bottom: .7rem;
+    left: .7rem;
+    rotate: 71deg;
+}
+
+.ab-screw-br {
+    bottom: .7rem;
+    right: .7rem;
+    rotate: -12deg;
+}
+
+.ab-plate-stage figcaption {
+    margin-top: 1rem;
+    text-align: center;
+    font-family: var(--nav-sans);
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--hero-ink-soft);
+}
+
+@media (max-width: 800px) {
+    .ab-plate-in {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .ab-member img {
+    .ab-plate-stage {
+        flex: 0 0 auto;
+        width: min(100%, 260px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ab-plate,
+    .ab-plate-sheen {
+        transform: none;
         transition: none;
+    }
+}
+
+/* ---------- Recent work ---------- */
+
+.ab-work {
+    padding: clamp(3rem, 8vh, 5rem) clamp(1.4rem, 7vw, 6rem) clamp(2rem, 5vh, 3rem);
+}
+
+.ab-work-in {
+    max-width: 1240px;
+    margin: 0 auto;
+}
+
+.ab-work-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.8rem 3rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--hero-ink);
+    margin-bottom: clamp(1.6rem, 4vh, 2.4rem);
+}
+
+.ab-work-head h2 {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 3vw, 2.3rem);
+    line-height: 1.12;
+    margin: 0;
+}
+
+.ab-work-head p {
+    margin: 0;
+    max-width: 34ch;
+    font-size: 0.95rem;
+    color: var(--hero-ink-soft);
+}
+
+.ab-work-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: clamp(1.2rem, 2.5vw, 2rem);
+}
+
+.ab-work-grid figure {
+    margin: 0;
+}
+
+.ab-work-grid img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+/* Lead with the reason, not the square footage — nobody builds an ADU because
+   they wanted 640 square feet. The spec line is the receipt, not the headline. */
+.ab-work-why {
+    display: block;
+    margin-top: 0.9rem;
+    font-family: var(--hero-display);
+    font-size: 1.22rem;
+    line-height: 1.24;
+    color: var(--hero-ink);
+}
+
+.ab-work-spec {
+    display: block;
+    margin-top: 0.5rem;
+    font-family: var(--nav-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--hero-ink-soft);
+}
+
+/* ---------- One review ---------- */
+
+.ab-say {
+    padding: clamp(2.5rem, 6vh, 4rem) clamp(1.4rem, 7vw, 6rem);
+}
+
+.ab-say-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    border-top: 1px solid var(--ab-rule);
+    padding-top: clamp(2rem, 4vh, 2.6rem);
+}
+
+.ab-say blockquote {
+    margin: 0;
+    max-width: 40ch;
+}
+
+.ab-say p {
+    margin: 0;
+    font-family: var(--hero-display);
+    font-size: clamp(1.2rem, 2.4vw, 1.75rem);
+    line-height: 1.3;
+    color: var(--hero-ink);
+}
+
+.ab-say cite {
+    display: block;
+    margin-top: 1.1rem;
+    font-style: normal;
+    font-family: var(--nav-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--hero-ink-soft);
+}
+
+/* ---------- Turnkey + what it costs ---------- */
+
+.ab-turnkey {
+    padding: clamp(2rem, 5vh, 3rem) clamp(1.4rem, 7vw, 6rem) clamp(2.5rem, 6vh, 3.5rem);
+}
+
+.ab-turnkey-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    border-top: 1px solid var(--ab-rule);
+    padding-top: clamp(2rem, 4vh, 2.6rem);
+}
+
+.ab-turnkey figure {
+    flex: 0 0 clamp(190px, 24vw, 320px);
+    margin: 0;
+}
+
+.ab-turnkey img {
+    width: 100%;
+    height: auto;
+
+    /* Knocked-out render: multiply drops the last of the white studio sweep
+       into the page ground so it reads as a drawing, not a pasted photo. */
+    mix-blend-mode: multiply;
+}
+
+.ab-turnkey-copy {
+    flex: 1 1 auto;
+    max-width: 46ch;
+}
+
+.ab-turnkey h2 {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.4rem, 2.8vw, 2.1rem);
+    line-height: 1.14;
+    margin: 0.9rem 0 1rem;
+}
+
+.ab-turnkey p {
+    margin: 0 0 1rem;
+    color: var(--hero-ink-soft);
+}
+
+.ab-cost {
+    margin: 1.3rem 0 0;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--ab-rule);
+    font-size: 0.95rem;
+    color: var(--hero-ink);
+}
+
+.ab-cost b {
+    font-weight: 500;
+}
+
+@media (max-width: 760px) {
+    .ab-turnkey-in {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ab-turnkey figure {
+        flex: 0 0 auto;
+        width: min(100%, 260px);
+    }
+}
+
+/* ---------- Title block ----------
+   Borrowed from the corner of a construction drawing sheet: ruled cells,
+   label over value, numbers set tabular. Licence and insurance belong in a
+   registry entry, not on a badge. */
+
+.ab-titleblock {
+    padding: 0 clamp(1.4rem, 7vw, 6rem) clamp(4rem, 9vh, 6rem);
+}
+
+.ab-titleblock-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    border: 1px solid rgba(27, 26, 22, 0.28);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.ab-tb-cell {
+    padding: 1rem 1.1rem 1.1rem;
+    border-right: 1px solid rgba(27, 26, 22, 0.18);
+}
+
+.ab-tb-cell:last-child {
+    border-right: 0;
+}
+
+.ab-tb-cell dt {
+    font-family: var(--nav-sans);
+    font-size: 0.56rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--hero-ink-soft);
+}
+
+.ab-tb-cell dd {
+    margin: 0.5rem 0 0;
+    font-family: var(--nav-sans);
+    font-size: 0.86rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+    color: var(--hero-ink);
+}
+
+@media (max-width: 620px) {
+    .ab-tb-cell {
+        border-right: 0;
+        border-bottom: 1px solid rgba(27, 26, 22, 0.18);
+    }
+
+    .ab-tb-cell:last-child {
+        border-bottom: 0;
+    }
+}
+
+/* ---------- Origin story ---------- */
+
+.ab-story {
+    padding: clamp(2.5rem, 6vh, 4rem) clamp(1.4rem, 7vw, 6rem);
+}
+
+.ab-story-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    border-top: 1px solid var(--hero-ink);
+    padding-top: clamp(2rem, 4vh, 2.8rem);
+}
+
+.ab-story-pull {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+    line-height: 1.18;
+    margin: 0 0 clamp(1.6rem, 4vh, 2.4rem);
+    max-width: 20ch;
+    color: var(--hero-ink);
+}
+
+.ab-story-cols {
+    columns: 2;
+    column-gap: clamp(2rem, 5vw, 4.5rem);
+    max-width: 76ch;
+    color: var(--hero-ink-soft);
+}
+
+.ab-story-cols p {
+    margin: 0 0 1.1rem;
+    break-inside: avoid;
+}
+
+.ab-story-cols p:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 760px) {
+    .ab-story-cols {
+        columns: 1;
+    }
+}
+
+/* ---------- Warranty ----------
+   Set as a schedule, because that is what it is: term, then what the term
+   covers. Big numerals so the ten-year is legible at a glance — that is the
+   figure a buyer is scanning for. */
+
+.ab-warranty {
+    padding: clamp(2rem, 5vh, 3rem) clamp(1.4rem, 7vw, 6rem);
+}
+
+.ab-warranty-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    border-top: 1px solid var(--ab-rule);
+    padding-top: clamp(2rem, 4vh, 2.6rem);
+}
+
+.ab-warranty-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.6rem 2rem;
+    margin-bottom: clamp(1.4rem, 3vh, 2rem);
+}
+
+.ab-warranty-head h2 {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.4rem, 2.8vw, 2.1rem);
+    line-height: 1.14;
+    margin: 0;
+}
+
+.ab-warranty-head p {
+    margin: 0;
+    max-width: 34ch;
+    font-size: 0.95rem;
+    color: var(--hero-ink-soft);
+}
+
+.ab-warranty-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1.6rem clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.ab-warranty-grid b {
+    display: block;
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    line-height: 1;
+    color: var(--hero-ink);
+}
+
+.ab-warranty-grid b i {
+    font-style: normal;
+    font-size: 0.32em;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-left: 0.5rem;
+    vertical-align: 0.9em;
+}
+
+.ab-warranty-grid span {
+    display: block;
+    margin-top: 0.7rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--ab-rule);
+    font-size: 0.9rem;
+    color: var(--hero-ink-soft);
+}
+
+/* ---------- Memberships row under the title block ---------- */
+
+.ab-members {
+    grid-column: 1 / -1;
+    border-top: 1px solid rgba(27, 26, 22, 0.18);
+    padding: 0.85rem 1.1rem;
+    font-family: var(--nav-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--hero-ink-soft);
+}
+
+/* ---------- Awards ----------
+   An index, not a badge wall. Logo grids drag three foreign palettes onto the
+   page and say nothing; year / award / which house is specific, and the run of
+   years is itself the argument. */
+
+.ab-awards {
+    padding: clamp(2rem, 5vh, 3rem) clamp(1.4rem, 7vw, 6rem);
+}
+
+.ab-awards-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    border-top: 1px solid var(--ab-rule);
+    padding-top: clamp(2rem, 4vh, 2.6rem);
+}
+
+.ab-awards-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.6rem 2rem;
+    margin-bottom: clamp(1.2rem, 2.5vh, 1.6rem);
+}
+
+.ab-awards-head h2 {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.4rem, 2.8vw, 2.1rem);
+    line-height: 1.14;
+    margin: 0;
+}
+
+.ab-awards-head p {
+    margin: 0;
+    max-width: 32ch;
+    font-size: 0.95rem;
+    color: var(--hero-ink-soft);
+}
+
+.ab-awards-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.ab-awards-list li {
+    display: grid;
+    grid-template-columns: 4.2rem minmax(0, 1fr) minmax(0, 15rem);
+    gap: 0 clamp(0.8rem, 2vw, 1.8rem);
+    align-items: baseline;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--ab-rule);
+}
+
+.ab-awards-list li:last-child {
+    border-bottom: 0;
+}
+
+.ab-aw-year {
+    font-family: var(--nav-sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.1em;
+    color: var(--brass);
+}
+
+.ab-aw-name {
+    font-family: var(--hero-display);
+    font-size: 1.05rem;
+    line-height: 1.3;
+    color: var(--hero-ink);
+}
+
+.ab-aw-for {
+    font-family: var(--nav-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--hero-ink-soft);
+}
+
+@media (max-width: 720px) {
+    .ab-awards-list li {
+        grid-template-columns: 3.4rem minmax(0, 1fr);
+        gap: 0.25rem 0.9rem;
+    }
+
+    .ab-aw-for {
+        grid-column: 2;
+    }
+}
+
+
+/* ---- Motion (deliberate, quiet; all reversible under reduced-motion) ---- */
+@keyframes ab-settle {
+    from {
+        transform: scale(1.06);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+.ab-hero-band img {
+    animation: ab-settle 1.2s var(--hero-ease) both;
+}
+
+.ab-row[data-reveal] {
+    opacity: 0;
+    transform: translateX(-38px);
+    transition: opacity .8s var(--hero-ease), transform .8s var(--hero-ease);
+}
+
+.ab-row:nth-child(even)[data-reveal] {
+    transform: translateX(38px);
+}
+
+.ab-row[data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+.ab-awards-list li {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .6s var(--hero-ease), transform .6s var(--hero-ease);
+}
+
+.ab-awards-list.is-visible li {
+    opacity: 1;
+    transform: none;
+}
+
+.ab-awards-list.is-visible li:nth-child(1) {
+    transition-delay: .05s
+}
+
+.ab-awards-list.is-visible li:nth-child(2) {
+    transition-delay: .13s
+}
+
+.ab-awards-list.is-visible li:nth-child(3) {
+    transition-delay: .21s
+}
+
+.ab-awards-list.is-visible li:nth-child(4) {
+    transition-delay: .29s
+}
+
+.ab-awards-list.is-visible li:nth-child(5) {
+    transition-delay: .37s
+}
+
+/* ---- Story liveliness ---- */
+.ab-story-in {
+    position: relative;
+}
+
+.ab-story-in > * {
+    position: relative;
+    z-index: 1;
+}
+
+.ab-story-year {
+    position: absolute;
+    top: clamp(-1rem, -1vw, 0rem);
+    right: clamp(0rem, 2vw, 2.5rem);
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(5rem, 13vw, 11rem);
+    line-height: .8;
+    color: var(--hero-ink);
+    opacity: .05;
+    pointer-events: none;
+    z-index: 0;
+    letter-spacing: -.02em;
+    user-select: none;
+}
+
+@media (max-width: 760px) {
+    .ab-story-year {
+        display: none;
+    }
+}
+
+.ab-story-pull .ab-pull-b {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(.4em);
+    transition: opacity .7s var(--hero-ease) .35s, transform .7s var(--hero-ease) .35s;
+    color: var(--hero-forest);
+    font-style: italic;
+}
+
+.ab-story-pull.is-visible .ab-pull-b {
+    opacity: 1;
+    transform: none;
+}
+
+.ab-story-figs b {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(2.4rem, 4.4vw, 3.6rem);
+    line-height: 1;
+    color: var(--hero-ink);
+}
+
+.ab-story-figs b .ab-count {
+    font-family: var(--hero-display);
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+}
+
+.ab-story-figs b i {
+    font-size: .4em;
+    vertical-align: .7em;
+    color: var(--brass);
+    font-style: normal;
+}
+
+.ab-story-figs li {
+    position: relative;
+    padding-bottom: .9rem;
+}
+
+.ab-story-figs li::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 2.4rem;
+    background: var(--brass);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .6s var(--hero-ease);
+}
+
+.ab-story-figs.is-visible li::after {
+    transform: scaleX(1);
+}
+
+.ab-story-figs.is-visible li:nth-child(1)::after {
+    transition-delay: .15s;
+}
+
+.ab-story-figs.is-visible li:nth-child(2)::after {
+    transition-delay: .35s;
+}
+
+.ab-story-figs.is-visible li:nth-child(3)::after {
+    transition-delay: .55s;
+}
+
+/* ---- Warmth pass ---- */
+.homes-page.about-page {
+    background: #f7f3ec;
+}
+
+.about-page .eyebrow {
+    font-family: var(--nav-sans);
+}
+
+.ab-title {
+    font-size: .72rem;
+    letter-spacing: .14em;
+    color: var(--brass);
+}
+
+.ab-plate-no {
+    color: #8a6a34;
+}
+
+.ab-quote .ab-sign {
+    color: var(--hero-forest);
+}
+
+.ab-row-shot img {
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(255, 250, 240, .6), 0 18px 40px -22px rgba(74, 54, 26, .4);
+}
+
+.ab-quote-shot img {
+    border-radius: 3px;
+}
+
+/* ---- Hero band ---- */
+.ab-hero-band {
+    margin: clamp(2rem, 5vh, 3.5rem) 0 0;
+    overflow: hidden;
+}
+
+.ab-hero-band img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    display: block;
+}
+
+@media (max-width: 640px) {
+    .ab-hero-band img {
+        aspect-ratio: 16 / 10;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ab-hero-band img {
+        animation: none;
+    }
+
+    .ab-row[data-reveal], .ab-awards-list li, .ab-story-figs li::after,
+    .ab-story-pull .ab-pull-b {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
     }
 }
 

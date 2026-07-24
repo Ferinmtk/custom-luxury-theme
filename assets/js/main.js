@@ -394,6 +394,110 @@
         });
     }
 
+    /* About page: elements that add .is-visible to themselves (figure list,
+       awards list — the children animate via CSS delays). Same contract as
+       [data-reveal] but the observed node is the one that gets the class. */
+    var selfReveal = document.querySelectorAll('[data-reveal-self]');
+    if (selfReveal.length && 'IntersectionObserver' in window && !reducedMotion) {
+        var sr = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    sr.unobserve(entry.target);
+                }
+            });
+        }, {threshold: 0.3});
+        selfReveal.forEach(function (el) {
+            sr.observe(el);
+        });
+    } else {
+        selfReveal.forEach(function (el) {
+            el.classList.add('is-visible');
+        });
+    }
+
+    /* About page: count the story figures up when they enter view. */
+    var counters = document.querySelectorAll('.ab-count');
+    counters.forEach(function (el) {
+        var to = parseInt(el.getAttribute('data-to'), 10);
+        if (isNaN(to)) {
+            return;
+        }
+        if (reducedMotion || !('IntersectionObserver' in window)) {
+            el.textContent = to;
+            return;
+        }
+        var raw = el.textContent; // preserve any non-numeric form like "2–4"
+        var run = function () {
+            var start = null;
+            var dur = 1100;
+            (function step(ts) {
+                start = start || ts;
+                var p = Math.min((ts - start) / dur, 1);
+                el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+                if (p < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    el.textContent = raw;
+                }
+            })(performance.now());
+        };
+        var co = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    run();
+                    co.unobserve(entry.target);
+                }
+            });
+        }, {threshold: 0.5});
+        co.observe(el);
+    });
+
+    /* About page: brass plate tilts toward the pointer, sheen tracks faster.
+       Off for touch and reduced-motion — a tilt you cannot aim is just noise. */
+    (function () {
+        var plate = document.getElementById('abPlate');
+        if (!plate || reducedMotion) {
+            return;
+        }
+        // Fine-pointer only: a tilt you cannot aim is just jitter.
+        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+            return;
+        }
+        var stage = plate.parentElement || plate;
+        var rect = null;
+        var raf = 0;
+        var px = 0.5;
+        var py = 0.5;
+        var apply = function () {
+            raf = 0;
+            plate.style.setProperty('--ry', ((px - 0.5) * 13).toFixed(2) + 'deg');
+            plate.style.setProperty('--rx', ((0.5 - py) * 9).toFixed(2) + 'deg');
+            plate.style.setProperty('--sx', (px * 100).toFixed(1) + '%');
+        };
+        var schedule = function () {
+            if (!raf) {
+                raf = requestAnimationFrame(apply);
+            }
+        };
+        stage.addEventListener('pointermove', function (e) {
+            rect = rect || plate.getBoundingClientRect();
+            px = clamp((e.clientX - rect.left) / rect.width, 0, 1);
+            py = clamp((e.clientY - rect.top) / rect.height, 0, 1);
+            schedule();
+        });
+        stage.addEventListener('pointerleave', function () {
+            px = 0.5;
+            py = 0.5;
+            schedule();
+        });
+        var drop = function () {
+            rect = null;
+        };
+        window.addEventListener('scroll', drop, {passive: true});
+        window.addEventListener('resize', drop, {passive: true});
+    })();
+
     /* Scrub head reveals (prototype-style: blur + rise, adds .in) */
     var scrubReveals = document.querySelectorAll('.scrub .reveal');
     if (scrubReveals.length && 'IntersectionObserver' in window && !reducedMotion) {
