@@ -75,17 +75,61 @@
     var vid = document.getElementById('vid');
 
     if (seq && vid) {
-        // Lighter encode on small screens (set before metadata loads).
-        var mobileSrc = vid.getAttribute('data-mobile-src');
-        if (mobileSrc && window.matchMedia('(max-width: 720px)').matches) {
-            vid.src = mobileSrc;
+        /**
+         * Deferred hero film.
+         *
+         * The markup carries no src and preload="none", so during first paint the
+         * only thing on the wire for this section is poster.jpg — the LCP element.
+         * We attach the real source once the page has finished loading, or as soon
+         * as the user shows intent (scroll / tap), whichever happens first.
+         *
+         * The scrub loop below already no-ops until `dur` is set by loadedmetadata,
+         * so the hero simply holds on the poster until the film arrives rather than
+         * breaking.
+         */
+        var filmLoaded = false;
+        var loadFilm = function () {
+            if (filmLoaded) {
+                return;
+            }
+            filmLoaded = true;
+
+            // Lighter encode on small screens.
+            var small = window.matchMedia('(max-width: 720px)').matches;
+            var src = (small && vid.getAttribute('data-mobile-src')) || vid.getAttribute('data-src');
+            if (!src) {
+                return;
+            }
+
+            vid.preload = 'auto';
+            vid.src = src;
+            vid.load();
+        };
+
+        // Intent: whichever the user does first.
+        window.addEventListener('scroll', loadFilm, {passive: true, once: true});
+        window.addEventListener('pointerdown', loadFilm, {once: true});
+
+        // Otherwise pick it up once the critical path is clear.
+        var idle = function () {
+            (window.requestIdleCallback || function (fn) {
+                setTimeout(fn, 1);
+            })(loadFilm);
+        };
+        if (document.readyState === 'complete') {
+            idle();
+        } else {
+            window.addEventListener('load', idle, {once: true});
         }
 
         if (reducedMotion) {
             vid.loop = true;
             vid.autoplay = true;
-            vid.play().catch(function () {
-            });
+            vid.addEventListener('canplay', function () {
+                vid.play().catch(function () {
+                });
+            }, {once: true});
+            loadFilm();
         } else {
             var mat = document.getElementById('mat');
             var c1 = document.getElementById('c1');

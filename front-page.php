@@ -21,12 +21,24 @@ get_header();
         <section class="descent" id="descent">
             <div class="d-pin">
                 <div class="d-mat" id="mat">
+                    <?php
+                    /*
+                     * The film ships WITHOUT a src and with preload="none" on purpose.
+                     *
+                     * descent.mp4 is ~15 MB. When the browser is allowed to start it
+                     * during first paint it starves poster.jpg — which is the actual
+                     * LCP element — and mobile LCP swings between ~2.6s and ~6.8s
+                     * depending on how the connection is shared. main.js attaches the
+                     * real source after load (or on first scroll / tap, whichever comes
+                     * first) via data-src / data-mobile-src.
+                     */
+                    ?>
                     <video
                             id="vid"
                             muted
                             playsinline
-                            preload="auto"
-                            src="<?php echo lh_asset('video/descent.mp4'); ?>"
+                            preload="none"
+                            data-src="<?php echo lh_asset('video/descent.mp4'); ?>"
                             data-mobile-src="<?php echo lh_asset('video/descent-mobile.mp4'); ?>"
                             poster="<?php echo lh_asset('img/poster.jpg'); ?>"
                     ></video>
@@ -82,8 +94,8 @@ get_header();
          * ------------------------------------------------------------------
          */
         $ph_img = lh_field_image('philosophy_image', 'img/philosophy-PLACEHOLDER.jpg', 'large', array(
-                'alt'      => lh_field('philosophy_image_alt', __('A family looking toward their finished home', 'luxury-homes')),
-                'loading'  => 'lazy',
+                'alt' => lh_field('philosophy_image_alt', __('A family looking toward their finished home', 'luxury-homes')),
+                'loading' => 'lazy',
                 'decoding' => 'async',
         ));
         ?>
@@ -120,9 +132,9 @@ get_header();
         <!-- ============ HOMES BY STYLE (pinned horizontal scrub) ============ -->
         <?php
         $scrub_homes = get_posts(array(
-                'post_type'      => 'home',
+                'post_type' => 'home',
                 'posts_per_page' => 6,
-                'orderby'        => array('menu_order' => 'ASC', 'date' => 'DESC'),
+                'orderby' => array('menu_order' => 'ASC', 'date' => 'DESC'),
         ));
         if ($scrub_homes) :
             ?>
@@ -136,7 +148,7 @@ get_header();
                         $scrub_last = array_key_last($scrub_homes);
                         foreach ($scrub_homes as $scrub_i => $lh_home) :
                             $m = lh_home_meta($lh_home->ID);
-                            $bits   = array();
+                            $bits = array();
                             if ($m['location']) {
                                 $bits[] = $m['location'];
                             }
@@ -147,7 +159,7 @@ get_header();
                                 /* translators: %s: square footage */
                                 $bits[] = sprintf(__('%s sq ft', 'luxury-homes'), number_format_i18n($m['sqft']));
                             }
-                            $is_last  = ($scrub_i === $scrub_last);
+                            $is_last = ($scrub_i === $scrub_last);
                             $home_url = get_permalink($lh_home);
                             ?>
                             <?php if ($is_last) : ?>
@@ -161,8 +173,8 @@ get_header();
                                 <?php endif; ?>
                                 <?php
                                 echo lh_home_image($lh_home->ID, 'large', array(
-                                        'alt'      => get_the_title($lh_home),
-                                        'loading'  => 'lazy',
+                                        'alt' => get_the_title($lh_home),
+                                        'loading' => 'lazy',
                                         'decoding' => 'async',
                                 ));
                                 ?>
@@ -336,7 +348,7 @@ get_header();
         <!-- ============ START WHERE YOU ARE (flip cards) ============ -->
         <?php
         $lh_tel_display = trim((string)lh_field('phone_display', '(303) 555-0100'));
-        $lh_tel_href    = 'tel:' . preg_replace('/[^0-9+]/', '', lh_field('phone', '+13035550100'));
+        $lh_tel_href = 'tel:' . preg_replace('/[^0-9+]/', '', lh_field('phone', '+13035550100'));
 
         // Front title + back message per option. Back copy is editable via ACF later.
         $lh_ways = array(
