@@ -16,7 +16,7 @@
 
 defined('ABSPATH') || exit;
 
-define('LH_VERSION', '1.26.4');
+define('LH_VERSION', '1.26.5');
 
 $lh_inc = get_template_directory() . '/inc/';
 

@@ -5343,6 +5343,76 @@ body.admin-bar .nav-overlay {
     }
 }
 
+
+/* ---- Marcus: signed founder's note, not a testimonial ----
+   Round photo, the line and signature set in the architect hand (loaded on
+   this page via enqueue), quieter credit. Reframes a playful aside so it
+   stops reading like a client quote. */
+.ab-note .ab-quote-in {
+    align-items: flex-start;
+    gap: clamp(1.4rem, 4vw, 3rem);
+}
+
+.ab-note .ab-quote-shot {
+    flex: 0 0 clamp(120px, 14vw, 148px);
+}
+
+.ab-note .ab-quote-shot img {
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.ab-note blockquote {
+    max-width: 34ch;
+}
+
+.ab-note .ab-quote p {
+    font-family: "Architects Daughter", var(--hero-display), cursive;
+    font-size: clamp(1.3rem, 2.3vw, 1.85rem);
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--hero-ink);
+}
+
+.ab-note .ab-sign {
+    font-family: "Architects Daughter", var(--hero-display), cursive;
+    font-size: 1.5rem;
+    color: var(--hero-forest);
+    transform: rotate(-3deg);
+    display: inline-block;
+    margin-top: 1rem;
+}
+
+.ab-note .ab-quote cite {
+    font-family: var(--nav-sans);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--hero-ink-soft);
+    opacity: 0.7;
+    margin-top: 0.6rem;
+}
+
+/* ---- Warranty: lead with a plain-language promise, terms as proof ---- */
+.ab-warranty-promise {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.3rem, 2.4vw, 1.9rem);
+    line-height: 1.4;
+    color: var(--hero-ink);
+    margin: 0 0 1.8rem;
+    max-width: 34ch;
+}
+
+.ab-warranty-promise b {
+    font-weight: 400;
+    font-style: italic;
+    color: var(--hero-forest);
+}
+
+
 /* ========== [PAGE: CONTACT] Wizard (multi-step) ========== */
 
 .ct-progress {
