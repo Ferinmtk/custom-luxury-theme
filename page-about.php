@@ -272,6 +272,23 @@ if (!function_exists('lh_about_photo')) {
                                                          href="<?php echo esc_url(home_url('/contact/')); ?>">ask us
                             what yours would cost</a>.</p>
                 </div>
+                <?php
+                /* The stylesheet has carried .ab-turnkey figure and a multiply
+                   blend for this slot all along — the markup just never had the
+                   figure, which is why the section sat in a half-empty band.
+                   turnkey-plans.jpg is white-point corrected so multiply knocks
+                   the studio sweep out cleanly; a replacement needs the same
+                   treatment or it will sit in a grey box. */
+                $ab_turnkey_img = lh_field_image('about_turnkey_image', 'img/turnkey-plans.jpg', 'large', array(
+                        'alt' => esc_attr__('A house under construction standing on its own blueprints, with rolled drawings and window and door samples alongside', 'luxury-homes'),
+                        'loading' => 'lazy',
+                        'decoding' => 'async',
+                        'width' => '500',
+                        'height' => '410',
+                ));
+                if ($ab_turnkey_img) : ?>
+                    <figure data-reveal><?php echo $ab_turnkey_img; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by lh_field_image ?></figure>
+                <?php endif; ?>
             </div>
         </section>
 

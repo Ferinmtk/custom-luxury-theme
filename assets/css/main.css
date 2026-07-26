@@ -6933,3 +6933,118 @@ html {
         display: none;
     }
 }
+
+/* ==========================================================================
+   About — visual refinement pass
+   Scoped to .about-page. The page's identity (Fraunces on warm white, forest
+   and brass, the cast plate as the one loud object) is settled and not what
+   these rules touch. They fix places where the execution fell short of it.
+   ========================================================================== */
+
+/* ---- Top veil ----
+   The header is a floating pill inset from the viewport edge, so page content
+   scrolls through the transparent strip above it and arrives fully legible —
+   a stray half-sentence sitting over the logo. A colour scrim can't work here
+   because the page runs cream, then #f2efe7, then dark forest at the CTA. So
+   blur the backdrop instead of tinting it, and mask the blur out downward:
+   background-agnostic, and it reads as depth rather than as a bar. */
+.about-page::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    height: 6rem;
+    z-index: 55;
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 46%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0, #000 46%, transparent 100%);
+}
+
+body.admin-bar .about-page::before {
+    height: 8rem;
+}
+
+/* No backdrop-filter (Firefox default, older Safari): fall back to nothing
+   rather than a cream bar that would be wrong over the forest CTA. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .about-page::before {
+        display: none;
+    }
+}
+
+/* ---- Portraits as a set ----
+   The four headshots come from four different sessions: one warm candid, two
+   grey studio, one cool formal. Side by side down a single column the mismatch
+   is the first thing the eye catches. Pulling the saturation back and warming
+   the shadows lets them read as one commission. This is a patch over a photo
+   problem, not a fix — four shots on one backdrop would beat it. Dial the
+   saturate() value toward 1 to weaken, or delete the block to revert. */
+.about-page .ab-row-shot img,
+.about-page .ab-quote-shot img {
+    background: #e8e3d8;
+    filter: saturate(0.74) contrast(1.03) sepia(0.07);
+}
+
+/* ---- Image language ----
+   Portraits already carry a 3px radius and a warm lifted shadow; the hero band
+   was square and flat, so the page opened in a different vocabulary than it
+   continued in. */
+.about-page .ab-hero-band {
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(255, 250, 240, 0.6), 0 26px 60px -34px rgba(74, 54, 26, 0.45);
+}
+
+/* ---- Awards ----
+   An index of judged work should feel like a ledger you can run a finger down.
+   The brass rule is the year column's colour arriving in the row. */
+.about-page .ab-awards-list li {
+    position: relative;
+    transition: background 0.35s var(--hero-ease);
+}
+
+.about-page .ab-awards-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 0;
+    height: 1px;
+    background: var(--brass);
+    transition: width 0.45s var(--hero-ease);
+}
+
+.about-page .ab-awards-list li:hover::before {
+    width: 100%;
+}
+
+.about-page .ab-awards-list li:hover {
+    background: linear-gradient(to right, rgba(168, 131, 79, 0.05), transparent 62%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .about-page .ab-awards-list li,
+    .about-page .ab-awards-list li::before {
+        transition: none;
+    }
+}
+
+/* ---- One team: close the trailing void ----
+   The copy is capped at 46ch and the figure was a fixed 320px, so in a 1240px
+   container roughly 300px collected at the right end as dead space rather than
+   as the gap between two columns. Push the figure to the far edge and let it
+   take more of the width now that it carries a drawing worth reading. */
+.about-page .ab-turnkey-in {
+    justify-content: space-between;
+}
+
+.about-page .ab-turnkey figure {
+    flex: 0 0 clamp(220px, 30vw, 400px);
+}
+
+@media (max-width: 760px) {
+    .about-page .ab-turnkey figure {
+        flex: 0 0 auto;
+        width: min(100%, 300px);
+    }
+}
