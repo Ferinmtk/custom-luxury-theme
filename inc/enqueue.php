@@ -5,43 +5,43 @@
  * @package Luxury_Homes
  */
 
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
-add_action( 'wp_enqueue_scripts', function () {
-	// Fonts: Fraunces (hero display) + Marcellus (site display) + Inter (body, incl. 300 for hero).
-	wp_enqueue_style(
-		'lh-fonts',
-		'https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500;600&family=Marcellus&family=Space+Grotesk:wght@400;500&display=swap',
-		array(),
-		null
-	);
-	wp_enqueue_style( 'lh-main', get_template_directory_uri() . '/assets/css/main.css', array( 'lh-fonts' ), LH_VERSION );
-	wp_enqueue_script( 'lh-main', get_template_directory_uri() . '/assets/js/main.js', array(), LH_VERSION, true );
-} );
+add_action('wp_enqueue_scripts', function () {
+    // Fonts: Fraunces (hero display) + Marcellus (site display) + Inter (body, incl. 300 for hero).
+    wp_enqueue_style(
+        'lh-fonts',
+        'https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500;600&family=Marcellus&family=Space+Grotesk:wght@400;500&display=swap',
+        array(),
+        null
+    );
+    wp_enqueue_style('lh-main', get_template_directory_uri() . '/assets/css/main.css', array('lh-fonts'), LH_VERSION);
+    wp_enqueue_script('lh-main', get_template_directory_uri() . '/assets/js/main.js', array(), LH_VERSION, true);
+});
 
 // Preconnect to Google Fonts (matches approved hero prototype head).
-add_filter( 'wp_resource_hints', function ( $urls, $relation_type ) {
-	if ( 'preconnect' === $relation_type ) {
-		$urls[] = 'https://fonts.googleapis.com';
-		$urls[] = array(
-			'href' => 'https://fonts.gstatic.com',
-			'crossorigin',
-		);
-	}
-	return $urls;
-}, 10, 2 );
+add_filter('wp_resource_hints', function ($urls, $relation_type) {
+    if ('preconnect' === $relation_type) {
+        $urls[] = 'https://fonts.googleapis.com';
+        $urls[] = array(
+            'href' => 'https://fonts.gstatic.com',
+            'crossorigin',
+        );
+    }
+    return $urls;
+}, 10, 2);
 
 /**
  * Contact page only: Leaflet map for the service area.
  * Tiles load client-side from CARTO/OpenStreetMap (no API key).
  */
-add_action( 'wp_enqueue_scripts', function () {
-	if ( ! ( is_page( 'contact' ) || is_page_template( 'page-contact.php' ) ) ) {
-		return;
-	}
-	wp_enqueue_style( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4' );
-	wp_enqueue_script( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true );
-	$init = <<<'JS'
+add_action('wp_enqueue_scripts', function () {
+    if (!(is_page('contact') || is_page_template('page-contact.php'))) {
+        return;
+    }
+    wp_enqueue_style('leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
+    wp_enqueue_script('leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true);
+    $init = <<<'JS'
 (function(){
   var el=document.getElementById('si-map'); if(!el||!window.L) return;
   var map=L.map(el,{scrollWheelZoom:false,zoomControl:true});
@@ -56,12 +56,13 @@ add_action( 'wp_enqueue_scripts', function () {
   map.on('blur',function(){map.scrollWheelZoom.disable();});
 })();
 JS;
-	wp_add_inline_script( 'leaflet', $init );
-} );
+    wp_add_inline_script('leaflet', $init);
+});
 
-/** Our Homes page only: architect-handwriting font for the drawn backdrop. */
-add_action( 'wp_enqueue_scripts', function () {
-	if ( is_page( 'our-homes' ) || is_page_template( 'page-our-homes.php' ) ) {
-		wp_enqueue_style( 'lh-architect-font', 'https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap', array(), null );
-	}
-} );
+/** Our Homes + About: architect-handwriting font (drawn backdrop / signed note). */
+add_action('wp_enqueue_scripts', function () {
+    if (is_page('our-homes') || is_page_template('page-our-homes.php')
+        || is_page('about') || is_page_template('page-about.php')) {
+        wp_enqueue_style('lh-architect-font', 'https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap', array(), null);
+    }
+});

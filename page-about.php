@@ -93,7 +93,6 @@ if (!function_exists('lh_about_photo')) {
         <?php while (have_posts()) : the_post(); ?>
             <section class="ab-hero">
                 <div class="ab-hero-in">
-                    <span class="eyebrow"><?php echo esc_html(lh_field('about_eyebrow', 'About')); ?></span>
                     <h1><?php echo wp_kses_post(lh_field('about_h1', 'Twenty years. Fifty-six houses. Mostly the <em>same hands</em>.')); ?></h1>
                     <?php if (trim(get_the_content())) : ?>
                         <div class="ab-lede"><?php the_content(); ?></div>
@@ -261,8 +260,10 @@ if (!function_exists('lh_about_photo')) {
             <div class="ab-warranty-in">
                 <div class="ab-warranty-head">
                     <h2 id="ab-warranty-title">After you move in</h2>
-                    <p>The part most builders go quiet about. Here is ours in writing.</p>
+                    <p>The part most builders go quiet about.</p>
                 </div>
+                <p class="ab-warranty-promise">If something we built fails, we fix it &mdash; <b>on our dime, no
+                        argument.</b> In writing:</p>
                 <ol class="ab-warranty-grid">
                     <?php foreach ($ab_warranty as $ab_w) : ?>
                         <li><b><?php echo esc_html($ab_w['term']); ?>
@@ -298,8 +299,8 @@ if (!function_exists('lh_about_photo')) {
             </div>
         </section>
 
-        <!-- 9. Quote -->
-        <section class="ab-quote">
+        <!-- 9. Quote — a signed note from the founder, not a testimonial -->
+        <section class="ab-quote ab-note">
             <div class="ab-quote-in">
                 <?php $ab_q_src = lh_about_photo($ab_team[0]['photo'] ?? ''); ?>
                 <?php if ($ab_q_src) : ?>
@@ -311,7 +312,7 @@ if (!function_exists('lh_about_photo')) {
                     <p>If we build for you, you&rsquo;ll see me at your house every week. That&rsquo;s not a service
                         promise &mdash; it&rsquo;s just how I like to spend a Tuesday.</p>
                     <span class="ab-sign"><?php echo esc_html($ab_team[0]['name']); ?></span>
-                    <cite><?php esc_html_e('Founder &amp; President', 'luxury-homes'); ?></cite>
+                    <cite><?php esc_html_e('Founder & President', 'luxury-homes'); ?></cite>
                 </blockquote>
             </div>
         </section>
