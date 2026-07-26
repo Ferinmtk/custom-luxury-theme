@@ -24,17 +24,31 @@ get_header();
 
 $company = function_exists('lh_company') ? lh_company() : 'Tester';
 
-/** Team. @placeholder bios — real people, borrowed copy. */
+/**
+ * Team. @placeholder bios — real people, borrowed copy.
+ *
+ * "role" is the short trade word stamped on the maker's plate (section 4).
+ * It is deliberately separate from "title", which is the long marketing one:
+ * the plate is cast at 140 x 180 mm and only fits about ten characters a line.
+ * Leave it empty and the plate falls back to "title" — which will fit badly,
+ * so fill it in.
+ */
 $ab_team = lh_field('about_team', array(
-        array('name' => 'Marcus Flinders', 'title' => 'Builder Prime', 'photo' => 'img/team/marcus-flinders.jpg',
+        array('name' => 'Marcus Flinders', 'title' => 'Builder Prime', 'role' => 'Founder', 'photo' => 'img/team/marcus-flinders.jpg',
                 'bio' => 'Founder and President. Accountable for your house from the first walk of the land to the keys — and on your site every week in between. Still owns the first hammer he ever bought.'),
-        array('name' => 'Spencer Edwards', 'title' => 'Master Builder', 'photo' => 'img/team/spencer-edwards.jpg',
+        array('name' => 'Spencer Edwards', 'title' => 'Master Builder', 'role' => 'Build', 'photo' => 'img/team/spencer-edwards.jpg',
                 'bio' => 'Twenty-two years a firefighter before he built his first home in 2001. Father of four. He knows current code, current materials, and exactly where the expensive mistakes like to hide.'),
-        array('name' => 'Patty Smith', 'title' => 'Designer Extraordinaire', 'photo' => 'img/team/patty-smith.jpg',
+        array('name' => 'Patty Smith', 'title' => 'Designer Extraordinaire', 'role' => 'Design', 'photo' => 'img/team/patty-smith.jpg',
                 'bio' => 'Designing since 1998, on houses from 1,500 to 15,000 square feet. She will ask how you make coffee before she draws the kitchen — and she means it.'),
-        array('name' => 'Charles Edington', 'title' => 'The Money Guy', 'photo' => 'img/team/charles-edington.jpg',
+        array('name' => 'Charles Edington', 'title' => 'The Money Guy', 'role' => 'Finance', 'photo' => 'img/team/charles-edington.jpg',
                 'bio' => 'Lending since 2002. Construction loans, draw schedules, allowances — and the person who will tell you the honest number before you fall for the wrong lot.'),
 ));
+
+/**
+ * Names cast into the plate. Four is not a style choice — the roster block is
+ * sized for four lines and a fifth pushes the raised date off the brass.
+ */
+$ab_plate_roster = array_slice((array)$ab_team, 0, 4);
 
 /** Story figures. @placeholder values. */
 $ab_founded = (int)lh_field('about_founded', 2006);
@@ -200,10 +214,16 @@ if (!function_exists('lh_about_photo')) {
                             <p class="ab-plate-no">House N<sup>o</sup> 56</p>
                             <span class="ab-plate-line" aria-hidden="true"></span>
                             <ul class="ab-plate-roster">
-                                <li><b>Marcus Flinders</b><i>Founder</i></li>
-                                <li><b>Spencer Edwards</b><i>Build</i></li>
-                                <li><b>Patty Smith</b><i>Design</i></li>
-                                <li><b>Charles Edington</b><i>Finance</i></li>
+                                <?php foreach ($ab_plate_roster as $ab_pr) :
+                                    $ab_pr_role = trim((string)($ab_pr['role'] ?? ''));
+                                    if ('' === $ab_pr_role) {
+                                        $ab_pr_role = trim((string)($ab_pr['title'] ?? ''));
+                                    }
+                                    ?>
+                                    <li>
+                                        <b><?php echo esc_html($ab_pr['name'] ?? ''); ?></b><i><?php echo esc_html($ab_pr_role); ?></i>
+                                    </li>
+                                <?php endforeach; ?>
                             </ul>
                             <span class="ab-plate-line" aria-hidden="true"></span>
                             <p class="ab-plate-raised">Raised <?php echo esc_html(gmdate('Y')); ?></p>

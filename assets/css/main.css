@@ -4542,7 +4542,9 @@ body.admin-bar .nav-overlay {
 
 .ab-plate-roster i {
     font-style: normal;
-    opacity: 0.6;
+    /* 0.6 disappeared under the sheen overlay — the roles were markedly
+       fainter than the names they sit beside. */
+    opacity: 0.78;
     letter-spacing: 0.16em;
 }
 
@@ -4552,7 +4554,7 @@ body.admin-bar .nav-overlay {
     font-size: 0.52rem;
     letter-spacing: 0.26em;
     text-transform: uppercase;
-    opacity: 0.72;
+    opacity: 0.82;
 }
 
 .ab-screw {
@@ -4820,17 +4822,22 @@ body.admin-bar .nav-overlay {
     max-width: 1240px;
     margin: 0 auto;
     border: 1px solid rgba(27, 26, 22, 0.28);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    /* Not grid: .ab-members spans the full width, which pinned the explicit
+       track count under auto-fit and left a bordered empty cell after EST.
+       Flex wrap fills the row whatever the registry length is. */
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .ab-tb-cell {
+    flex: 1 1 160px;
     padding: 1rem 1.1rem 1.1rem;
-    border-right: 1px solid rgba(27, 26, 22, 0.18);
 }
 
-.ab-tb-cell:last-child {
-    border-right: 0;
+/* Divider on the left of every cell but the first. Keying off :last-child
+   never worked here — the last child of the dl is .ab-members, not a cell. */
+.ab-tb-cell + .ab-tb-cell {
+    border-left: 1px solid rgba(27, 26, 22, 0.18);
 }
 
 .ab-tb-cell dt {
@@ -4852,11 +4859,16 @@ body.admin-bar .nav-overlay {
 
 @media (max-width: 620px) {
     .ab-tb-cell {
-        border-right: 0;
+        flex: 1 1 100%;
+    }
+
+    .ab-tb-cell,
+    .ab-tb-cell + .ab-tb-cell {
+        border-left: 0;
         border-bottom: 1px solid rgba(27, 26, 22, 0.18);
     }
 
-    .ab-tb-cell:last-child {
+    .ab-tb-cell:nth-last-child(2) {
         border-bottom: 0;
     }
 }
@@ -4986,7 +4998,7 @@ body.admin-bar .nav-overlay {
 /* ---------- Memberships row under the title block ---------- */
 
 .ab-members {
-    grid-column: 1 / -1;
+    flex: 1 0 100%;
     border-top: 1px solid rgba(27, 26, 22, 0.18);
     padding: 0.85rem 1.1rem;
     font-family: var(--nav-sans);
@@ -5208,11 +5220,19 @@ body.admin-bar .nav-overlay {
 }
 
 .ab-story-figs b {
+    /* Block, or the label runs on from the number and breaks mid-phrase:
+       "20+ Years / building", "2-4 Homes a / year". */
+    display: block;
     font-family: var(--hero-display);
     font-weight: 400;
     font-size: clamp(2.4rem, 4.4vw, 3.6rem);
     line-height: 1;
     color: var(--hero-ink);
+}
+
+.ab-story-figs li > span {
+    display: block;
+    margin-top: 0.45rem;
 }
 
 .ab-story-figs b .ab-count {
@@ -5351,6 +5371,9 @@ body.admin-bar .nav-overlay {
 .ab-note .ab-quote-in {
     align-items: flex-start;
     gap: clamp(1.4rem, 4vw, 3rem);
+    /* The note is a portrait plus a short hand-written measure. At the shared
+       1240px it read as two small things stranded in a wide empty field. */
+    max-width: 60rem;
 }
 
 .ab-note .ab-quote-shot {
@@ -5365,10 +5388,13 @@ body.admin-bar .nav-overlay {
 }
 
 .ab-note blockquote {
-    max-width: 34ch;
+    max-width: 40ch;
 }
 
-.ab-note .ab-quote p {
+/* Compound, not descendant: the section carries both classes on one element
+   (class="ab-quote ab-note"), so ".ab-note .ab-quote p" matches nothing and
+   the note silently fell back to the larger serif .ab-quote p. */
+.ab-note.ab-quote p {
     font-family: "Architects Daughter", var(--hero-display), cursive;
     font-size: clamp(1.3rem, 2.3vw, 1.85rem);
     line-height: 1.5;
@@ -5385,7 +5411,7 @@ body.admin-bar .nav-overlay {
     margin-top: 1rem;
 }
 
-.ab-note .ab-quote cite {
+.ab-note.ab-quote cite {
     font-family: var(--nav-sans);
     font-size: 0.6rem;
     letter-spacing: 0.18em;
