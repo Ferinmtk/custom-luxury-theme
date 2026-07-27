@@ -35,6 +35,9 @@
     --bone-dim: rgba(239, 231, 218, 0.62);
     --travertine: #c9baa3;
     --brass: #a8834f;
+    /* 4.53:1 on the cream ground, for small uppercase text where --brass
+       itself only reaches 3.15 and fails AA. */
+    --brass-deep: #8a6a34;
     --line: rgba(239, 231, 218, 0.14);
     --display: "Marcellus", serif;
     --body: "Inter", system-ui, sans-serif;
@@ -4233,65 +4236,6 @@ body.admin-bar .nav-overlay {
     }
 }
 
-/* ---------- 3. Quote ---------- */
-
-.ab-quote {
-    background: #f2efe7;
-}
-
-.ab-quote-in {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: clamp(3.5rem, 10vh, 6rem) clamp(1.4rem, 7vw, 6rem);
-    display: flex;
-    align-items: center;
-    gap: clamp(1.8rem, 5vw, 4rem);
-}
-
-.ab-quote-shot {
-    flex: 0 0 clamp(180px, 22vw, 300px);
-    margin: 0;
-}
-
-.ab-quote blockquote {
-    margin: 0;
-    flex: 1 1 auto;
-    max-width: 34ch;
-}
-
-@media (max-width: 720px) {
-    .ab-quote-in {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.6rem;
-    }
-
-    .ab-quote-shot {
-        flex: 0 0 auto;
-        width: 200px;
-    }
-}
-
-.ab-quote p {
-    font-family: var(--hero-display);
-    font-weight: 400;
-    font-size: clamp(1.4rem, 3.1vw, 2.4rem);
-    line-height: 1.24;
-    margin: 0;
-    color: var(--hero-ink);
-}
-
-.ab-quote cite {
-    display: block;
-    margin-top: 1.4rem;
-    font-style: normal;
-    font-family: var(--nav-sans);
-    font-size: 0.64rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--hero-ink-soft);
-}
-
 /* ---------- 4. Reach / Credentials ----------
    The template renders this block as .ab-cred (metros + registry title-block +
    memberships). The .ab-reach* selectors are the original names; the .ab-cred*
@@ -4320,8 +4264,7 @@ body.admin-bar .nav-overlay {
     }
 }
 
-.ab-reach-where ul,
-.ab-cred-where ul {
+.ab-reach-where ul {
     list-style: none;
     margin: 1rem 0 0;
     padding: 0;
@@ -4330,12 +4273,7 @@ body.admin-bar .nav-overlay {
     gap: 0.5rem 0.6rem;
 }
 
-.ab-cred-where {
-    margin-bottom: clamp(1.6rem, 3.5vh, 2.2rem);
-}
-
-.ab-reach-where li,
-.ab-cred-where li {
+.ab-reach-where li {
     font-family: var(--nav-sans);
     font-size: 0.72rem;
     letter-spacing: 0.08em;
@@ -4343,6 +4281,63 @@ body.admin-bar .nav-overlay {
     border: 1px solid var(--ab-rule);
     border-radius: 10px;
     color: var(--hero-ink);
+}
+
+/* The metros were pill chips, which read as filter tags — something to click.
+   They are a statement of where the company works, so they are set as a line
+   of display type with the honest caveat under it. */
+.ab-cred-metros {
+    margin: 1rem 0 0;
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.2rem, 2.4vw, 1.75rem);
+    line-height: 1.4;
+    max-width: 20ch;
+    color: var(--hero-ink);
+}
+
+.ab-cred-caveat {
+    margin: 1.1rem 0 0;
+    max-width: 42ch;
+    font-size: 0.86rem;
+    line-height: 1.7;
+    color: var(--hero-ink-soft);
+}
+
+/* ---- Registry ----
+   Label left, value right, one hairline per row. Six entries sit in two
+   columns on a wide screen and stack on a narrow one, with no fixed count
+   anywhere — the old title block broke the moment the registry length moved. */
+.ab-creds {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+    gap: 0 clamp(1.5rem, 4vw, 2.8rem);
+}
+
+.ab-creds-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.9rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--ab-rule);
+    font-family: var(--nav-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.ab-creds-row dt {
+    color: var(--hero-ink-soft);
+    white-space: nowrap;
+}
+
+.ab-creds-row dd {
+    margin: 0;
+    text-align: right;
+    color: var(--hero-ink);
+    font-variant-numeric: tabular-nums;
 }
 
 .ab-reach-facts {
@@ -4842,16 +4837,64 @@ body.admin-bar .nav-overlay {
     color: var(--hero-ink-soft);
 }
 
-.ab-cost {
-    margin: 1.3rem 0 0;
-    padding-top: 1.1rem;
+/* The range, set as a figure. Two columns split by a hairline: the number on
+   the left, the method on the right, because "how" is what makes the number
+   credible and it was previously trailing the same sentence. */
+.ab-price {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1.4rem, 3.5vw, 2.9rem);
+    margin-top: clamp(1.8rem, 4vh, 2.5rem);
+    padding-top: clamp(1.4rem, 3vh, 2rem);
     border-top: 1px solid var(--ab-rule);
-    font-size: 0.95rem;
-    color: var(--hero-ink);
 }
 
-.ab-cost b {
-    font-weight: 500;
+.ab-price-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    flex: 1 1 200px;
+}
+
+.ab-price-col:last-child {
+    flex: 1 1 240px;
+    max-width: 34ch;
+}
+
+.ab-price-rule {
+    width: 1px;
+    align-self: stretch;
+    background: var(--ab-rule);
+}
+
+.ab-price-lab {
+    font-family: var(--nav-sans);
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--hero-ink-soft);
+}
+
+.ab-price-fig {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+    line-height: 1;
+    color: var(--hero-ink);
+    font-variant-numeric: lining-nums;
+}
+
+.ab-price-note {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--hero-ink-soft);
+}
+
+@media (max-width: 560px) {
+    .ab-price-rule {
+        display: none;
+    }
 }
 
 @media (max-width: 760px) {
@@ -4865,72 +4908,6 @@ body.admin-bar .nav-overlay {
         width: min(100%, 260px);
     }
 }
-
-/* ---------- Title block ----------
-   Borrowed from the corner of a construction drawing sheet: ruled cells,
-   label over value, numbers set tabular. Licence and insurance belong in a
-   registry entry, not on a badge. */
-
-.ab-titleblock {
-    padding: 0 clamp(1.4rem, 7vw, 6rem) clamp(4rem, 9vh, 6rem);
-}
-
-.ab-titleblock-in {
-    max-width: 1240px;
-    margin: 0 auto;
-    border: 1px solid rgba(27, 26, 22, 0.28);
-    /* Not grid: .ab-members spans the full width, which pinned the explicit
-       track count under auto-fit and left a bordered empty cell after EST.
-       Flex wrap fills the row whatever the registry length is. */
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.ab-tb-cell {
-    flex: 1 1 160px;
-    padding: 1rem 1.1rem 1.1rem;
-}
-
-/* Divider on the left of every cell but the first. Keying off :last-child
-   never worked here — the last child of the dl is .ab-members, not a cell. */
-.ab-tb-cell + .ab-tb-cell {
-    border-left: 1px solid rgba(27, 26, 22, 0.18);
-}
-
-.ab-tb-cell dt {
-    font-family: var(--nav-sans);
-    font-size: 0.56rem;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--hero-ink-soft);
-}
-
-.ab-tb-cell dd {
-    margin: 0.5rem 0 0;
-    font-family: var(--nav-sans);
-    font-size: 0.86rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
-    color: var(--hero-ink);
-}
-
-@media (max-width: 620px) {
-    .ab-tb-cell {
-        flex: 1 1 100%;
-    }
-
-    .ab-tb-cell,
-    .ab-tb-cell + .ab-tb-cell {
-        border-left: 0;
-        border-bottom: 1px solid rgba(27, 26, 22, 0.18);
-    }
-
-    .ab-tb-cell:nth-last-child(2) {
-        border-bottom: 0;
-    }
-}
-
-/* ---------- Origin story ---------- */
 
 /* ---------- Origin story: the dark band ----------
    The one tonal break on the page. Everything from the hero to the closing CTA
@@ -5000,7 +4977,7 @@ body.admin-bar .nav-overlay {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: -1;
+    z-index: 0;
     font-family: var(--hero-display);
     font-size: clamp(5rem, 13vw, 11rem);
     line-height: 0.78;
@@ -5011,6 +4988,8 @@ body.admin-bar .nav-overlay {
 }
 
 .ab-story-card {
+    position: relative;
+    z-index: 1;
     background: var(--hero-white);
     max-width: min(100%, 40rem);
     padding: clamp(2rem, 4vw, 3.4rem) clamp(1.6rem, 3.4vw, 3.2rem);
@@ -5092,54 +5071,65 @@ body.admin-bar .nav-overlay {
     color: var(--hero-ink-soft);
 }
 
+/* Ruled cells rather than a flat row. The 1px grid gap over a rule-coloured
+   ground draws the hairlines: one background, no per-cell borders to keep in
+   sync as the column count changes. */
 .ab-warranty-grid {
     list-style: none;
-    margin: 0;
+    margin: clamp(2rem, 4.5vh, 3rem) 0 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    gap: 1.6rem clamp(1.5rem, 4vw, 3.5rem);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--ab-rule);
+    border: 1px solid var(--ab-rule);
 }
 
-.ab-warranty-grid b {
-    display: block;
+.ab-warranty-grid li {
+    background: var(--hero-white);
+    padding: clamp(1.4rem, 2.6vw, 2rem) clamp(1.1rem, 2vw, 1.7rem);
+    transition: background 0.3s var(--hero-ease);
+}
+
+.ab-warranty-grid li:hover {
+    background: #f2ede2;
+}
+
+.ab-term-n {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+}
+
+.ab-term-n b {
     font-family: var(--hero-display);
     font-weight: 400;
-    font-size: clamp(2.2rem, 4vw, 3.2rem);
-    line-height: 1;
+    font-size: clamp(3rem, 6vw, 4.6rem);
+    line-height: 0.86;
     color: var(--hero-ink);
 }
 
-.ab-warranty-grid b i {
+.ab-term-n i {
     font-style: normal;
-    font-size: 0.32em;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--brass);
-    margin-left: 0.5rem;
-    vertical-align: 0.9em;
-}
-
-.ab-warranty-grid span {
-    display: block;
-    margin-top: 0.7rem;
-    padding-top: 0.7rem;
-    border-top: 1px solid var(--ab-rule);
-    font-size: 0.9rem;
-    color: var(--hero-ink-soft);
-}
-
-/* ---------- Memberships row under the title block ---------- */
-
-.ab-members {
-    flex: 1 0 100%;
-    border-top: 1px solid rgba(27, 26, 22, 0.18);
-    padding: 0.85rem 1.1rem;
     font-family: var(--nav-sans);
-    font-size: 0.62rem;
-    letter-spacing: 0.16em;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
+    color: var(--brass-deep);
+}
+
+.ab-term-covers {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    line-height: 1.6;
     color: var(--hero-ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ab-warranty-grid li {
+        transition: none;
+    }
 }
 
 /* ---------- Awards ----------
@@ -5350,6 +5340,11 @@ body.admin-bar .nav-overlay {
     z-index: 1;
 }
 
+.ab-turnkey-copy h2 .ab-pull-b {
+    color: var(--hero-forest);
+    font-style: italic;
+}
+
 .ab-story-pull .ab-pull-b {
     display: inline-block;
     opacity: 0;
@@ -5359,7 +5354,11 @@ body.admin-bar .nav-overlay {
     font-style: italic;
 }
 
-.ab-story-pull.is-visible .ab-pull-b {
+/* .is-visible lands on the card, not the headline, since the band rebuild
+   moved data-reveal onto .ab-story-card — without the second selector
+   "on purpose." stays at opacity 0 permanently. */
+.ab-story-pull.is-visible .ab-pull-b,
+.ab-story-card.is-visible .ab-pull-b {
     opacity: 1;
     transform: none;
 }
@@ -5464,32 +5463,9 @@ body.admin-bar .nav-overlay {
     color: #8a6a34;
 }
 
-.ab-quote .ab-sign {
-    color: var(--hero-forest);
-}
-
 .ab-row-shot img {
     border-radius: 3px;
     box-shadow: 0 1px 0 rgba(255, 250, 240, .6), 0 18px 40px -22px rgba(74, 54, 26, .4);
-}
-
-.ab-quote-shot img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    object-position: center top;
-    border-radius: 3px;
-}
-
-/* Keep the quote portrait clear of the fixed header as it scrolls past. */
-.ab-quote {
-    scroll-margin-top: 6rem;
-}
-
-.ab-quote-shot {
-    position: relative;
-    z-index: 1;
 }
 
 /* ---- Hero band ---- */
@@ -5525,63 +5501,6 @@ body.admin-bar .nav-overlay {
     }
 }
 
-
-/* ---- Marcus: signed founder's note, not a testimonial ----
-   Round photo, the line and signature set in the architect hand (loaded on
-   this page via enqueue), quieter credit. Reframes a playful aside so it
-   stops reading like a client quote. */
-.ab-note .ab-quote-in {
-    align-items: flex-start;
-    gap: clamp(1.4rem, 4vw, 3rem);
-    /* The note is a portrait plus a short hand-written measure. At the shared
-       1240px it read as two small things stranded in a wide empty field. */
-    max-width: 60rem;
-}
-
-.ab-note .ab-quote-shot {
-    flex: 0 0 clamp(120px, 14vw, 148px);
-}
-
-.ab-note .ab-quote-shot img {
-    border-radius: 50%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    object-position: center top;
-}
-
-.ab-note blockquote {
-    max-width: 40ch;
-}
-
-/* Compound, not descendant: the section carries both classes on one element
-   (class="ab-quote ab-note"), so ".ab-note .ab-quote p" matches nothing and
-   the note silently fell back to the larger serif .ab-quote p. */
-.ab-note.ab-quote p {
-    font-family: "Architects Daughter", var(--hero-display), cursive;
-    font-size: clamp(1.3rem, 2.3vw, 1.85rem);
-    line-height: 1.5;
-    font-weight: 400;
-    color: var(--hero-ink);
-}
-
-.ab-note .ab-sign {
-    font-family: "Architects Daughter", var(--hero-display), cursive;
-    font-size: 1.5rem;
-    color: var(--hero-forest);
-    transform: rotate(-3deg);
-    display: inline-block;
-    margin-top: 1rem;
-}
-
-.ab-note.ab-quote cite {
-    font-family: var(--nav-sans);
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--hero-ink-soft);
-    opacity: 0.7;
-    margin-top: 0.6rem;
-}
 
 /* ---- Warranty: lead with a plain-language promise, terms as proof ---- */
 .ab-warranty-promise {
@@ -7142,8 +7061,7 @@ body.admin-bar .about-page::before {
    the shadows lets them read as one commission. This is a patch over a photo
    problem, not a fix — four shots on one backdrop would beat it. Dial the
    saturate() value toward 1 to weaken, or delete the block to revert. */
-.about-page .ab-row-shot img,
-.about-page .ab-quote-shot img {
+.about-page .ab-row-shot img {
     background: #e8e3d8;
     filter: saturate(0.74) contrast(1.03) sepia(0.07);
 }
@@ -7177,20 +7095,16 @@ body.admin-bar .about-page::before {
     }
 }
 
-/* ---- Story: let the figures use the measure they were given ----
-   The page carries two three-up numeric bands — these and the warranty terms.
-   The warranty band runs the full container; this one was capped at 40rem, so
-   the three stats huddled in the left half while the right half of the section
-   stood empty below the ghost year. Same object, same behaviour. */
+/* ---- Story figures ----
+   Running the full container was right while this was a flat cream band.
+   Against the dark one it left the three stats stretching out under the
+   photograph while the card above them stopped at 40rem. Sharing the card's
+   edge makes the left column read as a single object. */
 .about-page .ab-story-figs {
-    max-width: none;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    max-width: min(100%, 40rem);
     margin-top: clamp(2.2rem, 5vh, 3.2rem);
 }
 
-/* The ghost year sat at a negative offset, so it crossed the section's
-   hairline rule — and at 5% ink against a solid rule that reads as a
-   misalignment rather than as a deliberate bleed. Sit it under the line. */
 /* ---- Story band: responsive + reduced motion ----
    Below 860px the photograph stops being a right-hand plate and becomes a
    banner above the card: at that width a 46% column crops the house down to

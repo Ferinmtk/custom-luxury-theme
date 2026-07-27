@@ -59,10 +59,10 @@ JS;
     wp_add_inline_script('leaflet', $init);
 });
 
-/** Our Homes + About: architect-handwriting font (drawn backdrop / signed note). */
+/** Our Homes: architect-handwriting font for the drawn blueprint backdrop.
+ *  About no longer needs it — the signed note that used it has been removed. */
 add_action('wp_enqueue_scripts', function () {
-    if (is_page('our-homes') || is_page_template('page-our-homes.php')
-        || is_page('about') || is_page_template('page-about.php')) {
+    if (is_page('our-homes') || is_page_template('page-our-homes.php')) {
         wp_enqueue_style('lh-architect-font', 'https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap', array(), null);
     }
 });

@@ -81,7 +81,7 @@ $ab_awards = lh_field('about_awards', array(
 $ab_warranty = lh_field('about_warranty', array(
         array('term' => '1', 'unit' => 'year', 'covers' => 'Workmanship, finishes and fit'),
         array('term' => '2', 'unit' => 'years', 'covers' => 'Mechanical, electrical, plumbing'),
-        array('term' => '10', 'unit' => 'years', 'covers' => 'Structural'),
+        array('term' => '10', 'unit' => 'years', 'covers' => 'Structural — frame, foundation, roof'),
 ));
 
 /** Credentials. @placeholder licence/bond/EIN — legal risk if published as-is. */
@@ -317,20 +317,35 @@ if (!function_exists('lh_about_photo')) {
         </section>
 
         <!-- 6. One team + cost -->
-        <section class="ab-turnkey">
+        <section class="ab-turnkey" aria-labelledby="ab-turnkey-title">
             <div class="ab-turnkey-in">
                 <div class="ab-turnkey-copy">
                     <span class="eyebrow"><?php esc_html_e('One team', 'luxury-homes'); ?></span>
-                    <h2>Land, drawings, permits, build.</h2>
+                    <h2 id="ab-turnkey-title">Land, drawings, permits, <span class="ab-pull-b">build.</span></h2>
                     <p>You are not coordinating an architect, a builder and three subcontractors who have never met. We
                         <a class="ab-link" href="<?php echo esc_url(home_url('/how-we-build/')); ?>">walk the site, draw
                             it, permit it and build it</a> &mdash; and the person who shook your hand at the first
                         meeting is the one who hands you the keys.</p>
-                    <p class="ab-cost"><b>Most of our homes fall between $1.5M and $4M</b>, depending on the site and
-                        the finish. We price from real drawings, not a per-square-foot guess, and the contract is fixed
-                        before a shovel moves &mdash; <a class="ab-link"
-                                                         href="<?php echo esc_url(home_url('/contact/')); ?>">ask us
-                            what yours would cost</a>.</p>
+
+                    <?php
+                    /* The range was buried mid-paragraph behind a bolded clause.
+                       It is the one number every visitor is scanning for, so it
+                       is set as a figure with the method beside it. */
+                    ?>
+                    <div class="ab-price">
+                        <div class="ab-price-col">
+                            <span class="ab-price-lab"><?php esc_html_e('Typical range', 'luxury-homes'); ?></span>
+                            <b class="ab-price-fig"><?php echo esc_html(lh_field('about_price_range', '$1.5–4M')); ?></b>
+                        </div>
+                        <span class="ab-price-rule" aria-hidden="true"></span>
+                        <div class="ab-price-col">
+                            <span class="ab-price-lab"><?php esc_html_e('How it is priced', 'luxury-homes'); ?></span>
+                            <p class="ab-price-note">From real drawings, not a per-square-foot guess. Fixed before a
+                                shovel moves &mdash; <a class="ab-link"
+                                                        href="<?php echo esc_url(home_url('/contact/')); ?>">ask us what
+                                    yours would cost</a>.</p>
+                        </div>
+                    </div>
                 </div>
                 <?php
                 /* The stylesheet has carried .ab-turnkey figure and a multiply
@@ -352,7 +367,8 @@ if (!function_exists('lh_about_photo')) {
             </div>
         </section>
 
-        <!-- 7. Warranty -->
+        <!-- 7. Warranty — the terms are ruled cells rather than a flat row: a
+             guarantee reads as a guarantee when it looks like it was drawn up. -->
         <section class="ab-warranty" aria-labelledby="ab-warranty-title">
             <div class="ab-warranty-in">
                 <div class="ab-warranty-head">
@@ -363,8 +379,11 @@ if (!function_exists('lh_about_photo')) {
                         argument.</b> In writing:</p>
                 <ol class="ab-warranty-grid">
                     <?php foreach ($ab_warranty as $ab_w) : ?>
-                        <li><b><?php echo esc_html($ab_w['term']); ?>
-                                <i><?php echo esc_html($ab_w['unit']); ?></i></b><span><?php echo esc_html($ab_w['covers']); ?></span>
+                        <li>
+                            <span class="ab-term-n">
+                                <b><?php echo esc_html($ab_w['term']); ?></b><i><?php echo esc_html($ab_w['unit']); ?></i>
+                            </span>
+                            <span class="ab-term-covers"><?php echo esc_html($ab_w['covers']); ?></span>
                         </li>
                     <?php endforeach; ?>
                 </ol>
@@ -372,49 +391,34 @@ if (!function_exists('lh_about_photo')) {
         </section>
 
         <!-- 8. Credentials -->
-        <section class="ab-cred">
+        <section class="ab-cred" aria-labelledby="ab-cred-title">
             <div class="ab-cred-in">
                 <div class="ab-cred-where">
-                    <span class="eyebrow"><?php esc_html_e('Where we build', 'luxury-homes'); ?></span>
-                    <ul>
-                        <?php foreach ($ab_metros as $ab_m) : ?>
-                            <li><?php echo esc_html($ab_m); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
+                    <h2 class="eyebrow" id="ab-cred-title"><?php esc_html_e('Where we build', 'luxury-homes'); ?></h2>
+                    <p class="ab-cred-metros"><?php echo esc_html(implode(' · ', $ab_metros)); ?></p>
+                    <p class="ab-cred-caveat"><?php echo esc_html(lh_field('about_range_caveat', 'If your site is more than ninety minutes from our shop, we will tell you honestly that someone closer should build it.')); ?></p>
                 </div>
-                <dl class="ab-titleblock-in">
-                    <?php foreach ($ab_reg as $ab_r) : ?>
-                        <div class="ab-tb-cell">
+                <?php
+                /* Registry rows, label left and value right. The members line is
+                   folded in as a final row rather than spanning underneath —
+                   that span was what forced the phantom cell in the old grid. */
+                $ab_rows = $ab_reg;
+                if ($ab_members) {
+                    $ab_rows[] = array('k' => esc_html__('Member', 'luxury-homes'), 'v' => $ab_members);
+                }
+                ?>
+                <dl class="ab-creds">
+                    <?php foreach ($ab_rows as $ab_r) : ?>
+                        <div class="ab-creds-row">
                             <dt><?php echo esc_html($ab_r['k']); ?></dt>
                             <dd><?php echo esc_html($ab_r['v']); ?></dd>
                         </div>
                     <?php endforeach; ?>
-                    <?php if ($ab_members) : ?>
-                        <div class="ab-members"><?php echo esc_html__('Member', 'luxury-homes') . ' &mdash; ' . esc_html($ab_members); ?></div>
-                    <?php endif; ?>
                 </dl>
             </div>
         </section>
 
-        <!-- 9. Quote — a signed note from the founder, not a testimonial -->
-        <section class="ab-quote ab-note">
-            <div class="ab-quote-in">
-                <?php $ab_q_src = lh_about_photo($ab_team[0]['photo'] ?? ''); ?>
-                <?php if ($ab_q_src) : ?>
-                    <figure class="ab-quote-shot"><img src="<?php echo esc_url($ab_q_src); ?>"
-                                                       alt="<?php echo esc_attr($ab_team[0]['name']); ?>" loading="lazy"
-                                                       decoding="async" width="600" height="600"></figure>
-                <?php endif; ?>
-                <blockquote>
-                    <p>If we build for you, you&rsquo;ll see me at your house every week. That&rsquo;s not a service
-                        promise &mdash; it&rsquo;s just how I like to spend a Tuesday.</p>
-                    <span class="ab-sign"><?php echo esc_html($ab_team[0]['name']); ?></span>
-                    <cite><?php esc_html_e('Founder & President', 'luxury-homes'); ?></cite>
-                </blockquote>
-            </div>
-        </section>
-
-        <!-- 10. CTA -->
+        <!-- 9. CTA -->
         <section class="hm-cta">
             <div class="hm-cta-in">
                 <span class="eyebrow"><?php esc_html_e('Next', 'luxury-homes'); ?></span>
