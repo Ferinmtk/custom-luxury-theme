@@ -329,7 +329,7 @@ get_header();
 
             <?php
             $hq = trim((string)lh_field('hww_quote', 'The person who walked our land in the first week was the person who handed us the keys.'));
-            $ha = trim((string)lh_field('hww_quote_attr', 'The Halvorsens · Meadow House, Park City'));
+            $ha = trim((string)lh_field('hww_quote_attr', 'The Halvorsens · Meadow House, Evergreen'));
             if ('' !== $hq) :
                 ?>
                 <figure class="hww-quote-block">

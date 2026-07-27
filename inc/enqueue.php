@@ -34,7 +34,8 @@ add_filter('wp_resource_hints', function ($urls, $relation_type) {
 /**
  * Contact page only: Leaflet map for the service area.
  * Tiles load client-side from CARTO/OpenStreetMap (no API key).
- */
+ * Polygon traces the Front Range corridor: Boulder down to Castle Pines,
+ * west past Evergreen. Pins must stay inside it — the map fits its bounds. */
 add_action('wp_enqueue_scripts', function () {
     if (!(is_page('contact') || is_page_template('page-contact.php'))) {
         return;
@@ -46,10 +47,10 @@ add_action('wp_enqueue_scripts', function () {
   var el=document.getElementById('si-map'); if(!el||!window.L) return;
   var map=L.map(el,{scrollWheelZoom:false,zoomControl:true});
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:18,subdomains:'abcd',attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
-  var area=[[40.86,-111.96],[40.80,-111.55],[40.72,-111.28],[40.60,-111.20],[40.44,-111.34],[40.43,-111.58],[40.58,-111.86],[40.76,-112.00]];
+  var area=[[40.13,-105.35],[40.13,-104.85],[39.85,-104.72],[39.38,-104.78],[39.38,-105.15],[39.58,-105.42],[39.95,-105.42]];
   var poly=L.polygon(area,{color:'#a8834f',weight:2,opacity:0.9,dashArray:'2 6',fillColor:'#a8834f',fillOpacity:0.08}).addTo(map);
   function pin(lat,lng,label){var m=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<span class="si-pin"><b></b><span>'+label+'</span></span>',iconSize:[0,0]})}).addTo(map);m.on('click',function(){window.open('https://www.google.com/maps/search/?api=1&query='+lat+','+lng,'_blank','noopener');});}
-  pin(40.7608,-111.8910,'Salt Lake');pin(40.6461,-111.4980,'Park City');pin(40.5070,-111.4130,'Heber');pin(40.6431,-111.2800,'Kamas');
+  pin(39.7392,-104.9903,'Denver');pin(40.0150,-105.2705,'Boulder');pin(39.4578,-104.8961,'Castle Pines');pin(39.6333,-105.3172,'Evergreen');
   map.fitBounds(poly.getBounds(),{padding:[36,36]});
   map.on('click',function(e){window.open('https://www.google.com/maps/@'+e.latlng.lat.toFixed(5)+','+e.latlng.lng.toFixed(5)+',11z','_blank','noopener');});
   map.on('focus',function(){map.scrollWheelZoom.enable();});

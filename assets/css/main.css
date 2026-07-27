@@ -6019,7 +6019,23 @@ body.admin-bar .nav-overlay {
 }
 
 .si-body {
+    /* One measure for every element in the form column. The options and inputs
+       were capped at 540px while the progress track above them and the nav note
+       below them ran the full body width — so the three answer cards stopped
+       ~100px short of a rule directly above and another directly below. Sharing
+       one custom property means they cannot drift apart again. At the desktop
+       card width the body's inner box is ~640px, so nothing is clipped: the
+       cap only bites once the layout stacks and the card grows to 940px. */
+    --si-measure: 640px;
+
     padding: clamp(2rem, 4.5vw, 3rem) clamp(1.8rem, 4.5vw, 3.4rem) clamp(2rem, 4.5vw, 2.8rem)
+}
+
+.si-meter,
+.si-q,
+.si-alert,
+.si-nav {
+    max-width: var(--si-measure)
 }
 
 .si-alert {
@@ -6144,7 +6160,7 @@ body.admin-bar .nav-overlay {
     display: flex;
     flex-direction: column;
     gap: .55rem;
-    max-width: 540px
+    max-width: var(--si-measure)
 }
 
 .si-opts-row {
@@ -6215,7 +6231,7 @@ body.admin-bar .nav-overlay {
 }
 
 .si-inp-wrap {
-    max-width: 540px
+    max-width: var(--si-measure)
 }
 
 .si-lab {
