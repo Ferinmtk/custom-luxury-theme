@@ -4398,7 +4398,9 @@ body.admin-bar .nav-overlay {
     border-top: 1px solid var(--ab-rule);
     padding-top: clamp(2rem, 4vh, 2.8rem);
     display: flex;
-    align-items: center;
+    /* Top, not centre: the copy column now carries the tally underneath it and
+       is much the taller of the two, so centring left the impression floating. */
+    align-items: flex-start;
     gap: clamp(1.8rem, 5vw, 4.5rem);
 }
 
@@ -4426,8 +4428,10 @@ body.admin-bar .nav-overlay {
 }
 
 .ab-plate-stage {
-    flex: 0 0 clamp(200px, 26vw, 330px);
+    flex: 0 0 clamp(220px, 30vw, 400px);
     margin: 0;
+    /* The tilt is a rotate on .ab-plate; without perspective on the stage it
+       renders as a flat skew. */
     perspective: 1100px;
 }
 
@@ -4590,6 +4594,59 @@ body.admin-bar .nav-overlay {
     bottom: .7rem;
     right: .7rem;
     rotate: -12deg;
+}
+
+/* ---- Tally ----
+   One mark per plate raised. Grouped in fives so the eye can count them
+   without counting, which is the entire reason a tally exists. */
+.ab-tally {
+    margin-top: clamp(1.6rem, 4vh, 2.4rem);
+    padding-top: clamp(1rem, 2.4vh, 1.4rem);
+    border-top: 1px solid var(--ab-rule);
+}
+
+.ab-tally-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0 0.9rem;
+    font-family: var(--nav-sans);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--hero-ink-soft);
+}
+
+.ab-tally-head b {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: 1.3rem;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--brass);
+}
+
+.ab-tally-marks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 3px;
+}
+
+.ab-tally-marks li {
+    width: 3px;
+    height: 20px;
+    border-radius: 1px;
+    background: rgba(120, 103, 71, 0.34);
+    box-shadow: 1px 0 0 rgba(255, 253, 246, 0.7);
+}
+
+/* Gap after every fifth mark, the way you would score a gate. */
+.ab-tally-marks li:nth-child(5n) {
+    margin-right: 0.65rem;
 }
 
 .ab-plate-stage figcaption {
@@ -4875,47 +4932,124 @@ body.admin-bar .nav-overlay {
 
 /* ---------- Origin story ---------- */
 
+/* ---------- Origin story: the dark band ----------
+   The one tonal break on the page. Everything from the hero to the closing CTA
+   is warm white otherwise, which left this section as a headline stranded
+   beside an empty right half. Forest ground, photograph held to the right,
+   story set on a warm-white card so it reads as an inset plate — and the cast
+   brass plate three sections down lands harder for having a dark note before
+   it. --ab-ground is --hero-forest taken down in value, not a new hue: two
+   greens from one family, far enough apart on the page to read as deliberate. */
+
 .ab-story {
-    padding: clamp(2.5rem, 6vh, 4rem) clamp(1.4rem, 7vw, 6rem);
+    --ab-ground: #2a3129;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--ab-ground);
+    padding: clamp(3rem, 8vh, 5.5rem) clamp(1.4rem, 7vw, 6rem) clamp(3rem, 8vh, 5rem);
+}
+
+.ab-story-media {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(46%, 720px);
+    z-index: 0;
+}
+
+.ab-story-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 60% center;
+    display: block;
+}
+
+/* The photograph is a landscape frame in a tall slot, so it is cropped hard.
+   Holding it back from full brightness stops that crop reading as the subject
+   and lets it sit as ground for the card. */
+.ab-story-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(42, 49, 41, 0.34);
+}
+
+.ab-story-fade {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 62%;
+    background: linear-gradient(to right, var(--ab-ground) 0%, rgba(42, 49, 41, 0.86) 46%, rgba(42, 49, 41, 0) 100%);
 }
 
 .ab-story-in {
+    position: relative;
+    z-index: 1;
     max-width: 1240px;
     margin: 0 auto;
-    border-top: 1px solid var(--hero-ink);
-    padding-top: clamp(2rem, 4vh, 2.8rem);
+    /* Clears the top of the ghost numeral; the card overlaps the rest of it. */
+    padding-top: clamp(2.6rem, 6vw, 5rem);
+}
+
+/* The founding year, kept as a ghost numeral rather than swapped for a
+   "Since 2006" eyebrow — the eyebrow is the conventional move and the numeral
+   is the memorable one. Anchored top-left, not right: at the right edge it
+   would fall over the photograph, where brass at this alpha turns to mud.
+   Here it sits on flat forest and the card crops it, which is the effect. */
+.ab-story-year {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    font-family: var(--hero-display);
+    font-size: clamp(5rem, 13vw, 11rem);
+    line-height: 0.78;
+    letter-spacing: -0.02em;
+    color: rgba(168, 131, 79, 0.22);
+    pointer-events: none;
+    user-select: none;
+}
+
+.ab-story-card {
+    background: var(--hero-white);
+    max-width: min(100%, 40rem);
+    padding: clamp(2rem, 4vw, 3.4rem) clamp(1.6rem, 3.4vw, 3.2rem);
+    border-radius: 3px;
+    box-shadow: 0 42px 90px -34px rgba(12, 16, 11, 0.62);
 }
 
 .ab-story-pull {
     font-family: var(--hero-display);
     font-weight: 400;
-    font-size: clamp(1.5rem, 3.4vw, 2.6rem);
-    line-height: 1.18;
-    margin: 0 0 clamp(1.6rem, 4vh, 2.4rem);
+    font-size: clamp(1.6rem, 3.4vw, 2.7rem);
+    line-height: 1.12;
+    margin: 0;
     max-width: 20ch;
     color: var(--hero-ink);
+    text-wrap: pretty;
 }
 
+.ab-story-rule {
+    display: block;
+    height: 1px;
+    background: var(--hero-line);
+    margin: clamp(1.4rem, 3vh, 2rem) 0 clamp(1.2rem, 2.6vh, 1.7rem);
+}
+
+/* Single column inside the card: at 40rem the two-column set produced
+   four-word lines, and it broke the "we could have grown / instead" turn
+   across the gutter, which is the argument of the section. */
 .ab-story-cols {
-    columns: 2;
-    column-gap: clamp(2rem, 5vw, 4.5rem);
-    max-width: 76ch;
     color: var(--hero-ink-soft);
+    max-width: 54ch;
 }
 
 .ab-story-cols p {
-    margin: 0 0 1.1rem;
-    break-inside: avoid;
+    margin: 0 0 1.05rem;
 }
 
 .ab-story-cols p:last-child {
     margin-bottom: 0;
-}
-
-@media (max-width: 760px) {
-    .ab-story-cols {
-        columns: 1;
-    }
 }
 
 /* ---------- Warranty ----------
@@ -5048,57 +5182,100 @@ body.admin-bar .nav-overlay {
     color: var(--hero-ink-soft);
 }
 
+/* Set as a colophon rather than a ledger: each award is a small column, and
+   the run of them reads as a row of citations at the foot of the work. The
+   house number is the last line because it is the one that can be checked. */
 .ab-awards-list {
     list-style: none;
     margin: 0;
     padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
 }
 
 .ab-awards-list li {
-    display: grid;
-    grid-template-columns: 4.2rem minmax(0, 1fr) minmax(0, 15rem);
-    gap: 0 clamp(0.8rem, 2vw, 1.8rem);
-    align-items: baseline;
-    padding: 0.85rem 0;
-    border-bottom: 1px solid var(--ab-rule);
+    padding: 0 clamp(0.9rem, 2vw, 1.7rem);
 }
 
-.ab-awards-list li:last-child {
-    border-bottom: 0;
+.ab-awards-list li:first-child {
+    padding-left: 0;
+}
+
+/* Divider on the left of every item but the first. On wrap the first item of
+   a new row keeps its rule, which in a grid reads as a column edge rather
+   than an error. */
+.ab-awards-list li + li {
+    border-left: 1px solid var(--ab-rule);
 }
 
 .ab-aw-year {
-    font-family: var(--nav-sans);
-    font-size: 0.72rem;
-    font-weight: 500;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.1em;
+    display: block;
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    line-height: 1;
+    font-variant-numeric: lining-nums tabular-nums;
     color: var(--brass);
 }
 
 .ab-aw-name {
-    font-family: var(--hero-display);
-    font-size: 1.05rem;
-    line-height: 1.3;
+    display: block;
+    margin-top: 0.85rem;
+    font-family: var(--hero-sans);
+    font-size: 0.92rem;
+    line-height: 1.42;
     color: var(--hero-ink);
+    text-wrap: pretty;
 }
 
 .ab-aw-for {
+    display: block;
+    margin-top: 0.75rem;
     font-family: var(--nav-sans);
-    font-size: 0.62rem;
+    font-size: 0.6rem;
+    line-height: 1.6;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--hero-ink-soft);
 }
 
-@media (max-width: 720px) {
-    .ab-awards-list li {
-        grid-template-columns: 3.4rem minmax(0, 1fr);
-        gap: 0.25rem 0.9rem;
+.ab-aw-for i {
+    font-style: normal;
+    margin: 0 0.15rem;
+    color: rgba(27, 26, 22, 0.28);
+}
+
+.ab-aw-for em {
+    font-style: normal;
+    white-space: nowrap;
+}
+
+.ab-aw-for sup {
+    font-size: 0.8em;
+    vertical-align: 0.35em;
+}
+
+@media (max-width: 620px) {
+    .ab-awards-list {
+        grid-template-columns: 1fr;
     }
 
-    .ab-aw-for {
-        grid-column: 2;
+    .ab-awards-list li {
+        padding: 1rem 0;
+        border-top: 1px solid var(--ab-rule);
+    }
+
+    .ab-awards-list li + li {
+        border-left: 0;
+    }
+
+    .ab-awards-list li:first-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .ab-aw-name {
+        margin-top: 0.5rem;
     }
 }
 
@@ -5173,28 +5350,6 @@ body.admin-bar .nav-overlay {
     z-index: 1;
 }
 
-.ab-story-year {
-    position: absolute;
-    top: clamp(-1rem, -1vw, 0rem);
-    right: clamp(0rem, 2vw, 2.5rem);
-    font-family: var(--hero-display);
-    font-weight: 400;
-    font-size: clamp(5rem, 13vw, 11rem);
-    line-height: .8;
-    color: var(--hero-ink);
-    opacity: .05;
-    pointer-events: none;
-    z-index: 0;
-    letter-spacing: -.02em;
-    user-select: none;
-}
-
-@media (max-width: 760px) {
-    .ab-story-year {
-        display: none;
-    }
-}
-
 .ab-story-pull .ab-pull-b {
     display: inline-block;
     opacity: 0;
@@ -5209,10 +5364,12 @@ body.admin-bar .nav-overlay {
     transform: none;
 }
 
+/* On the dark ground now, and ruled off the card above like a ledger line. */
 .ab-story-figs {
     list-style: none;
-    margin: clamp(1.8rem, 4vh, 2.6rem) 0 0;
-    padding: 0;
+    margin: clamp(2.4rem, 5vh, 3.4rem) 0 0;
+    padding: clamp(1.6rem, 3.4vh, 2.2rem) 0 0;
+    border-top: 1px solid rgba(250, 249, 246, 0.24);
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1.4rem clamp(1.5rem, 4vw, 3rem);
@@ -5227,12 +5384,17 @@ body.admin-bar .nav-overlay {
     font-weight: 400;
     font-size: clamp(2.4rem, 4.4vw, 3.6rem);
     line-height: 1;
-    color: var(--hero-ink);
+    color: var(--hero-white);
 }
 
 .ab-story-figs li > span {
     display: block;
     margin-top: 0.45rem;
+    font-family: var(--nav-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(250, 249, 246, 0.62);
 }
 
 .ab-story-figs b .ab-count {
@@ -6995,40 +7157,6 @@ body.admin-bar .about-page::before {
     box-shadow: 0 1px 0 rgba(255, 250, 240, 0.6), 0 26px 60px -34px rgba(74, 54, 26, 0.45);
 }
 
-/* ---- Awards ----
-   An index of judged work should feel like a ledger you can run a finger down.
-   The brass rule is the year column's colour arriving in the row. */
-.about-page .ab-awards-list li {
-    position: relative;
-    transition: background 0.35s var(--hero-ease);
-}
-
-.about-page .ab-awards-list li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -1px;
-    width: 0;
-    height: 1px;
-    background: var(--brass);
-    transition: width 0.45s var(--hero-ease);
-}
-
-.about-page .ab-awards-list li:hover::before {
-    width: 100%;
-}
-
-.about-page .ab-awards-list li:hover {
-    background: linear-gradient(to right, rgba(168, 131, 79, 0.05), transparent 62%);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .about-page .ab-awards-list li,
-    .about-page .ab-awards-list li::before {
-        transition: none;
-    }
-}
-
 /* ---- One team: close the trailing void ----
    The copy is capped at 46ch and the figure was a fixed 320px, so in a 1240px
    container roughly 300px collected at the right end as dead space rather than
@@ -7046,5 +7174,58 @@ body.admin-bar .about-page::before {
     .about-page .ab-turnkey figure {
         flex: 0 0 auto;
         width: min(100%, 300px);
+    }
+}
+
+/* ---- Story: let the figures use the measure they were given ----
+   The page carries two three-up numeric bands — these and the warranty terms.
+   The warranty band runs the full container; this one was capped at 40rem, so
+   the three stats huddled in the left half while the right half of the section
+   stood empty below the ghost year. Same object, same behaviour. */
+.about-page .ab-story-figs {
+    max-width: none;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    margin-top: clamp(2.2rem, 5vh, 3.2rem);
+}
+
+/* The ghost year sat at a negative offset, so it crossed the section's
+   hairline rule — and at 5% ink against a solid rule that reads as a
+   misalignment rather than as a deliberate bleed. Sit it under the line. */
+/* ---- Story band: responsive + reduced motion ----
+   Below 860px the photograph stops being a right-hand plate and becomes a
+   banner above the card: at that width a 46% column crops the house down to
+   a sliver of wall. */
+@media (max-width: 860px) {
+    .about-page .ab-story {
+        padding-top: 0;
+    }
+
+    .about-page .ab-story-media {
+        position: relative;
+        inset: auto;
+        width: auto;
+        height: clamp(190px, 34vw, 280px);
+        margin: 0 calc(-1 * clamp(1.4rem, 7vw, 6rem)) clamp(2rem, 5vh, 2.8rem);
+    }
+
+    .about-page .ab-story-fade {
+        inset: auto 0 0;
+        width: auto;
+        height: 55%;
+        background: linear-gradient(to top, var(--ab-ground) 0%, rgba(42, 49, 41, 0) 100%);
+    }
+
+    .about-page .ab-story-year {
+        font-size: clamp(4rem, 20vw, 6rem);
+    }
+}
+
+/* The card carries a heavy shadow to lift it off the forest. On the warmth
+   pass background that shadow would be wrong, so it is scoped here rather
+   than to .ab-story-card globally. */
+@media (prefers-reduced-motion: reduce) {
+    .about-page .ab-story-card[data-reveal] {
+        opacity: 1;
+        transform: none;
     }
 }

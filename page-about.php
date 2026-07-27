@@ -52,19 +52,29 @@ $ab_plate_roster = array_slice((array)$ab_team, 0, 4);
 
 /** Story figures. @placeholder values. */
 $ab_founded = (int)lh_field('about_founded', 2006);
+
+/**
+ * Houses completed. Single source: the plate number, the tally marks and the
+ * figure below the story all read from here. The prose that spells it out
+ * ("fifty-six") stays editable copy rather than a generated number word —
+ * generating it would only work in English.
+ */
+$ab_houses = (int)lh_field('about_houses', 56);
+
 $ab_figs = lh_field('about_figures', array(
         array('n' => '20', 'suffix' => '+', 'label' => 'Years building'),
-        array('n' => '56', 'suffix' => '', 'label' => 'Homes completed'),
+        array('n' => (string)$ab_houses, 'suffix' => '', 'label' => 'Homes completed'),
         array('n' => '2–4', 'suffix' => '', 'label' => 'Homes a year'),
 ));
 
-/** Awards. @placeholder — must be real before launch. */
+/** Awards. @placeholder — must be real before launch. "house" is the plate
+ *  number the award was won on; leave it empty and the citation just omits it. */
 $ab_awards = lh_field('about_awards', array(
-        array('year' => '2024', 'name' => 'MAME Award — Custom Home over 6,000 sq ft', 'body' => 'HBA of Metro Denver'),
-        array('year' => '2023', 'name' => 'Best of Houzz — Service', 'body' => 'Fourth consecutive year'),
-        array('year' => '2022', 'name' => 'Parade of Homes — People’s Choice', 'body' => 'Stonebrook Court'),
-        array('year' => '2021', 'name' => 'MAME Award — Best Interior Design', 'body' => 'HBA of Metro Denver'),
-        array('year' => '2019', 'name' => 'Best in American Living — Regional', 'body' => 'NAHB'),
+        array('year' => '2024', 'name' => 'MAME Award — Custom Home over 6,000 sq ft', 'body' => 'HBA of Metro Denver', 'house' => '52'),
+        array('year' => '2023', 'name' => 'Best of Houzz — Service', 'body' => 'Fourth consecutive year', 'house' => ''),
+        array('year' => '2022', 'name' => 'Parade of Homes — People’s Choice', 'body' => 'Stonebrook Court', 'house' => '45'),
+        array('year' => '2021', 'name' => 'MAME Award — Best Interior Design', 'body' => 'HBA of Metro Denver', 'house' => '42'),
+        array('year' => '2019', 'name' => 'Best in American Living — Regional', 'body' => 'NAHB', 'house' => '37'),
 ));
 
 /** Warranty schedule. */
@@ -129,20 +139,44 @@ if (!function_exists('lh_about_photo')) {
             </section>
         <?php endwhile; ?>
 
-        <!-- 2. Story -->
+        <!-- 2. Story — dark photographic band.
+             The card is warm white on forest so the origin story reads as an
+             inset plate; the figures sit on the dark ground below it. This is
+             the page's one tonal break: cream runs unbroken from here to the
+             closing CTA otherwise, and the brass plate lands harder for it. -->
         <section class="ab-story" aria-labelledby="ab-story-title">
+            <?php
+            $ab_story_img = lh_field_image('about_story_image', 'img/story-dusk.jpg', 'full', array(
+                    'alt' => '',
+                    'loading' => 'lazy',
+                    'decoding' => 'async',
+                    'width' => '1500',
+                    'height' => '854',
+            ));
+            if ($ab_story_img) : ?>
+                <div class="ab-story-media" aria-hidden="true">
+                    <?php echo $ab_story_img; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by lh_field_image ?>
+                    <span class="ab-story-fade"></span>
+                </div>
+            <?php endif; ?>
+
             <div class="ab-story-in">
                 <span class="ab-story-year" aria-hidden="true"><?php echo esc_html($ab_founded); ?></span>
-                <h2 class="ab-story-pull" id="ab-story-title" data-reveal>
-                    <?php echo wp_kses_post(lh_field('about_story_head', 'We never became a volume builder, <span class="ab-pull-b">on&nbsp;purpose.</span>')); ?>
-                </h2>
-                <div class="ab-story-cols">
-                    <?php echo wp_kses_post(lh_field('about_story_body',
-                            '<p>We started in ' . esc_html($ab_founded) . ' with a pickup, a framing crew of three and a promise to a family in Cherry Hills: we would build their house as if it were our own. We have not found a reason to work any other way since.</p>'
-                            . '<p>We could have grown. Instead we kept the crew and capped the year at four houses &mdash; as many as we can stand on site for, every day, until they are finished.</p>'
-                            . '<p>Twenty years on, most of the same people are still here. That is the entire trick, and there is not a second one.</p>'
-                    )); ?>
+
+                <div class="ab-story-card" data-reveal>
+                    <h2 class="ab-story-pull" id="ab-story-title">
+                        <?php echo wp_kses_post(lh_field('about_story_head', 'We never became a volume builder, <span class="ab-pull-b">on&nbsp;purpose.</span>')); ?>
+                    </h2>
+                    <span class="ab-story-rule" aria-hidden="true"></span>
+                    <div class="ab-story-cols">
+                        <?php echo wp_kses_post(lh_field('about_story_body',
+                                '<p>We started in ' . esc_html($ab_founded) . ' with a pickup, a framing crew of three and a promise to a family in Cherry Hills: we would build their house as if it were our own. We have not found a reason to work any other way since.</p>'
+                                . '<p>We could have grown. Instead we kept the crew and capped the year at four houses &mdash; as many as we can stand on site for, every day, until they are finished.</p>'
+                                . '<p>Twenty years on, most of the same people are still here. That is the entire trick, and there is not a second one.</p>'
+                        )); ?>
+                    </div>
                 </div>
+
                 <ul class="ab-story-figs" data-reveal-self>
                     <?php foreach ($ab_figs as $ab_f) : ?>
                         <li>
@@ -201,7 +235,24 @@ if (!function_exists('lh_about_photo')) {
                     <h2 id="ab-plate-title">Every house we finish gets one of&nbsp;these.</h2>
                     <p>Cast brass, set into the mechanical room wall where no guest will ever see it. Stamped with the
                         house number and everyone whose hands were on it.</p>
-                    <p>We have made fifty-six. The names change slowly &mdash; that is the entire point.</p>
+                    <p><?php echo esc_html(lh_field('about_plate_note', 'We have made fifty-six. The names change slowly — that is the entire point.')); ?></p>
+
+                    <div class="ab-tally">
+                        <p class="ab-tally-head">
+                            <span><?php esc_html_e('One mark per plate raised', 'luxury-homes'); ?></span>
+                            <b><?php echo esc_html($ab_houses); ?></b>
+                        </p>
+                        <?php
+                        /* Decorative: the count is already stated beside it, so the
+                           marks are hidden from assistive tech rather than read out
+                           fifty-six times. */
+                        ?>
+                        <ul class="ab-tally-marks" aria-hidden="true">
+                            <?php for ($ab_m = 0; $ab_m < $ab_houses; $ab_m++) : ?>
+                                <li></li>
+                            <?php endfor; ?>
+                        </ul>
+                    </div>
                 </div>
                 <figure class="ab-plate-stage" data-reveal>
                     <div class="ab-plate" id="abPlate">
@@ -211,7 +262,7 @@ if (!function_exists('lh_about_photo')) {
                                                                                            aria-hidden="true"></span>
                         <div class="ab-plate-face">
                             <p class="ab-plate-maker">Cherry Hills &middot; Colorado</p>
-                            <p class="ab-plate-no">House N<sup>o</sup> 56</p>
+                            <p class="ab-plate-no">House N<sup>o</sup> <?php echo esc_html($ab_houses); ?></p>
                             <span class="ab-plate-line" aria-hidden="true"></span>
                             <ul class="ab-plate-roster">
                                 <?php foreach ($ab_plate_roster as $ab_pr) :
@@ -235,21 +286,30 @@ if (!function_exists('lh_about_photo')) {
             </div>
         </section>
 
-        <!-- 5. Awards -->
+        <!-- 5. Awards — set as a colophon: year, citation, then the house it was
+             won on. The house number is the point; it ties a jury's opinion to
+             something the reader can go and stand in front of. -->
         <section class="ab-awards" aria-labelledby="ab-awards-title">
             <div class="ab-awards-in">
                 <div class="ab-awards-head">
                     <h2 id="ab-awards-title">Recognised work</h2>
-                    <p>Judged by people who build for a living, on houses you can go and look at. <a class="ab-link"
-                                                                                                     href="<?php echo esc_url(home_url('/our-homes/')); ?>">See
-                            all fifty-six</a>.</p>
+                    <p><?php echo esc_html(lh_field('about_awards_note', 'Five of the fifty-six carry a pin. Judged by people who build for a living.')); ?>
+                        <a class="ab-link"
+                           href="<?php echo esc_url(home_url('/our-homes/')); ?>"><?php esc_html_e('See them all', 'luxury-homes'); ?></a>.
+                    </p>
                 </div>
                 <ol class="ab-awards-list" data-reveal-self>
                     <?php foreach ($ab_awards as $ab_a) : ?>
                         <li>
                             <span class="ab-aw-year"><?php echo esc_html($ab_a['year']); ?></span>
                             <span class="ab-aw-name"><?php echo esc_html($ab_a['name']); ?></span>
-                            <span class="ab-aw-for"><?php echo esc_html($ab_a['body']); ?></span>
+                            <span class="ab-aw-for">
+                                <?php echo esc_html($ab_a['body']); ?>
+                                <?php if (!empty($ab_a['house'])) : ?>
+                                    <i aria-hidden="true">/</i>
+                                    <em>N<sup>o</sup>&nbsp;<?php echo esc_html($ab_a['house']); ?></em>
+                                <?php endif; ?>
+                            </span>
                         </li>
                     <?php endforeach; ?>
                 </ol>
