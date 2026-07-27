@@ -6721,12 +6721,22 @@ body.admin-bar .nav-overlay {
     inset: 0
 }
 
-.si-mapframe .leaflet-tile {
-    filter: grayscale(.18) sepia(.30) saturate(.72) brightness(1.03) contrast(.97) hue-rotate(-6deg)
+.si-mapframe .si-tile-sat {
+    /* Just enough warmth to sit with the cream page. The old grade —
+       sepia(.30) saturate(.72) — was tuned for a pale vector basemap and
+       turns aerial photography to mud. */
+    filter: saturate(.88) sepia(.10) contrast(1.03) brightness(.97)
+}
+
+/* Labels and roads stay unfiltered or they stop being legible. */
+.si-mapframe .si-tile-ref {
+    filter: none
 }
 
 .si-page .leaflet-container {
-    background: #efe7da;
+    /* Shows through until tiles land — a dark ground reads as "map loading",
+       cream reads as "map broken". */
+    background: #2e3230;
     font-family: var(--si-body)
 }
 
@@ -6751,8 +6761,18 @@ body.admin-bar .nav-overlay {
     font-size: .7rem;
     font-weight: 600;
     letter-spacing: .06em;
-    color: var(--si-ink);
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .8)
+    /* Flipped for the satellite ground: cream type with a dark halo. Ink with
+       a white shadow vanished over forest and rooftops alike. */
+    color: #fdfaf3;
+    text-shadow: 0 1px 2px rgba(12, 14, 12, .9), 0 0 7px rgba(12, 14, 12, .6)
+}
+
+.si-pin b {
+    /* --si-brass (#a8834f) measures about 2:1 against urban grey and 2.7:1
+       against forest — it disappears on imagery. Same lifted brass as the
+       boundary stroke, which clears 4:1 on both. */
+    background: #e2c894;
+    box-shadow: 0 0 0 3px rgba(226, 200, 148, .32), 0 1px 4px rgba(12, 14, 12, .7)
 }
 
 .si-page .leaflet-control-attribution {

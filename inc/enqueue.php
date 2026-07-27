@@ -33,7 +33,9 @@ add_filter('wp_resource_hints', function ($urls, $relation_type) {
 
 /**
  * Contact page only: Leaflet map for the service area.
- * Tiles load client-side from CARTO/OpenStreetMap (no API key).
+ * Satellite imagery from Esri (no API key), with Esri's transportation and
+ * place-name layers over the top. Third-party service with no SLA — if it
+ * ever goes away the CARTO light basemap is the fallback.
  * Polygon traces the Front Range corridor: Boulder down to Castle Pines,
  * west past Evergreen. Pins must stay inside it — the map fits its bounds. */
 add_action('wp_enqueue_scripts', function () {
@@ -46,9 +48,17 @@ add_action('wp_enqueue_scripts', function () {
 (function(){
   var el=document.getElementById('si-map'); if(!el||!window.L) return;
   var map=L.map(el,{scrollWheelZoom:false,zoomControl:true});
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:18,subdomains:'abcd',attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
+  // Esri World Imagery: satellite, no API key. NOTE the {z}/{y}/{x} order —
+  // ArcGIS puts y before x, and the usual {z}/{x}/{y} silently returns the
+  // wrong tiles rather than erroring.
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,className:'si-tile-sat',attribution:'Imagery &copy; Esri, Maxar, Earthstar Geographics'}).addTo(map);
+  // Roads and place names ride on top, the way a satellite view reads on
+  // Google. Separate className so the warm grade below only hits the imagery
+  // — filtering the labels turns them to mud.
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,className:'si-tile-ref',pane:'overlayPane'}).addTo(map);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,className:'si-tile-ref',pane:'overlayPane'}).addTo(map);
   var area=[[40.13,-105.35],[40.13,-104.85],[39.85,-104.72],[39.38,-104.78],[39.38,-105.15],[39.58,-105.42],[39.95,-105.42]];
-  var poly=L.polygon(area,{color:'#a8834f',weight:2,opacity:0.9,dashArray:'2 6',fillColor:'#a8834f',fillOpacity:0.08}).addTo(map);
+  var poly=L.polygon(area,{color:'#e2c894',weight:2.5,opacity:1,dashArray:'3 7',fillColor:'#e2c894',fillOpacity:0.10}).addTo(map);
   function pin(lat,lng,label){var m=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<span class="si-pin"><b></b><span>'+label+'</span></span>',iconSize:[0,0]})}).addTo(map);m.on('click',function(){window.open('https://www.google.com/maps/search/?api=1&query='+lat+','+lng,'_blank','noopener');});}
   pin(39.7392,-104.9903,'Denver');pin(40.0150,-105.2705,'Boulder');pin(39.4578,-104.8961,'Castle Pines');pin(39.6333,-105.3172,'Evergreen');
   map.fitBounds(poly.getBounds(),{padding:[36,36]});
