@@ -16,7 +16,7 @@
 
 defined('ABSPATH') || exit;
 
-define('LH_VERSION', '1.31.0');
+define('LH_VERSION', '1.32.1');
 
 $lh_inc = get_template_directory() . '/inc/';
 
@@ -28,4 +28,4 @@ require $lh_inc . 'setup.php';       // theme supports, menus, image sizes, admi
 require $lh_inc . 'enqueue.php';     // styles / scripts / fonts
 require $lh_inc . 'meta.php';        // Our Homes <head> preload + Open Graph
 
-unset($lh_inc);git
+unset($lh_inc);

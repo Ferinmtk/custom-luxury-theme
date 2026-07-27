@@ -54,18 +54,13 @@ $ab_plate_roster = array_slice((array)$ab_team, 0, 4);
 $ab_founded = (int)lh_field('about_founded', 2006);
 
 /**
- * Houses completed. Single source: the plate number, the tally marks and the
- * figure below the story all read from here. The prose that spells it out
+ * Houses completed. Single source for the plate number. The prose that
+ * spells it out
  * ("fifty-six") stays editable copy rather than a generated number word —
  * generating it would only work in English.
  */
 $ab_houses = (int)lh_field('about_houses', 56);
 
-$ab_figs = lh_field('about_figures', array(
-        array('n' => '20', 'suffix' => '+', 'label' => 'Years building'),
-        array('n' => (string)$ab_houses, 'suffix' => '', 'label' => 'Homes completed'),
-        array('n' => '2–4', 'suffix' => '', 'label' => 'Homes a year'),
-));
 
 /** Awards. @placeholder — must be real before launch. "house" is the plate
  *  number the award was won on; leave it empty and the citation just omits it. */
@@ -177,18 +172,6 @@ if (!function_exists('lh_about_photo')) {
                     </div>
                 </div>
 
-                <ul class="ab-story-figs" data-reveal-self>
-                    <?php foreach ($ab_figs as $ab_f) : ?>
-                        <li>
-                            <b><span class="ab-count"
-                                     data-to="<?php echo esc_attr(preg_replace('/[^0-9].*$/', '', $ab_f['n'])); ?>"><?php echo esc_html($ab_f['n']); ?></span><?php
-                                if (!empty($ab_f['suffix'])) : ?>
-                                    <i><?php echo esc_html($ab_f['suffix']); ?></i><?php endif;
-                                ?></b>
-                            <span><?php echo esc_html($ab_f['label']); ?></span>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
             </div>
         </section>
 
@@ -237,22 +220,6 @@ if (!function_exists('lh_about_photo')) {
                         house number and everyone whose hands were on it.</p>
                     <p><?php echo esc_html(lh_field('about_plate_note', 'We have made fifty-six. The names change slowly — that is the entire point.')); ?></p>
 
-                    <div class="ab-tally">
-                        <p class="ab-tally-head">
-                            <span><?php esc_html_e('One mark per plate raised', 'luxury-homes'); ?></span>
-                            <b><?php echo esc_html($ab_houses); ?></b>
-                        </p>
-                        <?php
-                        /* Decorative: the count is already stated beside it, so the
-                           marks are hidden from assistive tech rather than read out
-                           fifty-six times. */
-                        ?>
-                        <ul class="ab-tally-marks" aria-hidden="true">
-                            <?php for ($ab_m = 0; $ab_m < $ab_houses; $ab_m++) : ?>
-                                <li></li>
-                            <?php endfor; ?>
-                        </ul>
-                    </div>
                 </div>
                 <figure class="ab-plate-stage" data-reveal>
                     <div class="ab-plate" id="abPlate">
@@ -404,12 +371,12 @@ if (!function_exists('lh_about_photo')) {
                    that span was what forced the phantom cell in the old grid. */
                 $ab_rows = $ab_reg;
                 if ($ab_members) {
-                    $ab_rows[] = array('k' => esc_html__('Member', 'luxury-homes'), 'v' => $ab_members);
+                    $ab_rows[] = array('k' => esc_html__('Member', 'luxury-homes'), 'v' => $ab_members, 'wide' => true);
                 }
                 ?>
                 <dl class="ab-creds">
                     <?php foreach ($ab_rows as $ab_r) : ?>
-                        <div class="ab-creds-row">
+                        <div class="ab-creds-row<?php echo empty($ab_r['wide']) ? '' : ' ab-creds-row--wide'; ?>">
                             <dt><?php echo esc_html($ab_r['k']); ?></dt>
                             <dd><?php echo esc_html($ab_r['v']); ?></dd>
                         </div>

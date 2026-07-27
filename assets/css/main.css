@@ -4340,6 +4340,20 @@ body.admin-bar .nav-overlay {
     font-variant-numeric: tabular-nums;
 }
 
+/* Registry values are short codes; the memberships list is a sentence. Right
+   aligning it in a half-width column produced four ragged lines of 0.62rem
+   caps. Give it the full width and let it set left. */
+.ab-creds-row--wide {
+    grid-column: 1 / -1;
+    align-items: baseline;
+}
+
+.ab-creds-row--wide dd {
+    text-align: left;
+    max-width: 46ch;
+    line-height: 1.7;
+}
+
 .ab-reach-facts {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -4393,9 +4407,9 @@ body.admin-bar .nav-overlay {
     border-top: 1px solid var(--ab-rule);
     padding-top: clamp(2rem, 4vh, 2.8rem);
     display: flex;
-    /* Top, not centre: the copy column now carries the tally underneath it and
-       is much the taller of the two, so centring left the impression floating. */
-    align-items: flex-start;
+    /* Back to centre now the tally is gone: the copy is much the shorter
+       column again, and top-aligning it left a well of empty page beneath. */
+    align-items: center;
     gap: clamp(1.8rem, 5vw, 4.5rem);
 }
 
@@ -4589,59 +4603,6 @@ body.admin-bar .nav-overlay {
     bottom: .7rem;
     right: .7rem;
     rotate: -12deg;
-}
-
-/* ---- Tally ----
-   One mark per plate raised. Grouped in fives so the eye can count them
-   without counting, which is the entire reason a tally exists. */
-.ab-tally {
-    margin-top: clamp(1.6rem, 4vh, 2.4rem);
-    padding-top: clamp(1rem, 2.4vh, 1.4rem);
-    border-top: 1px solid var(--ab-rule);
-}
-
-.ab-tally-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin: 0 0 0.9rem;
-    font-family: var(--nav-sans);
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--hero-ink-soft);
-}
-
-.ab-tally-head b {
-    font-family: var(--hero-display);
-    font-weight: 400;
-    font-size: 1.3rem;
-    letter-spacing: 0;
-    text-transform: none;
-    color: var(--brass);
-}
-
-.ab-tally-marks {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 3px;
-}
-
-.ab-tally-marks li {
-    width: 3px;
-    height: 20px;
-    border-radius: 1px;
-    background: rgba(120, 103, 71, 0.34);
-    box-shadow: 1px 0 0 rgba(255, 253, 246, 0.7);
-}
-
-/* Gap after every fifth mark, the way you would score a gate. */
-.ab-tally-marks li:nth-child(5n) {
-    margin-right: 0.65rem;
 }
 
 .ab-plate-stage figcaption {
@@ -4841,9 +4802,14 @@ body.admin-bar .nav-overlay {
    the left, the method on the right, because "how" is what makes the number
    credible and it was previously trailing the same sentence. */
 .ab-price {
-    display: flex;
-    flex-wrap: wrap;
-    gap: clamp(1.4rem, 3.5vw, 2.9rem);
+    /* Grid, not flex: the two columns are 200px and 240px basis, and inside a
+       46ch copy column that is a few pixels too wide — so it wrapped, and the
+       1px rule stayed on the first line as a bar hanging off the figure.
+       Explicit tracks can't wrap by accident. */
+    display: grid;
+    grid-template-columns: auto 1px minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(1rem, 2.2vw, 1.9rem);
     margin-top: clamp(1.8rem, 4vh, 2.5rem);
     padding-top: clamp(1.4rem, 3vh, 2rem);
     border-top: 1px solid var(--ab-rule);
@@ -4853,12 +4819,7 @@ body.admin-bar .nav-overlay {
     display: flex;
     flex-direction: column;
     gap: 0.55rem;
-    flex: 1 1 200px;
-}
-
-.ab-price-col:last-child {
-    flex: 1 1 240px;
-    max-width: 34ch;
+    min-width: 0;
 }
 
 .ab-price-rule {
@@ -4891,7 +4852,11 @@ body.admin-bar .nav-overlay {
     color: var(--hero-ink-soft);
 }
 
-@media (max-width: 560px) {
+@media (max-width: 620px) {
+    .ab-price {
+        grid-template-columns: 1fr;
+    }
+
     .ab-price-rule {
         display: none;
     }
@@ -5363,87 +5328,6 @@ body.admin-bar .nav-overlay {
     transform: none;
 }
 
-/* On the dark ground now, and ruled off the card above like a ledger line. */
-.ab-story-figs {
-    list-style: none;
-    margin: clamp(2.4rem, 5vh, 3.4rem) 0 0;
-    padding: clamp(1.6rem, 3.4vh, 2.2rem) 0 0;
-    border-top: 1px solid rgba(250, 249, 246, 0.24);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1.4rem clamp(1.5rem, 4vw, 3rem);
-    max-width: 40rem;
-}
-
-.ab-story-figs b {
-    /* Block, or the label runs on from the number and breaks mid-phrase:
-       "20+ Years / building", "2-4 Homes a / year". */
-    display: block;
-    font-family: var(--hero-display);
-    font-weight: 400;
-    font-size: clamp(2.4rem, 4.4vw, 3.6rem);
-    line-height: 1;
-    color: var(--hero-white);
-}
-
-.ab-story-figs li > span {
-    display: block;
-    margin-top: 0.45rem;
-    font-family: var(--nav-sans);
-    font-size: 0.62rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: rgba(250, 249, 246, 0.62);
-}
-
-.ab-story-figs b .ab-count {
-    font-family: var(--hero-display);
-    font-size: inherit;
-    font-weight: inherit;
-    letter-spacing: inherit;
-}
-
-.ab-story-figs b i {
-    font-size: .4em;
-    vertical-align: .7em;
-    color: var(--brass);
-    font-style: normal;
-}
-
-.ab-story-figs li {
-    position: relative;
-    padding-bottom: .9rem;
-}
-
-.ab-story-figs li::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 2px;
-    width: 2.4rem;
-    background: var(--brass);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform .6s var(--hero-ease);
-}
-
-.ab-story-figs.is-visible li::after {
-    transform: scaleX(1);
-}
-
-.ab-story-figs.is-visible li:nth-child(1)::after {
-    transition-delay: .15s;
-}
-
-.ab-story-figs.is-visible li:nth-child(2)::after {
-    transition-delay: .35s;
-}
-
-.ab-story-figs.is-visible li:nth-child(3)::after {
-    transition-delay: .55s;
-}
-
 /* ---- Warmth pass ---- */
 .homes-page.about-page {
     background: #f7f3ec;
@@ -5493,7 +5377,7 @@ body.admin-bar .nav-overlay {
         animation: none;
     }
 
-    .ab-row[data-reveal], .ab-awards-list li, .ab-story-figs li::after,
+    .ab-row[data-reveal], .ab-awards-list li,
     .ab-story-pull .ab-pull-b {
         opacity: 1 !important;
         transform: none !important;
@@ -7093,16 +6977,6 @@ body.admin-bar .about-page::before {
         flex: 0 0 auto;
         width: min(100%, 300px);
     }
-}
-
-/* ---- Story figures ----
-   Running the full container was right while this was a flat cream band.
-   Against the dark one it left the three stats stretching out under the
-   photograph while the card above them stopped at 40rem. Sharing the card's
-   edge makes the left column read as a single object. */
-.about-page .ab-story-figs {
-    max-width: min(100%, 40rem);
-    margin-top: clamp(2.2rem, 5vh, 3.2rem);
 }
 
 /* ---- Story band: responsive + reduced motion ----
