@@ -1834,6 +1834,12 @@ body.admin-bar .nav-overlay {
     background: #f5f3ed;
     color: var(--hero-ink);
     padding: clamp(4rem, 10vh, 7rem) var(--pad);
+    /* The plan in the CTA below overhangs UP into this section. That space has
+       to be cream padding here, not margin on the CTA — body is var(--ink), so
+       a margin between the two sections shows as a black band. The overhang is
+       half the image height, which scales with container width (see the -21.73%
+       note on .hm-cta--plan), hence a vw-based clamp rather than a fixed rem. */
+    padding-bottom: clamp(10rem, 26vw, 17rem);
 }
 
 .ways-in {
@@ -2750,7 +2756,7 @@ body.admin-bar .nav-overlay {
    change one and you must change the other. */
 
 .hm-cta--plan {
-    margin-top: 14rem;
+    margin-top: 0;
 }
 
 .hm-cta--plan .hm-cta-in {
@@ -2796,7 +2802,7 @@ body.admin-bar .nav-overlay {
     }
 
     .hm-cta--plan {
-        margin-top: 8rem;
+        margin-top: 0;
     }
 }
 
