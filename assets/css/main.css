@@ -1973,19 +1973,6 @@ body.admin-bar .nav-overlay {
     box-shadow: 0 8px 18px -10px rgba(38, 34, 27, 0.9);
 }
 
-.ways-bridge {
-    margin: clamp(2.4rem, 5vw, 3.4rem) auto 0;
-    padding-top: clamp(2.2rem, 4.5vw, 3rem);
-    border-top: 1px solid rgba(27, 26, 22, 0.1);
-    font-family: var(--hero-display);
-    font-size: clamp(1.15rem, 2.2vw, 1.5rem);
-    line-height: 1.35;
-    color: var(--hero-ink);
-    text-align: center;
-    max-width: 30ch;
-    text-wrap: balance;
-}
-
 .ways-foot {
     margin-top: clamp(2.5rem, 6vh, 4rem);
     padding-top: clamp(2rem, 4vw, 3rem);
@@ -2755,8 +2742,44 @@ body.admin-bar .nav-overlay {
    aspect-ratio and the margin below are the same number written two ways —
    change one and you must change the other. */
 
+/* Option 1 — one dark mass. This CTA takes the FOOTER's ink rather than the
+   #2c3a2c green the other pages use, so the page ends as a single dark block
+   with the plan floating on the only seam. Scoped to --plan so About,
+   How We Build and Our Homes keep their green. */
+
 .hm-cta--plan {
     margin-top: 0;
+    background: var(--ink);
+}
+
+/* The shared eyebrow/phone tint (#cdd6c5) is a green-cast grey that reads
+   sickly on ink; travertine belongs to this ground. */
+
+.hm-cta--plan .eyebrow {
+    color: var(--travertine);
+}
+
+.hm-cta--plan .hm-cta-call {
+    color: var(--bone-dim);
+}
+
+.hm-cta--plan .hm-cta-call a {
+    color: var(--bone);
+}
+
+/* .ways-btn is an ink pill — invisible on ink. Invert it: bone fill, ink text,
+   brass still sweeping in on hover. */
+
+.hm-cta--plan .ways-btn {
+    background: var(--bone);
+    color: var(--hero-ink);
+    box-shadow: 0 14px 28px -14px rgba(0, 0, 0, 0.55);
+}
+
+.hm-cta--plan .ways-btn:hover,
+.hm-cta--plan .ways-btn:focus-visible {
+    color: var(--bone);
+    box-shadow: 0 22px 36px -14px rgba(0, 0, 0, 0.6);
 }
 
 .hm-cta--plan .hm-cta-in {

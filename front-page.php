@@ -418,9 +418,6 @@ get_header();
                         </a>
                     <?php endforeach; ?>
                 </div>
-
-                <p class="ways-bridge"
-                   data-reveal><?php esc_html_e('Whichever one you are, the first conversation is the same.', 'luxury-homes'); ?></p>
             </div>
         </section>
 
