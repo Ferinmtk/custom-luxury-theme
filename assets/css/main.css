@@ -35,6 +35,9 @@
     --bone-dim: rgba(239, 231, 218, 0.62);
     --travertine: #c9baa3;
     --brass: #a8834f;
+    /* 4.53:1 on the cream ground, for small uppercase text where --brass
+       itself only reaches 3.15 and fails AA. */
+    --brass-deep: #8a6a34;
     --line: rgba(239, 231, 218, 0.14);
     --display: "Marcellus", serif;
     --body: "Inter", system-ui, sans-serif;
@@ -4233,65 +4236,6 @@ body.admin-bar .nav-overlay {
     }
 }
 
-/* ---------- 3. Quote ---------- */
-
-.ab-quote {
-    background: #f2efe7;
-}
-
-.ab-quote-in {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: clamp(3.5rem, 10vh, 6rem) clamp(1.4rem, 7vw, 6rem);
-    display: flex;
-    align-items: center;
-    gap: clamp(1.8rem, 5vw, 4rem);
-}
-
-.ab-quote-shot {
-    flex: 0 0 clamp(180px, 22vw, 300px);
-    margin: 0;
-}
-
-.ab-quote blockquote {
-    margin: 0;
-    flex: 1 1 auto;
-    max-width: 34ch;
-}
-
-@media (max-width: 720px) {
-    .ab-quote-in {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.6rem;
-    }
-
-    .ab-quote-shot {
-        flex: 0 0 auto;
-        width: 200px;
-    }
-}
-
-.ab-quote p {
-    font-family: var(--hero-display);
-    font-weight: 400;
-    font-size: clamp(1.4rem, 3.1vw, 2.4rem);
-    line-height: 1.24;
-    margin: 0;
-    color: var(--hero-ink);
-}
-
-.ab-quote cite {
-    display: block;
-    margin-top: 1.4rem;
-    font-style: normal;
-    font-family: var(--nav-sans);
-    font-size: 0.64rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--hero-ink-soft);
-}
-
 /* ---------- 4. Reach / Credentials ----------
    The template renders this block as .ab-cred (metros + registry title-block +
    memberships). The .ab-reach* selectors are the original names; the .ab-cred*
@@ -4320,8 +4264,7 @@ body.admin-bar .nav-overlay {
     }
 }
 
-.ab-reach-where ul,
-.ab-cred-where ul {
+.ab-reach-where ul {
     list-style: none;
     margin: 1rem 0 0;
     padding: 0;
@@ -4330,12 +4273,7 @@ body.admin-bar .nav-overlay {
     gap: 0.5rem 0.6rem;
 }
 
-.ab-cred-where {
-    margin-bottom: clamp(1.6rem, 3.5vh, 2.2rem);
-}
-
-.ab-reach-where li,
-.ab-cred-where li {
+.ab-reach-where li {
     font-family: var(--nav-sans);
     font-size: 0.72rem;
     letter-spacing: 0.08em;
@@ -4343,6 +4281,77 @@ body.admin-bar .nav-overlay {
     border: 1px solid var(--ab-rule);
     border-radius: 10px;
     color: var(--hero-ink);
+}
+
+/* The metros were pill chips, which read as filter tags — something to click.
+   They are a statement of where the company works, so they are set as a line
+   of display type with the honest caveat under it. */
+.ab-cred-metros {
+    margin: 1rem 0 0;
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.2rem, 2.4vw, 1.75rem);
+    line-height: 1.4;
+    max-width: 20ch;
+    color: var(--hero-ink);
+}
+
+.ab-cred-caveat {
+    margin: 1.1rem 0 0;
+    max-width: 42ch;
+    font-size: 0.86rem;
+    line-height: 1.7;
+    color: var(--hero-ink-soft);
+}
+
+/* ---- Registry ----
+   Label left, value right, one hairline per row. Six entries sit in two
+   columns on a wide screen and stack on a narrow one, with no fixed count
+   anywhere — the old title block broke the moment the registry length moved. */
+.ab-creds {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+    gap: 0 clamp(1.5rem, 4vw, 2.8rem);
+}
+
+.ab-creds-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.9rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--ab-rule);
+    font-family: var(--nav-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.ab-creds-row dt {
+    color: var(--hero-ink-soft);
+    white-space: nowrap;
+}
+
+.ab-creds-row dd {
+    margin: 0;
+    text-align: right;
+    color: var(--hero-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Registry values are short codes; the memberships list is a sentence. Right
+   aligning it in a half-width column produced four ragged lines of 0.62rem
+   caps. Give it the full width and let it set left. */
+.ab-creds-row--wide {
+    grid-column: 1 / -1;
+    align-items: baseline;
+}
+
+.ab-creds-row--wide dd {
+    text-align: left;
+    max-width: 46ch;
+    line-height: 1.7;
 }
 
 .ab-reach-facts {
@@ -4398,6 +4407,8 @@ body.admin-bar .nav-overlay {
     border-top: 1px solid var(--ab-rule);
     padding-top: clamp(2rem, 4vh, 2.8rem);
     display: flex;
+    /* Back to centre now the tally is gone: the copy is much the shorter
+       column again, and top-aligning it left a well of empty page beneath. */
     align-items: center;
     gap: clamp(1.8rem, 5vw, 4.5rem);
 }
@@ -4426,8 +4437,10 @@ body.admin-bar .nav-overlay {
 }
 
 .ab-plate-stage {
-    flex: 0 0 clamp(200px, 26vw, 330px);
+    flex: 0 0 clamp(220px, 30vw, 400px);
     margin: 0;
+    /* The tilt is a rotate on .ab-plate; without perspective on the stage it
+       renders as a flat skew. */
     perspective: 1100px;
 }
 
@@ -4542,7 +4555,9 @@ body.admin-bar .nav-overlay {
 
 .ab-plate-roster i {
     font-style: normal;
-    opacity: 0.6;
+    /* 0.6 disappeared under the sheen overlay — the roles were markedly
+       fainter than the names they sit beside. */
+    opacity: 0.78;
     letter-spacing: 0.16em;
 }
 
@@ -4552,7 +4567,7 @@ body.admin-bar .nav-overlay {
     font-size: 0.52rem;
     letter-spacing: 0.26em;
     text-transform: uppercase;
-    opacity: 0.72;
+    opacity: 0.82;
 }
 
 .ab-screw {
@@ -4783,16 +4798,68 @@ body.admin-bar .nav-overlay {
     color: var(--hero-ink-soft);
 }
 
-.ab-cost {
-    margin: 1.3rem 0 0;
-    padding-top: 1.1rem;
+/* The range, set as a figure. Two columns split by a hairline: the number on
+   the left, the method on the right, because "how" is what makes the number
+   credible and it was previously trailing the same sentence. */
+.ab-price {
+    /* Grid, not flex: the two columns are 200px and 240px basis, and inside a
+       46ch copy column that is a few pixels too wide — so it wrapped, and the
+       1px rule stayed on the first line as a bar hanging off the figure.
+       Explicit tracks can't wrap by accident. */
+    display: grid;
+    grid-template-columns: auto 1px minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(1rem, 2.2vw, 1.9rem);
+    margin-top: clamp(1.8rem, 4vh, 2.5rem);
+    padding-top: clamp(1.4rem, 3vh, 2rem);
     border-top: 1px solid var(--ab-rule);
-    font-size: 0.95rem;
-    color: var(--hero-ink);
 }
 
-.ab-cost b {
-    font-weight: 500;
+.ab-price-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-width: 0;
+}
+
+.ab-price-rule {
+    width: 1px;
+    align-self: stretch;
+    background: var(--ab-rule);
+}
+
+.ab-price-lab {
+    font-family: var(--nav-sans);
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--hero-ink-soft);
+}
+
+.ab-price-fig {
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+    line-height: 1;
+    color: var(--hero-ink);
+    font-variant-numeric: lining-nums;
+}
+
+.ab-price-note {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--hero-ink-soft);
+}
+
+@media (max-width: 620px) {
+    .ab-price {
+        grid-template-columns: 1fr;
+    }
+
+    .ab-price-rule {
+        display: none;
+    }
 }
 
 @media (max-width: 760px) {
@@ -4807,103 +4874,126 @@ body.admin-bar .nav-overlay {
     }
 }
 
-/* ---------- Title block ----------
-   Borrowed from the corner of a construction drawing sheet: ruled cells,
-   label over value, numbers set tabular. Licence and insurance belong in a
-   registry entry, not on a badge. */
-
-.ab-titleblock {
-    padding: 0 clamp(1.4rem, 7vw, 6rem) clamp(4rem, 9vh, 6rem);
-}
-
-.ab-titleblock-in {
-    max-width: 1240px;
-    margin: 0 auto;
-    border: 1px solid rgba(27, 26, 22, 0.28);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-}
-
-.ab-tb-cell {
-    padding: 1rem 1.1rem 1.1rem;
-    border-right: 1px solid rgba(27, 26, 22, 0.18);
-}
-
-.ab-tb-cell:last-child {
-    border-right: 0;
-}
-
-.ab-tb-cell dt {
-    font-family: var(--nav-sans);
-    font-size: 0.56rem;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--hero-ink-soft);
-}
-
-.ab-tb-cell dd {
-    margin: 0.5rem 0 0;
-    font-family: var(--nav-sans);
-    font-size: 0.86rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
-    color: var(--hero-ink);
-}
-
-@media (max-width: 620px) {
-    .ab-tb-cell {
-        border-right: 0;
-        border-bottom: 1px solid rgba(27, 26, 22, 0.18);
-    }
-
-    .ab-tb-cell:last-child {
-        border-bottom: 0;
-    }
-}
-
-/* ---------- Origin story ---------- */
+/* ---------- Origin story: the dark band ----------
+   The one tonal break on the page. Everything from the hero to the closing CTA
+   is warm white otherwise, which left this section as a headline stranded
+   beside an empty right half. Forest ground, photograph held to the right,
+   story set on a warm-white card so it reads as an inset plate — and the cast
+   brass plate three sections down lands harder for having a dark note before
+   it. --ab-ground is --hero-forest taken down in value, not a new hue: two
+   greens from one family, far enough apart on the page to read as deliberate. */
 
 .ab-story {
-    padding: clamp(2.5rem, 6vh, 4rem) clamp(1.4rem, 7vw, 6rem);
+    --ab-ground: #2a3129;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--ab-ground);
+    padding: clamp(3rem, 8vh, 5.5rem) clamp(1.4rem, 7vw, 6rem) clamp(3rem, 8vh, 5rem);
+}
+
+.ab-story-media {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(46%, 720px);
+    z-index: 0;
+}
+
+.ab-story-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 60% center;
+    display: block;
+}
+
+/* The photograph is a landscape frame in a tall slot, so it is cropped hard.
+   Holding it back from full brightness stops that crop reading as the subject
+   and lets it sit as ground for the card. */
+.ab-story-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(42, 49, 41, 0.34);
+}
+
+.ab-story-fade {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 62%;
+    background: linear-gradient(to right, var(--ab-ground) 0%, rgba(42, 49, 41, 0.86) 46%, rgba(42, 49, 41, 0) 100%);
 }
 
 .ab-story-in {
+    position: relative;
+    z-index: 1;
     max-width: 1240px;
     margin: 0 auto;
-    border-top: 1px solid var(--hero-ink);
-    padding-top: clamp(2rem, 4vh, 2.8rem);
+    /* Clears the top of the ghost numeral; the card overlaps the rest of it. */
+    padding-top: clamp(2.6rem, 6vw, 5rem);
+}
+
+/* The founding year, kept as a ghost numeral rather than swapped for a
+   "Since 2006" eyebrow — the eyebrow is the conventional move and the numeral
+   is the memorable one. Anchored top-left, not right: at the right edge it
+   would fall over the photograph, where brass at this alpha turns to mud.
+   Here it sits on flat forest and the card crops it, which is the effect. */
+.ab-story-year {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    font-family: var(--hero-display);
+    font-size: clamp(5rem, 13vw, 11rem);
+    line-height: 0.78;
+    letter-spacing: -0.02em;
+    color: rgba(168, 131, 79, 0.22);
+    pointer-events: none;
+    user-select: none;
+}
+
+.ab-story-card {
+    position: relative;
+    z-index: 1;
+    background: var(--hero-white);
+    max-width: min(100%, 40rem);
+    padding: clamp(2rem, 4vw, 3.4rem) clamp(1.6rem, 3.4vw, 3.2rem);
+    border-radius: 3px;
+    box-shadow: 0 42px 90px -34px rgba(12, 16, 11, 0.62);
 }
 
 .ab-story-pull {
     font-family: var(--hero-display);
     font-weight: 400;
-    font-size: clamp(1.5rem, 3.4vw, 2.6rem);
-    line-height: 1.18;
-    margin: 0 0 clamp(1.6rem, 4vh, 2.4rem);
+    font-size: clamp(1.6rem, 3.4vw, 2.7rem);
+    line-height: 1.12;
+    margin: 0;
     max-width: 20ch;
     color: var(--hero-ink);
+    text-wrap: pretty;
 }
 
+.ab-story-rule {
+    display: block;
+    height: 1px;
+    background: var(--hero-line);
+    margin: clamp(1.4rem, 3vh, 2rem) 0 clamp(1.2rem, 2.6vh, 1.7rem);
+}
+
+/* Single column inside the card: at 40rem the two-column set produced
+   four-word lines, and it broke the "we could have grown / instead" turn
+   across the gutter, which is the argument of the section. */
 .ab-story-cols {
-    columns: 2;
-    column-gap: clamp(2rem, 5vw, 4.5rem);
-    max-width: 76ch;
     color: var(--hero-ink-soft);
+    max-width: 54ch;
 }
 
 .ab-story-cols p {
-    margin: 0 0 1.1rem;
-    break-inside: avoid;
+    margin: 0 0 1.05rem;
 }
 
 .ab-story-cols p:last-child {
     margin-bottom: 0;
-}
-
-@media (max-width: 760px) {
-    .ab-story-cols {
-        columns: 1;
-    }
 }
 
 /* ---------- Warranty ----------
@@ -4946,54 +5036,65 @@ body.admin-bar .nav-overlay {
     color: var(--hero-ink-soft);
 }
 
+/* Ruled cells rather than a flat row. The 1px grid gap over a rule-coloured
+   ground draws the hairlines: one background, no per-cell borders to keep in
+   sync as the column count changes. */
 .ab-warranty-grid {
     list-style: none;
-    margin: 0;
+    margin: clamp(2rem, 4.5vh, 3rem) 0 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    gap: 1.6rem clamp(1.5rem, 4vw, 3.5rem);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--ab-rule);
+    border: 1px solid var(--ab-rule);
 }
 
-.ab-warranty-grid b {
-    display: block;
+.ab-warranty-grid li {
+    background: var(--hero-white);
+    padding: clamp(1.4rem, 2.6vw, 2rem) clamp(1.1rem, 2vw, 1.7rem);
+    transition: background 0.3s var(--hero-ease);
+}
+
+.ab-warranty-grid li:hover {
+    background: #f2ede2;
+}
+
+.ab-term-n {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+}
+
+.ab-term-n b {
     font-family: var(--hero-display);
     font-weight: 400;
-    font-size: clamp(2.2rem, 4vw, 3.2rem);
-    line-height: 1;
+    font-size: clamp(3rem, 6vw, 4.6rem);
+    line-height: 0.86;
     color: var(--hero-ink);
 }
 
-.ab-warranty-grid b i {
+.ab-term-n i {
     font-style: normal;
-    font-size: 0.32em;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--brass);
-    margin-left: 0.5rem;
-    vertical-align: 0.9em;
-}
-
-.ab-warranty-grid span {
-    display: block;
-    margin-top: 0.7rem;
-    padding-top: 0.7rem;
-    border-top: 1px solid var(--ab-rule);
-    font-size: 0.9rem;
-    color: var(--hero-ink-soft);
-}
-
-/* ---------- Memberships row under the title block ---------- */
-
-.ab-members {
-    grid-column: 1 / -1;
-    border-top: 1px solid rgba(27, 26, 22, 0.18);
-    padding: 0.85rem 1.1rem;
     font-family: var(--nav-sans);
-    font-size: 0.62rem;
-    letter-spacing: 0.16em;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
+    color: var(--brass-deep);
+}
+
+.ab-term-covers {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    line-height: 1.6;
     color: var(--hero-ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ab-warranty-grid li {
+        transition: none;
+    }
 }
 
 /* ---------- Awards ----------
@@ -5036,57 +5137,100 @@ body.admin-bar .nav-overlay {
     color: var(--hero-ink-soft);
 }
 
+/* Set as a colophon rather than a ledger: each award is a small column, and
+   the run of them reads as a row of citations at the foot of the work. The
+   house number is the last line because it is the one that can be checked. */
 .ab-awards-list {
     list-style: none;
     margin: 0;
     padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
 }
 
 .ab-awards-list li {
-    display: grid;
-    grid-template-columns: 4.2rem minmax(0, 1fr) minmax(0, 15rem);
-    gap: 0 clamp(0.8rem, 2vw, 1.8rem);
-    align-items: baseline;
-    padding: 0.85rem 0;
-    border-bottom: 1px solid var(--ab-rule);
+    padding: 0 clamp(0.9rem, 2vw, 1.7rem);
 }
 
-.ab-awards-list li:last-child {
-    border-bottom: 0;
+.ab-awards-list li:first-child {
+    padding-left: 0;
+}
+
+/* Divider on the left of every item but the first. On wrap the first item of
+   a new row keeps its rule, which in a grid reads as a column edge rather
+   than an error. */
+.ab-awards-list li + li {
+    border-left: 1px solid var(--ab-rule);
 }
 
 .ab-aw-year {
-    font-family: var(--nav-sans);
-    font-size: 0.72rem;
-    font-weight: 500;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.1em;
+    display: block;
+    font-family: var(--hero-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    line-height: 1;
+    font-variant-numeric: lining-nums tabular-nums;
     color: var(--brass);
 }
 
 .ab-aw-name {
-    font-family: var(--hero-display);
-    font-size: 1.05rem;
-    line-height: 1.3;
+    display: block;
+    margin-top: 0.85rem;
+    font-family: var(--hero-sans);
+    font-size: 0.92rem;
+    line-height: 1.42;
     color: var(--hero-ink);
+    text-wrap: pretty;
 }
 
 .ab-aw-for {
+    display: block;
+    margin-top: 0.75rem;
     font-family: var(--nav-sans);
-    font-size: 0.62rem;
+    font-size: 0.6rem;
+    line-height: 1.6;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--hero-ink-soft);
 }
 
-@media (max-width: 720px) {
-    .ab-awards-list li {
-        grid-template-columns: 3.4rem minmax(0, 1fr);
-        gap: 0.25rem 0.9rem;
+.ab-aw-for i {
+    font-style: normal;
+    margin: 0 0.15rem;
+    color: rgba(27, 26, 22, 0.28);
+}
+
+.ab-aw-for em {
+    font-style: normal;
+    white-space: nowrap;
+}
+
+.ab-aw-for sup {
+    font-size: 0.8em;
+    vertical-align: 0.35em;
+}
+
+@media (max-width: 620px) {
+    .ab-awards-list {
+        grid-template-columns: 1fr;
     }
 
-    .ab-aw-for {
-        grid-column: 2;
+    .ab-awards-list li {
+        padding: 1rem 0;
+        border-top: 1px solid var(--ab-rule);
+    }
+
+    .ab-awards-list li + li {
+        border-left: 0;
+    }
+
+    .ab-awards-list li:first-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .ab-aw-name {
+        margin-top: 0.5rem;
     }
 }
 
@@ -5161,26 +5305,9 @@ body.admin-bar .nav-overlay {
     z-index: 1;
 }
 
-.ab-story-year {
-    position: absolute;
-    top: clamp(-1rem, -1vw, 0rem);
-    right: clamp(0rem, 2vw, 2.5rem);
-    font-family: var(--hero-display);
-    font-weight: 400;
-    font-size: clamp(5rem, 13vw, 11rem);
-    line-height: .8;
-    color: var(--hero-ink);
-    opacity: .05;
-    pointer-events: none;
-    z-index: 0;
-    letter-spacing: -.02em;
-    user-select: none;
-}
-
-@media (max-width: 760px) {
-    .ab-story-year {
-        display: none;
-    }
+.ab-turnkey-copy h2 .ab-pull-b {
+    color: var(--hero-forest);
+    font-style: italic;
 }
 
 .ab-story-pull .ab-pull-b {
@@ -5192,75 +5319,13 @@ body.admin-bar .nav-overlay {
     font-style: italic;
 }
 
-.ab-story-pull.is-visible .ab-pull-b {
+/* .is-visible lands on the card, not the headline, since the band rebuild
+   moved data-reveal onto .ab-story-card — without the second selector
+   "on purpose." stays at opacity 0 permanently. */
+.ab-story-pull.is-visible .ab-pull-b,
+.ab-story-card.is-visible .ab-pull-b {
     opacity: 1;
     transform: none;
-}
-
-.ab-story-figs {
-    list-style: none;
-    margin: clamp(1.8rem, 4vh, 2.6rem) 0 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1.4rem clamp(1.5rem, 4vw, 3rem);
-    max-width: 40rem;
-}
-
-.ab-story-figs b {
-    font-family: var(--hero-display);
-    font-weight: 400;
-    font-size: clamp(2.4rem, 4.4vw, 3.6rem);
-    line-height: 1;
-    color: var(--hero-ink);
-}
-
-.ab-story-figs b .ab-count {
-    font-family: var(--hero-display);
-    font-size: inherit;
-    font-weight: inherit;
-    letter-spacing: inherit;
-}
-
-.ab-story-figs b i {
-    font-size: .4em;
-    vertical-align: .7em;
-    color: var(--brass);
-    font-style: normal;
-}
-
-.ab-story-figs li {
-    position: relative;
-    padding-bottom: .9rem;
-}
-
-.ab-story-figs li::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 2px;
-    width: 2.4rem;
-    background: var(--brass);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform .6s var(--hero-ease);
-}
-
-.ab-story-figs.is-visible li::after {
-    transform: scaleX(1);
-}
-
-.ab-story-figs.is-visible li:nth-child(1)::after {
-    transition-delay: .15s;
-}
-
-.ab-story-figs.is-visible li:nth-child(2)::after {
-    transition-delay: .35s;
-}
-
-.ab-story-figs.is-visible li:nth-child(3)::after {
-    transition-delay: .55s;
 }
 
 /* ---- Warmth pass ---- */
@@ -5282,32 +5347,9 @@ body.admin-bar .nav-overlay {
     color: #8a6a34;
 }
 
-.ab-quote .ab-sign {
-    color: var(--hero-forest);
-}
-
 .ab-row-shot img {
     border-radius: 3px;
     box-shadow: 0 1px 0 rgba(255, 250, 240, .6), 0 18px 40px -22px rgba(74, 54, 26, .4);
-}
-
-.ab-quote-shot img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    object-position: center top;
-    border-radius: 3px;
-}
-
-/* Keep the quote portrait clear of the fixed header as it scrolls past. */
-.ab-quote {
-    scroll-margin-top: 6rem;
-}
-
-.ab-quote-shot {
-    position: relative;
-    z-index: 1;
 }
 
 /* ---- Hero band ---- */
@@ -5335,7 +5377,7 @@ body.admin-bar .nav-overlay {
         animation: none;
     }
 
-    .ab-row[data-reveal], .ab-awards-list li, .ab-story-figs li::after,
+    .ab-row[data-reveal], .ab-awards-list li,
     .ab-story-pull .ab-pull-b {
         opacity: 1 !important;
         transform: none !important;
@@ -5343,57 +5385,6 @@ body.admin-bar .nav-overlay {
     }
 }
 
-
-/* ---- Marcus: signed founder's note, not a testimonial ----
-   Round photo, the line and signature set in the architect hand (loaded on
-   this page via enqueue), quieter credit. Reframes a playful aside so it
-   stops reading like a client quote. */
-.ab-note .ab-quote-in {
-    align-items: flex-start;
-    gap: clamp(1.4rem, 4vw, 3rem);
-}
-
-.ab-note .ab-quote-shot {
-    flex: 0 0 clamp(120px, 14vw, 148px);
-}
-
-.ab-note .ab-quote-shot img {
-    border-radius: 50%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    object-position: center top;
-}
-
-.ab-note blockquote {
-    max-width: 34ch;
-}
-
-.ab-note .ab-quote p {
-    font-family: "Architects Daughter", var(--hero-display), cursive;
-    font-size: clamp(1.3rem, 2.3vw, 1.85rem);
-    line-height: 1.5;
-    font-weight: 400;
-    color: var(--hero-ink);
-}
-
-.ab-note .ab-sign {
-    font-family: "Architects Daughter", var(--hero-display), cursive;
-    font-size: 1.5rem;
-    color: var(--hero-forest);
-    transform: rotate(-3deg);
-    display: inline-block;
-    margin-top: 1rem;
-}
-
-.ab-note .ab-quote cite {
-    font-family: var(--nav-sans);
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--hero-ink-soft);
-    opacity: 0.7;
-    margin-top: 0.6rem;
-}
 
 /* ---- Warranty: lead with a plain-language promise, terms as proof ---- */
 .ab-warranty-promise {
@@ -5977,8 +5968,100 @@ body.admin-bar .nav-overlay {
     border-top: 0
 }
 
-.si-head {
-    padding: clamp(2rem, 4.5vw, 3.2rem) clamp(1.8rem, 4.5vw, 3.4rem) 0
+/* ---- Hero ----
+   Was .si-head, inside the card. Lifting it out is what makes the card small:
+   the eyebrow, the 4rem headline and the lede were roughly 230px of the card's
+   height, and none of it was the form. */
+.si-hero {
+    position: relative;
+    /* Matches .si-layout, not .si-stage. At 940 the headline started 150px
+       right of the card beneath it and the band ran under the sidebar. */
+    max-width: 1240px;
+    margin: 0 auto clamp(2rem, 5vh, 3.2rem)
+}
+
+.si-hero-in {
+    position: relative;
+    z-index: 2
+}
+
+/* ---- Ground ----
+   The photograph sits behind the whole section rather than in it. Absolute
+   inside .si-wrap (which is already position:relative;overflow:hidden), so it
+   adds no height: the form still begins at the top of the page. */
+/* ---- Band ----
+   Full layout width, after the lede, nothing overlapping it. */
+.si-hero-band {
+    max-width: 1240px;
+    margin: 0 auto clamp(2rem, 5vh, 3rem);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 40px 90px -46px rgba(28, 26, 21, .6)
+}
+
+.si-hero-band img {
+    display: block;
+    width: 100%;
+    /* 520px at desktop. The couple runs from roughly a third to nine-tenths of
+       the frame's height, so a shorter band cuts them at the waist whichever
+       way the crop is anchored — at 330px it used only 47% of the picture.
+
+       54vh, not 46: at 46 the preferred value only reaches the 520 ceiling on a
+       viewport taller than ~1130px, so a normal laptop got ~455 and the band
+       rendered nearer option B than the C it was meant to be. */
+    height: clamp(280px, 54vh, 520px);
+    object-fit: cover;
+    object-position: center 46%
+}
+
+/* ---- Ground ----
+   Scoped to the form zone, not the whole section: the map below is already a
+   large image and does not want a second one behind it. */
+.si-formzone {
+    position: relative;
+    overflow: hidden
+}
+
+/* Child combinator so `.si-wrap > *` cannot reach it — and .si-bg is inside
+   .si-formzone now, so it is out of that rule's range either way. */
+.si-formzone > .si-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none
+}
+
+.si-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Framed for the studio interior: models and courtyard glazing, left of
+       centre. */
+    object-position: 30% 45%;
+    display: block;
+    opacity: .34;
+    filter: saturate(.5) contrast(.9)
+}
+
+/* Diagonal wash, near-solid at the top left where the headline and card sit,
+   thinning to the right. Without it the type has to hold contrast against
+   whatever the photograph happens to be doing behind it. */
+.si-bg-wash {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg,
+    var(--si-page) 30%,
+    rgba(231, 223, 208, .55) 62%,
+    rgba(231, 223, 208, .20) 100%)
+}
+
+/* Above the ground. */
+.si-hero,
+.si-hero-band,
+.si-layout,
+.si-maparea {
+    position: relative;
+    z-index: 1
 }
 
 .si-eyebrow {
@@ -6000,7 +6083,7 @@ body.admin-bar .nav-overlay {
     background: var(--si-brass)
 }
 
-.si-head h1 {
+.si-hero h1 {
     font-family: var(--si-serif);
     font-weight: 400;
     font-size: clamp(2.5rem, 6vw, 4rem);
@@ -6009,7 +6092,7 @@ body.admin-bar .nav-overlay {
     margin: 0
 }
 
-.si-head h1 em {
+.si-hero h1 em {
     font-style: italic;
     color: var(--si-brass-deep)
 }
@@ -6028,7 +6111,25 @@ body.admin-bar .nav-overlay {
 }
 
 .si-body {
-    padding: clamp(2rem, 4.5vw, 3rem) clamp(1.8rem, 4.5vw, 3.4rem) clamp(2rem, 4.5vw, 2.8rem)
+    /* One measure for every element in the form column. The options and inputs
+       were capped at 540px while the progress track above them and the nav note
+       below them ran the full body width — so the three answer cards stopped
+       ~100px short of a rule directly above and another directly below. Sharing
+       one custom property means they cannot drift apart again. At the desktop
+       card width the body's inner box is ~640px, so nothing is clipped: the
+       cap only bites once the layout stacks and the card grows to 940px. */
+    --si-measure: 640px;
+
+    /* First value raised: this used to sit beneath the headline block, which
+       supplied its own breathing room. The card starts here now. */
+    padding: clamp(2.4rem, 5vw, 3.4rem) clamp(1.8rem, 4.5vw, 3.4rem) clamp(2rem, 4.5vw, 2.8rem)
+}
+
+.si-meter,
+.si-q,
+.si-alert,
+.si-nav {
+    max-width: var(--si-measure)
 }
 
 .si-alert {
@@ -6153,7 +6254,7 @@ body.admin-bar .nav-overlay {
     display: flex;
     flex-direction: column;
     gap: .55rem;
-    max-width: 540px
+    max-width: var(--si-measure)
 }
 
 .si-opts-row {
@@ -6224,7 +6325,7 @@ body.admin-bar .nav-overlay {
 }
 
 .si-inp-wrap {
-    max-width: 540px
+    max-width: var(--si-measure)
 }
 
 .si-lab {
@@ -6531,11 +6632,11 @@ body.admin-bar .nav-overlay {
 }
 
 /* Contact: force readable dark headings on the light card */
-.si-page .si-head h1 {
+.si-page .si-hero h1 {
     color: var(--si-ink)
 }
 
-.si-page .si-head h1 em {
+.si-page .si-hero h1 em {
     color: var(--si-brass-deep)
 }
 
@@ -6714,12 +6815,23 @@ body.admin-bar .nav-overlay {
     inset: 0
 }
 
-.si-mapframe .leaflet-tile {
-    filter: grayscale(.18) sepia(.30) saturate(.72) brightness(1.03) contrast(.97) hue-rotate(-6deg)
+.si-mapframe .si-tile-sat {
+    /* Deliberately almost nothing. The previous pass warmed the imagery with
+       sepia(.10) to pull it toward the cream page — over Front Range
+       rangeland, which is already tan, that read as khaki-on-khaki. Let the
+       photography be photography. */
+    filter: saturate(.96) contrast(1.05) brightness(1.02)
+}
+
+/* Labels and roads unfiltered, or they stop being legible. */
+.si-mapframe .si-tile-ref {
+    filter: none
 }
 
 .si-page .leaflet-container {
-    background: #efe7da;
+    /* Shows through until tiles land: a dark ground reads as "loading",
+       cream reads as "broken". */
+    background: #2e3230;
     font-family: var(--si-body)
 }
 
@@ -6744,8 +6856,17 @@ body.admin-bar .nav-overlay {
     font-size: .7rem;
     font-weight: 600;
     letter-spacing: .06em;
-    color: var(--si-ink);
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .8)
+    /* Cream with a dark halo: ink with a white shadow vanishes over forest
+       and rooftops alike. */
+    color: #fdfaf3;
+    text-shadow: 0 1px 2px rgba(12, 14, 12, .9), 0 0 7px rgba(12, 14, 12, .6)
+}
+
+.si-pin b {
+    /* --si-brass (#a8834f) is ~2:1 against urban grey and 2.7:1 against
+       forest — invisible on imagery. Lifted brass clears 4:1 on both. */
+    background: #e2c894;
+    box-shadow: 0 0 0 3px rgba(226, 200, 148, .32), 0 1px 4px rgba(12, 14, 12, .7)
 }
 
 .si-page .leaflet-control-attribution {
@@ -6783,9 +6904,13 @@ body.admin-bar .nav-overlay {
     cursor: pointer
 }
 
-/* Contact: map click opens Google Maps */
+/* Contact: the map pans and zooms; only the pins are click targets. */
 .si-page .leaflet-container {
-    cursor: pointer
+    cursor: grab
+}
+
+.si-page .leaflet-container:active {
+    cursor: grabbing
 }
 
 
@@ -6905,5 +7030,124 @@ html {
 @media (prefers-reduced-motion: reduce) {
     .sc-reveal {
         display: none;
+    }
+}
+
+/* ==========================================================================
+   About — visual refinement pass
+   Scoped to .about-page. The page's identity (Fraunces on warm white, forest
+   and brass, the cast plate as the one loud object) is settled and not what
+   these rules touch. They fix places where the execution fell short of it.
+   ========================================================================== */
+
+/* ---- Top veil ----
+   The header is a floating pill inset from the viewport edge, so page content
+   scrolls through the transparent strip above it and arrives fully legible —
+   a stray half-sentence sitting over the logo. A colour scrim can't work here
+   because the page runs cream, then #f2efe7, then dark forest at the CTA. So
+   blur the backdrop instead of tinting it, and mask the blur out downward:
+   background-agnostic, and it reads as depth rather than as a bar. */
+.about-page::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    height: 6rem;
+    z-index: 55;
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 46%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0, #000 46%, transparent 100%);
+}
+
+body.admin-bar .about-page::before {
+    height: 8rem;
+}
+
+/* No backdrop-filter (Firefox default, older Safari): fall back to nothing
+   rather than a cream bar that would be wrong over the forest CTA. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .about-page::before {
+        display: none;
+    }
+}
+
+/* ---- Portraits as a set ----
+   The four headshots come from four different sessions: one warm candid, two
+   grey studio, one cool formal. Side by side down a single column the mismatch
+   is the first thing the eye catches. Pulling the saturation back and warming
+   the shadows lets them read as one commission. This is a patch over a photo
+   problem, not a fix — four shots on one backdrop would beat it. Dial the
+   saturate() value toward 1 to weaken, or delete the block to revert. */
+.about-page .ab-row-shot img {
+    background: #e8e3d8;
+    filter: saturate(0.74) contrast(1.03) sepia(0.07);
+}
+
+/* ---- Image language ----
+   Portraits already carry a 3px radius and a warm lifted shadow; the hero band
+   was square and flat, so the page opened in a different vocabulary than it
+   continued in. */
+.about-page .ab-hero-band {
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(255, 250, 240, 0.6), 0 26px 60px -34px rgba(74, 54, 26, 0.45);
+}
+
+/* ---- One team: close the trailing void ----
+   The copy is capped at 46ch and the figure was a fixed 320px, so in a 1240px
+   container roughly 300px collected at the right end as dead space rather than
+   as the gap between two columns. Push the figure to the far edge and let it
+   take more of the width now that it carries a drawing worth reading. */
+.about-page .ab-turnkey-in {
+    justify-content: space-between;
+}
+
+.about-page .ab-turnkey figure {
+    flex: 0 0 clamp(220px, 30vw, 400px);
+}
+
+@media (max-width: 760px) {
+    .about-page .ab-turnkey figure {
+        flex: 0 0 auto;
+        width: min(100%, 300px);
+    }
+}
+
+/* ---- Story band: responsive + reduced motion ----
+   Below 860px the photograph stops being a right-hand plate and becomes a
+   banner above the card: at that width a 46% column crops the house down to
+   a sliver of wall. */
+@media (max-width: 860px) {
+    .about-page .ab-story {
+        padding-top: 0;
+    }
+
+    .about-page .ab-story-media {
+        position: relative;
+        inset: auto;
+        width: auto;
+        height: clamp(190px, 34vw, 280px);
+        margin: 0 calc(-1 * clamp(1.4rem, 7vw, 6rem)) clamp(2rem, 5vh, 2.8rem);
+    }
+
+    .about-page .ab-story-fade {
+        inset: auto 0 0;
+        width: auto;
+        height: 55%;
+        background: linear-gradient(to top, var(--ab-ground) 0%, rgba(42, 49, 41, 0) 100%);
+    }
+
+    .about-page .ab-story-year {
+        font-size: clamp(4rem, 20vw, 6rem);
+    }
+}
+
+/* The card carries a heavy shadow to lift it off the forest. On the warmth
+   pass background that shadow would be wrong, so it is scoped here rather
+   than to .ab-story-card globally. */
+@media (prefers-reduced-motion: reduce) {
+    .about-page .ab-story-card[data-reveal] {
+        opacity: 1;
+        transform: none;
     }
 }
