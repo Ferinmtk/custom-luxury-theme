@@ -5968,8 +5968,100 @@ body.admin-bar .nav-overlay {
     border-top: 0
 }
 
-.si-head {
-    padding: clamp(2rem, 4.5vw, 3.2rem) clamp(1.8rem, 4.5vw, 3.4rem) 0
+/* ---- Hero ----
+   Was .si-head, inside the card. Lifting it out is what makes the card small:
+   the eyebrow, the 4rem headline and the lede were roughly 230px of the card's
+   height, and none of it was the form. */
+.si-hero {
+    position: relative;
+    /* Matches .si-layout, not .si-stage. At 940 the headline started 150px
+       right of the card beneath it and the band ran under the sidebar. */
+    max-width: 1240px;
+    margin: 0 auto clamp(2rem, 5vh, 3.2rem)
+}
+
+.si-hero-in {
+    position: relative;
+    z-index: 2
+}
+
+/* ---- Ground ----
+   The photograph sits behind the whole section rather than in it. Absolute
+   inside .si-wrap (which is already position:relative;overflow:hidden), so it
+   adds no height: the form still begins at the top of the page. */
+/* ---- Band ----
+   Full layout width, after the lede, nothing overlapping it. */
+.si-hero-band {
+    max-width: 1240px;
+    margin: 0 auto clamp(2rem, 5vh, 3rem);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 40px 90px -46px rgba(28, 26, 21, .6)
+}
+
+.si-hero-band img {
+    display: block;
+    width: 100%;
+    /* 520px at desktop. The couple runs from roughly a third to nine-tenths of
+       the frame's height, so a shorter band cuts them at the waist whichever
+       way the crop is anchored — at 330px it used only 47% of the picture.
+
+       54vh, not 46: at 46 the preferred value only reaches the 520 ceiling on a
+       viewport taller than ~1130px, so a normal laptop got ~455 and the band
+       rendered nearer option B than the C it was meant to be. */
+    height: clamp(280px, 54vh, 520px);
+    object-fit: cover;
+    object-position: center 46%
+}
+
+/* ---- Ground ----
+   Scoped to the form zone, not the whole section: the map below is already a
+   large image and does not want a second one behind it. */
+.si-formzone {
+    position: relative;
+    overflow: hidden
+}
+
+/* Child combinator so `.si-wrap > *` cannot reach it — and .si-bg is inside
+   .si-formzone now, so it is out of that rule's range either way. */
+.si-formzone > .si-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none
+}
+
+.si-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Framed for the studio interior: models and courtyard glazing, left of
+       centre. */
+    object-position: 30% 45%;
+    display: block;
+    opacity: .34;
+    filter: saturate(.5) contrast(.9)
+}
+
+/* Diagonal wash, near-solid at the top left where the headline and card sit,
+   thinning to the right. Without it the type has to hold contrast against
+   whatever the photograph happens to be doing behind it. */
+.si-bg-wash {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg,
+    var(--si-page) 30%,
+    rgba(231, 223, 208, .55) 62%,
+    rgba(231, 223, 208, .20) 100%)
+}
+
+/* Above the ground. */
+.si-hero,
+.si-hero-band,
+.si-layout,
+.si-maparea {
+    position: relative;
+    z-index: 1
 }
 
 .si-eyebrow {
@@ -5991,7 +6083,7 @@ body.admin-bar .nav-overlay {
     background: var(--si-brass)
 }
 
-.si-head h1 {
+.si-hero h1 {
     font-family: var(--si-serif);
     font-weight: 400;
     font-size: clamp(2.5rem, 6vw, 4rem);
@@ -6000,7 +6092,7 @@ body.admin-bar .nav-overlay {
     margin: 0
 }
 
-.si-head h1 em {
+.si-hero h1 em {
     font-style: italic;
     color: var(--si-brass-deep)
 }
@@ -6028,7 +6120,9 @@ body.admin-bar .nav-overlay {
        cap only bites once the layout stacks and the card grows to 940px. */
     --si-measure: 640px;
 
-    padding: clamp(2rem, 4.5vw, 3rem) clamp(1.8rem, 4.5vw, 3.4rem) clamp(2rem, 4.5vw, 2.8rem)
+    /* First value raised: this used to sit beneath the headline block, which
+       supplied its own breathing room. The card starts here now. */
+    padding: clamp(2.4rem, 5vw, 3.4rem) clamp(1.8rem, 4.5vw, 3.4rem) clamp(2rem, 4.5vw, 2.8rem)
 }
 
 .si-meter,
@@ -6538,11 +6632,11 @@ body.admin-bar .nav-overlay {
 }
 
 /* Contact: force readable dark headings on the light card */
-.si-page .si-head h1 {
+.si-page .si-hero h1 {
     color: var(--si-ink)
 }
 
-.si-page .si-head h1 em {
+.si-page .si-hero h1 em {
     color: var(--si-brass-deep)
 }
 
@@ -6722,20 +6816,21 @@ body.admin-bar .nav-overlay {
 }
 
 .si-mapframe .si-tile-sat {
-    /* Just enough warmth to sit with the cream page. The old grade —
-       sepia(.30) saturate(.72) — was tuned for a pale vector basemap and
-       turns aerial photography to mud. */
-    filter: saturate(.88) sepia(.10) contrast(1.03) brightness(.97)
+    /* Deliberately almost nothing. The previous pass warmed the imagery with
+       sepia(.10) to pull it toward the cream page — over Front Range
+       rangeland, which is already tan, that read as khaki-on-khaki. Let the
+       photography be photography. */
+    filter: saturate(.96) contrast(1.05) brightness(1.02)
 }
 
-/* Labels and roads stay unfiltered or they stop being legible. */
+/* Labels and roads unfiltered, or they stop being legible. */
 .si-mapframe .si-tile-ref {
     filter: none
 }
 
 .si-page .leaflet-container {
-    /* Shows through until tiles land — a dark ground reads as "map loading",
-       cream reads as "map broken". */
+    /* Shows through until tiles land: a dark ground reads as "loading",
+       cream reads as "broken". */
     background: #2e3230;
     font-family: var(--si-body)
 }
@@ -6761,16 +6856,15 @@ body.admin-bar .nav-overlay {
     font-size: .7rem;
     font-weight: 600;
     letter-spacing: .06em;
-    /* Flipped for the satellite ground: cream type with a dark halo. Ink with
-       a white shadow vanished over forest and rooftops alike. */
+    /* Cream with a dark halo: ink with a white shadow vanishes over forest
+       and rooftops alike. */
     color: #fdfaf3;
     text-shadow: 0 1px 2px rgba(12, 14, 12, .9), 0 0 7px rgba(12, 14, 12, .6)
 }
 
 .si-pin b {
-    /* --si-brass (#a8834f) measures about 2:1 against urban grey and 2.7:1
-       against forest — it disappears on imagery. Same lifted brass as the
-       boundary stroke, which clears 4:1 on both. */
+    /* --si-brass (#a8834f) is ~2:1 against urban grey and 2.7:1 against
+       forest — invisible on imagery. Lifted brass clears 4:1 on both. */
     background: #e2c894;
     box-shadow: 0 0 0 3px rgba(226, 200, 148, .32), 0 1px 4px rgba(12, 14, 12, .7)
 }
@@ -6810,9 +6904,13 @@ body.admin-bar .nav-overlay {
     cursor: pointer
 }
 
-/* Contact: map click opens Google Maps */
+/* Contact: the map pans and zooms; only the pins are click targets. */
 .si-page .leaflet-container {
-    cursor: pointer
+    cursor: grab
+}
+
+.si-page .leaflet-container:active {
+    cursor: grabbing
 }
 
 
