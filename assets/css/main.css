@@ -3889,54 +3889,132 @@ body.admin-bar .nav-overlay {
 }
 
 .hwb-steps-in {
-    max-width: 1240px;
+    /* Was 1240px while the copy capped at 62ch, so the right third of every row
+       sat empty. The container now ends roughly where the text does. */
+    max-width: 1040px;
     margin: 0 auto;
 }
 
+/* The steps are set as a drafting sheet: a dashed grid line runs the height of
+   the list and each stage is marked with a circled bubble, the way column
+   positions are called out on a real drawing. The bubbles are opaque so they
+   knock the line out as they cross it. */
+
 .hwb-list {
+    position: relative;
     list-style: none;
     margin: 0;
     padding: 0;
-    counter-reset: none;
+}
+
+.hwb-list::before {
+    content: '';
+    position: absolute;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    left: 33px;
+    width: 1px;
+    background-image: linear-gradient(to bottom, rgba(27, 26, 22, 0.28) 5px, transparent 5px);
+    background-size: 1px 11px;
 }
 
 .hwb-step {
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(60px, 160px) 1fr;
-    gap: 1.5rem clamp(1.5rem, 5vw, 4rem);
-    padding: clamp(1.8rem, 4vh, 2.8rem) 0;
+    grid-template-columns: 66px 1fr;
+    gap: 1.5rem clamp(1.6rem, 4vw, 3.2rem);
+    padding: clamp(2rem, 5vh, 3.2rem) 0;
     border-top: 1px solid rgba(27, 26, 22, 0.14);
+    align-items: start;
+}
+
+.hwb-step:first-child {
+    border-top: none;
 }
 
 .hwb-step:last-child {
-    border-bottom: 1px solid rgba(27, 26, 22, 0.14);
+    border-bottom: none;
+}
+
+/* Dimension ticks at both ends of each rule. Absolutely positioned so they
+   don't become grid items — a static pseudo-element inside a grid container
+   would take a cell of its own and shove the layout sideways. */
+
+.hwb-step::before,
+.hwb-step::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    width: 1px;
+    height: 9px;
+    background: rgba(27, 26, 22, 0.3);
+}
+
+.hwb-step:first-child::before,
+.hwb-step:first-child::after {
+    display: none;
+}
+
+.hwb-step::before {
+    left: 0;
+}
+
+.hwb-step::after {
+    right: 0;
 }
 
 .hwb-step .num {
+    position: relative;
+    z-index: 1;
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    border: 1px solid var(--brass);
+    background: var(--hero-white);
+    display: grid;
+    place-items: center;
     font-family: var(--hero-display);
-    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-size: 1.3rem;
     line-height: 1;
-    color: var(--hero-forest);
+    color: var(--brass-deep);
     font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
 }
 
 .hwb-step h3 {
     font-family: var(--hero-display);
     font-weight: 400;
-    font-size: clamp(1.3rem, 2.2vw, 1.7rem);
-    margin: 0 0 0.6rem;
+    font-size: clamp(1.45rem, 2.4vw, 1.95rem);
+    line-height: 1.15;
+    margin: 0.55rem 0 0.7rem;
+    color: var(--hero-ink);
 }
 
 .hwb-step p {
     margin: 0;
     color: var(--hero-ink-soft);
-    max-width: 62ch;
+    max-width: 58ch;
+    line-height: 1.7;
 }
 
 @media (max-width: 640px) {
+    .hwb-list::before {
+        left: 26px;
+    }
+
     .hwb-step {
-        grid-template-columns: 1fr;
-        gap: 0.6rem;
+        grid-template-columns: 52px 1fr;
+        gap: 1rem;
+    }
+
+    .hwb-step .num {
+        width: 52px;
+        height: 52px;
+        font-size: 1.05rem;
+    }
+
+    .hwb-step h3 {
+        margin-top: 0.3rem;
     }
 }
 
