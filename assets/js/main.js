@@ -74,7 +74,25 @@
     var seq = document.getElementById('descent');
     var vid = document.getElementById('vid');
 
-    if (seq && vid) {
+    /*
+     * <=720px shows a still (.d-still) instead of the descent, so nothing below
+     * this point should run: no src, no poster, no scroll listeners, no pin.
+     * Keep this breakpoint in step with the media query in main.css and the
+     * <source> in front-page.php.
+     *
+     * Evaluated once. Crossing 720px by resizing or rotating does not re-init
+     * the hero — a reload does. Phones don't cross it, so this only affects a
+     * desktop window dragged narrow and back.
+     */
+    var descentIsMobile = window.matchMedia('(max-width: 720px)').matches;
+
+    if (seq && vid && !descentIsMobile) {
+        // Poster is held in data-poster so phones never fetch it either.
+        var posterSrc = vid.getAttribute('data-poster');
+        if (posterSrc) {
+            vid.poster = posterSrc;
+        }
+
         /**
          * Deferred hero film.
          *

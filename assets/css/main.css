@@ -741,6 +741,60 @@ body.admin-bar .nav-overlay {
     }
 }
 
+/* ---------- Descent: mobile still ----------
+   Phones get one image, not the film. The <picture> in front-page.php resolves
+   to a 1x1 above 721px so desktop never fetches the still; main.js checks the
+   same 720px and skips the whole hero, so no video or poster is fetched here.
+   Change the breakpoint in all three places or none.
+
+   Placed at the end of the descent section deliberately: these override the
+   base rules above and CSS order decides ties. Do not hoist. */
+
+.d-still {
+    display: none;
+}
+
+@media (max-width: 720px) {
+    /* Collapse the 560vh pin back to a normal block. */
+    .descent {
+        height: auto;
+    }
+
+    .d-pin {
+        position: static;
+        height: auto;
+        display: block;
+    }
+
+    .d-mat {
+        width: 100%;
+        height: auto;
+        box-shadow: none;
+    }
+
+    /* Everything the scrub drove has nothing driving it now. */
+    .d-mat video,
+    .d-copy,
+    .d-grade,
+    .d-cue {
+        display: none;
+    }
+
+    .d-still {
+        display: block;
+    }
+
+    .d-still img {
+        display: block;
+        width: 100%;
+        height: auto;
+        /* Reserves the box before the image decodes, so the sections below it
+           don't jump. Match this to the still's real ratio when it arrives. */
+        aspect-ratio: 4 / 5;
+        object-fit: cover;
+    }
+}
+
 /* =========================================================
    SITE SECTIONS (unchanged)
    ========================================================= */

@@ -40,8 +40,40 @@ get_header();
                             preload="none"
                             data-src="<?php echo lh_asset('video/descent.mp4'); ?>"
                             data-mobile-src="<?php echo lh_asset('video/descent-mobile.mp4'); ?>"
-                            poster="<?php echo lh_asset('img/poster.jpg'); ?>"
+                            data-poster="<?php echo lh_asset('img/poster.jpg'); ?>"
                     ></video>
+                    <?php
+                    /*
+                     * MOBILE (<=720px): a still stands in for the whole descent.
+                     *
+                     * The film is not merely hidden — main.js never attaches a src and
+                     * never sets the poster (hence data-poster above), so a phone
+                     * downloads no video at all. The <picture> below is how the still
+                     * stays off the desktop wire: a display:none <img> is still fetched
+                     * by most browsers, but a <source> that wins the media query is not,
+                     * so desktop resolves to the 1x1 and stops.
+                     *
+                     * The 720px breakpoint is shared by three places and they must agree:
+                     * this <source>, the media query in main.css, and descentIsMobile
+                     * in main.js.
+                     */
+                    $lh_still = 'img/hero-mobile.jpg';
+                    if (!file_exists(get_template_directory() . '/assets/' . $lh_still)) {
+                        $lh_still = 'img/poster.jpg'; // until the dedicated still lands
+                    }
+                    ?>
+                    <picture class="d-still">
+                        <source media="(min-width: 721px)"
+                                srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+                        <img src="<?php echo lh_asset($lh_still); ?>"
+                             alt="<?php echo esc_attr(sprintf(
+                             /* translators: %s: company name */
+                                     __('A %s home on its site at dusk', 'luxury-homes'),
+                                     lh_company()
+                             )); ?>"
+                             fetchpriority="high"
+                             decoding="async">
+                    </picture>
                     <div class="d-grade" aria-hidden="true"></div>
 
                     <div class="d-copy" id="c1">
