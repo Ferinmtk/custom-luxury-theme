@@ -377,57 +377,81 @@ get_header();
                 <span aria-hidden="true">&rarr;</span></a>
         </section>
 
-        <!-- ============ START WHERE YOU ARE (flip cards) ============ -->
+        <!-- ============ START WHERE YOU ARE (static cards) ============ -->
         <?php
         $lh_tel_display = trim((string)lh_field('phone_display', '(303) 555-0100'));
         $lh_tel_href = 'tel:' . preg_replace('/[^0-9+]/', '', lh_field('phone', '+13035550100'));
 
-        // Front title + back message per option. Back copy is editable via ACF later.
+        /*
+         * Four entry points, not six. These were flip cards; the message was on the
+         * back face, reachable only on hover — which meant no touch device ever saw
+         * it (the .is-flipped handler CLAUDE.md describes was never written). Both
+         * faces are on one static card now. Copy is editable via ACF later.
+         */
         $lh_ways = array(
-                array('icon' => 'map-pin', 'tone' => '#3a6033', 'title' => 'You own the land.', 'back' => 'Send us the parcel. We’ll walk it and tell you what it wants to become.'),
-                array('icon' => 'search', 'tone' => '#347391', 'title' => 'You’re still looking for a site.', 'back' => 'Bring us three. We’ll tell you which one builds, and what it costs before you buy.'),
-                array('icon' => 'activity', 'tone' => '#b3812a', 'title' => 'You have drawings already.', 'back' => 'Send the plans. We’ll price them honestly and flag what we’d change.'),
-                array('icon' => 'compass', 'tone' => '#c46c36', 'title' => 'You don’t know where to start.', 'back' => 'Start with a walk. No plans, no pressure — just the land and a conversation.'),
-                array('icon' => 'shield', 'tone' => '#b03e2c', 'title' => 'You’ve been burned before.', 'back' => 'Fair. Ask us anything, call our last three clients, then decide.'),
-                array('icon' => 'eye', 'tone' => '#93794b', 'title' => 'You’re just looking.', 'back' => 'Look. Nothing here needs your email.', 'gold' => true, 'link' => '/our-homes/'),
+                array('icon' => 'map-pin', 'title' => 'You own the land.', 'msg' => 'Send us the parcel. We’ll walk it and tell you what it wants to become.'),
+                array('icon' => 'compass', 'title' => 'You don’t know where to start.', 'msg' => 'Start with a walk. No plans, no pressure — just the land and a conversation.'),
+                array('icon' => 'shield', 'title' => 'You’ve been burned before.', 'msg' => 'Fair. Ask us anything, call our last three clients, then decide.'),
+                array('icon' => 'eye', 'title' => 'You’re just looking.', 'msg' => 'Look. Nothing here needs your email.', 'gold' => true, 'link' => '/our-homes/', 'cta' => 'See the homes'),
         );
         ?>
-        <section class="ways" id="contact">
+        <section class="ways">
             <div class="ways-in">
                 <header class="ways-head" data-reveal>
                     <h2 class="ways-title"><?php esc_html_e('Start where you are', 'luxury-homes'); ?></h2>
-                    <p class="ways-sub"><?php esc_html_e('Six ways in.', 'luxury-homes'); ?></p>
+                    <p class="ways-sub"><?php esc_html_e('Four ways in. Pick the one that sounds like you.', 'luxury-homes'); ?></p>
                 </header>
 
                 <div class="ways-grid" data-reveal>
-                    <?php foreach ($lh_ways as $lh_i => $lh_w) :
+                    <?php foreach ($lh_ways as $lh_w) :
                         $lh_gold = empty($lh_w['gold']) ? '' : ' ways-card--gold';
+                        $lh_cta = isset($lh_w['cta']) ? $lh_w['cta'] : __('Start here', 'luxury-homes');
                         ?>
                         <a class="ways-card<?php echo esc_attr($lh_gold); ?>"
-                           href="<?php echo esc_url(home_url(isset($lh_w['link']) ? $lh_w['link'] : '/contact/')); ?>"
-                           style="--tone: <?php echo esc_attr($lh_w['tone']); ?>;">
-						<span class="ways-card__inner">
-							<span class="ways-card__front">
-								<span class="ways-card__icon"><?php echo lh_option_icon($lh_w['icon']); // phpcs:ignore
-                                    ?></span>
-								<span class="ways-card__title"><?php echo esc_html($lh_w['title']); ?></span>
-								<span class="ways-card__hint" aria-hidden="true">&rarr;</span>
-							</span>
-							<span class="ways-card__back">
-								<span class="ways-card__msg"><?php echo esc_html($lh_w['back']); ?></span>
-								<span class="ways-card__arrow" aria-hidden="true">&rarr;</span>
-							</span>
-						</span>
+                           href="<?php echo esc_url(home_url(isset($lh_w['link']) ? $lh_w['link'] : '/contact/')); ?>">
+                            <span class="ways-card__icon"><?php echo lh_option_icon($lh_w['icon']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- inline SVG from icon library
+                                ?></span>
+                            <span class="ways-card__title"><?php echo esc_html($lh_w['title']); ?></span>
+                            <span class="ways-card__msg"><?php echo esc_html($lh_w['msg']); ?></span>
+                            <span class="ways-card__cta"><?php echo esc_html($lh_cta); ?><i
+                                        aria-hidden="true">&rarr;</i></span>
                         </a>
                     <?php endforeach; ?>
                 </div>
 
-                <div class="ways-foot" data-reveal>
-                    <p class="ways-foot__line"><?php esc_html_e('Whichever one you are, the first conversation is the same.', 'luxury-homes'); ?></p>
+                <p class="ways-bridge"
+                   data-reveal><?php esc_html_e('Whichever one you are, the first conversation is the same.', 'luxury-homes'); ?></p>
+            </div>
+        </section>
+
+        <!-- ============ CLOSING CTA (plan on the seam) ============ -->
+        <section class="hm-cta hm-cta--plan" id="contact">
+            <div class="hm-cta-in">
+                <?php
+                /*
+                 * The plan sits ON the seam between the cream above and the green
+                 * below. A negative top margin lifts it by exactly half its own
+                 * height: height = width / ratio, and a percentage margin resolves
+                 * against the CONTAINER WIDTH, so the lift is -50/ratio %. This image
+                 * is 1546x672 (2.3006) => -21.73%. It is NOT the -25% used on Our
+                 * Homes, whose render is 16/8. Swap the image and you must recompute
+                 * BOTH the aspect-ratio and the margin, or it will sit off-centre.
+                 * flow-root on .hm-cta-in is what stops that margin collapsing away.
+                 */
+                ?>
+                <figure class="hm-cta-media" data-reveal>
+                    <img src="<?php echo lh_asset('img/cta-floorplan.jpg'); ?>"
+                         alt="<?php esc_attr_e('Architectural floor plan drawings on a drafting table', 'luxury-homes'); ?>"
+                         width="1546" height="672" loading="lazy" decoding="async">
+                </figure>
+                <div class="hm-cta-copy">
+                    <span class="eyebrow"><?php esc_html_e('Your turn', 'luxury-homes'); ?></span>
+                    <h2><?php esc_html_e('It starts as a', 'luxury-homes'); ?>
+                        <em><?php esc_html_e('drawing', 'luxury-homes'); ?></em>.</h2>
                     <a class="ways-btn" href="<?php echo esc_url(home_url('/contact/')); ?>"><span
                                 class="ways-btn__label"><?php esc_html_e('Start the conversation', 'luxury-homes'); ?></span><span
                                 class="ways-btn__arrow" aria-hidden="true">&rarr;</span></a>
-                    <p class="ways-foot__call"><?php
+                    <p class="hm-cta-call"><?php
                         printf(
                         /* translators: %s: telephone link */
                                 esc_html__('Or call us directly · %s', 'luxury-homes'),
