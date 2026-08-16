@@ -37,13 +37,18 @@
        --brass was the accent on light cards. Platinum proper (#b5b2b3) only
        reaches 1.88:1 on the light ground and is unreadable, so the accent
        becomes a graphite in the same neutral family. --brass-deep keeps its
-       original job: small uppercase text needing AA, now 4.65:1. Token NAMES
-       are kept so no rule in main.css has to change; only their values move. */
+       original job: small uppercase text needing AA, at 6.53:1 on white.
+       Token NAMES are kept so no rule in main.css has to change; only their
+       values move. */
     --travertine: #b5b2b3;
-    --brass: #7d7b7c; /* NOTE: 4.2:1 on white — fails AA for text. Every
-       homepage .eyebrow overrides it (forest/travertine); any NEW eyebrow on a
-       light ground must use --brass-deep instead. */
-    --brass-deep: #5f5d5e; /* 6.4:1 on white — AA with headroom, not a squeak */
+    --brass: #7d7b7c; /* 4.20:1 on #fff, and only 3.75:1 on --hero-white, which
+       is the ground most light sections actually use — under AA either way.
+       On the homepage it survives because every .eyebrow overrides it and its
+       remaining consumers sit on dark: .site-footer__label and
+       .site-footer__phone a:hover, both 5.00:1 on --ink. Any NEW use on a
+       light ground must take --brass-deep instead. */
+    --brass-deep: #5f5d5e; /* 6.53:1 on white — AA with headroom, not a squeak.
+       Dark grounds are the reverse: only 3.21:1, so use --travertine there. */
 
     /* ---- Light ground ---- */
     --hero-white: #f2f2f1; /* was #faf9f6, warm cream */
@@ -75,7 +80,11 @@
 
 .ways-card {
     background: #fff;
-    border-color: rgba(11, 11, 12, 0.13);
+    /* White cards on an #ececeb ground differ by only 1.12:1, so the border is
+       the entire boundary once the shadow is gone. At 0.13 it read 1.33:1 and
+       the card edges effectively vanished; 0.30 clears the 3:1 that SC 1.4.11
+       asks of a component boundary. */
+    border-color: rgba(11, 11, 12, 0.3);
     box-shadow: none;
 }
 
@@ -129,7 +138,10 @@
    becomes platinum and the numeral goes graphite. */
 
 .hwb-step .num {
-    border-color: #b5b2b3;
+    /* Dormant until the is_front_page() gate widens to How We Build. Mid
+       platinum would be 1.88:1 on this light ground — a ring you cannot see —
+       so the drafting circle takes the graphite instead, at 5.83:1. */
+    border-color: var(--brass-deep);
     color: var(--hero-ink);
     background: var(--hero-white);
 }
@@ -182,14 +194,19 @@
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.16); /* was warm-tinted */
 }
 
+/* The phase copy sits at the bottom of the film, so that is where the grade
+   has to do its work. At the previous 0.38 the eyebrow measured barely 1.2:1
+   over a bright frame — text on a moving image gets no help from a shadow,
+   which is why the deepening happens here and not on the type. */
 .d-grade {
-    background: linear-gradient(to bottom, rgba(10, 10, 11, 0.32), rgba(10, 10, 11, 0.02) 42%, rgba(10, 10, 11, 0.38));
+    background: linear-gradient(to bottom, rgba(10, 10, 11, 0.44), rgba(10, 10, 11, 0.14) 42%, rgba(10, 10, 11, 0.7));
 }
 
 .d-copy .eyebrow {
-    color: var(--travertine);
-    /* Its h2/p siblings carry text-shadows; the eyebrow had none, so its
-       contrast over the film was footage-dependent. Same scrim as the p. */
+    /* Was --travertine, the darkest metal in the ramp, which made the eyebrow
+       the least legible line in an overlay whose h2 and p are near-white.
+       --bone clears 4.5:1 against any frame at the grade above. */
+    color: var(--bone);
     text-shadow: 0 1px 18px rgba(0, 0, 0, 0.4);
 }
 
@@ -262,7 +279,7 @@
     --hww-bg-1: #141415;
     --hww-bg-2: #000;
     --hww-ivory: #f0efee;
-    --hww-gold: #b5b2b3; /* 9.98:1 on black */
+    --hww-gold: #b5b2b3; /* 9.98:1 at the gradient edge, 8.75:1 at its centre */
     --hww-gold-deep: #b5b2b3;
     --hww-gold-lo: #949293; /* gradient tail (was #A98F4F) */
     --hww-gold-hi: #e1e0df; /* gradient head + comet (was #E3D294) */
@@ -359,7 +376,9 @@
 }
 
 .hdr.is-dark {
-    background: rgba(0, 0, 0, 0.55);
+    /* 0.62, not 0.55: at 0.55 the nav links measured 4.23:1 over a bright
+       video frame — short of AA. This clears it without going opaque. */
+    background: rgba(0, 0, 0, 0.62);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
     border-color: rgba(225, 224, 223, 0.16);
