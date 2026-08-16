@@ -12,7 +12,22 @@
 <header class="hdr" id="site-header">
     <div class="hdr-in">
         <a class="wordmark" href="<?php echo esc_url(home_url('/')); ?>">
-            <?php echo esc_html(lh_company()); ?>
+            <?php
+            /*
+             * The real Richard Marcus lockup, supplied by the client. Two files
+             * because the header inverts: .hdr.is-dark swaps them in CSS. The
+             * dark-ground file keeps the platinum sheen, which flat text cannot
+             * reproduce. Company name stays as the alt text, so the brand is
+             * still readable to screen readers and when images fail.
+             */
+            ?>
+            <img class="wordmark__img wordmark__img--on-light"
+                 src="<?php echo lh_asset('img/brand/wordmark-dark.png'); ?>"
+                 alt="<?php echo esc_attr(lh_company()); ?>" width="263" height="64"
+                 fetchpriority="high" decoding="async">
+            <img class="wordmark__img wordmark__img--on-dark"
+                 src="<?php echo lh_asset('img/brand/wordmark-light.png'); ?>"
+                 alt="" aria-hidden="true" width="263" height="64" decoding="async">
         </a>
         <div class="hdr-right">
             <nav class="hdr-nav" aria-label="<?php esc_attr_e('Primary', 'luxury-homes'); ?>">

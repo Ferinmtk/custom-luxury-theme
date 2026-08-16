@@ -1,0 +1,437 @@
+/* =========================================================
+   PLATINUM & BLACK — palette override
+   =========================================================
+
+   Loads AFTER main.css and overrides tokens only. main.css is untouched, so
+   removing the enqueue in inc/enqueue.php reverts the whole site to the warm
+   scheme with no other edit. That's deliberate: it lets the two directions be
+   flipped between while the client decides.
+
+   Values are sampled from the Richard Marcus Signature Homes logo files, not
+   invented:
+     black      #000000   the logo ground (a TRUE black - the old --ink
+                          #16130f carried brown in it)
+     platinum   #949293 -> #b5b2b3 -> #e1e0df   the metallic sheen ramp
+     highlight  #e7e7e7   the bright edge on the wordmark
+
+   The old scheme was warm throughout (bone, travertine, brass, forest). Every
+   one of those had yellow or green in it, which is what read as "not edgy
+   sophisticated enough" next to a black-and-platinum identity. These
+   replacements are neutral: R, G and B within a few points of each other.
+   ========================================================= */
+
+:root {
+    /* ---- Dark ground ---- */
+    --ink: #000;
+    --ink-soft: #0e0e0f;
+
+    /* ---- Light text on the dark ground ---- */
+    --bone: #e1e0df; /* 15.93:1 on black */
+    --bone-dim: rgba(225, 224, 223, 0.62);
+    --line: rgba(225, 224, 223, 0.14);
+
+    /* ---- Accents ----
+       --travertine sits on dark grounds only (footer headings, eyebrows), so
+       the mid platinum is fine there at 9.98:1.
+
+       --brass was the accent on light cards. Platinum proper (#b5b2b3) only
+       reaches 1.88:1 on the light ground and is unreadable, so the accent
+       becomes a graphite in the same neutral family. --brass-deep keeps its
+       original job: small uppercase text needing AA, now 4.65:1. Token NAMES
+       are kept so no rule in main.css has to change; only their values move. */
+    --travertine: #b5b2b3;
+    --brass: #7d7b7c; /* NOTE: 4.2:1 on white — fails AA for text. Every
+       homepage .eyebrow overrides it (forest/travertine); any NEW eyebrow on a
+       light ground must use --brass-deep instead. */
+    --brass-deep: #5f5d5e; /* 6.4:1 on white — AA with headroom, not a squeak */
+
+    /* ---- Light ground ---- */
+    --hero-white: #f2f2f1; /* was #faf9f6, warm cream */
+    --hero-ink: #0b0b0c; /* 17.56:1 */
+    --hero-ink-soft: #5a5a5c; /* 6.14:1 */
+    --hero-line: rgba(11, 11, 12, 0.13);
+
+    /* ---- Was forest green. Nothing in this identity is green. ---- */
+    --hero-forest: #1a1a1c;
+
+    /* ---- Geometry ----
+       The reference set he sent (Ferrari, McLaren, Bentley, Rolls-Royce) has
+       almost no rounding and no soft shadows: hard edges and hairline rules.
+       Both tokens are read by rules in THIS file (cards + .philosophy__media),
+       not by main.css, which still hardcodes its radii. */
+    --radius-card: 2px;
+    --radius-media: 3px;
+}
+
+/* ---------- Cards: square off, drop the diffuse shadow ----------
+   A 14px radius with a soft drop shadow reads friendly and web-app. Hairline
+   border and near-square corners read precise. */
+
+.ways-card,
+.hm-cta--plan .hm-cta-media,
+.hwb-steps-in .hwb-step {
+    border-radius: var(--radius-card);
+}
+
+.ways-card {
+    background: #fff;
+    border-color: rgba(11, 11, 12, 0.13);
+    box-shadow: none;
+}
+
+@media (hover: hover) {
+    .ways-card:hover {
+        border-color: rgba(11, 11, 12, 0.42);
+    }
+}
+
+/* The featured card inverts: one black mass in the light half of the page.
+   It restores the black/platinum rhythm inside .ways, gives the grid a focal
+   point, and puts actual platinum (#b5b2b3, 9.5:1 on near-black) on screen —
+   the light grounds otherwise have no metal anywhere. */
+.ways-card--gold {
+    background: #0b0b0c;
+    border-color: #0b0b0c;
+}
+
+.ways-card--gold .ways-card__title {
+    color: #e1e0df;
+}
+
+.ways-card--gold .ways-card__msg {
+    color: rgba(225, 224, 223, 0.62); /* 6:1 effective on #0b0b0c */
+}
+
+.ways-card--gold .ways-card__cta {
+    color: #b5b2b3;
+}
+
+@media (hover: hover) {
+    .ways-card--gold:hover {
+        border-color: rgba(225, 224, 223, 0.5); /* ink hover border is invisible on black */
+    }
+}
+
+/* Icon tiles were brass with a coloured glow. Platinum, square, no glow. */
+.ways-card__icon {
+    background: #1a1a1c;
+    border-radius: 3px;
+    box-shadow: none;
+}
+
+.ways-card--gold .ways-card__icon {
+    background: #1a1a1c; /* one step off the card's black, not lost in it */
+    box-shadow: none;
+}
+
+/* ---------- Step bubbles ----------
+   The circle stays: it's drafting notation, not decoration. The brass ring
+   becomes platinum and the numeral goes graphite. */
+
+.hwb-step .num {
+    border-color: #b5b2b3;
+    color: var(--hero-ink);
+    background: var(--hero-white);
+}
+
+/* ---------- The plan on the seam ----------
+   Shadow was tuned to bloom against green. On true black a warm bloom reads
+   muddy, so it tightens to a harder, shorter drop. */
+
+.hm-cta--plan .hm-cta-media {
+    box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.9);
+}
+
+/* ---------- Buttons ----------
+   Pills read soft. These square off to match the wordmark's wide-tracked
+   lettering. */
+
+/* .sh-btn is forward-looking (single-home / About / Our Homes) for when the
+   is_front_page() gate widens; it matches nothing on the homepage today.
+   (.hm-cta-btn deliberately absent: Our Homes styles it at 0-2-0 specificity,
+   so it needs .our-homes-page .hm-cta-btn when that page migrates.) */
+.ways-btn,
+.sh-btn {
+    border-radius: 2px;
+}
+
+/* Controls stay planted. The reference set moves imagery, not buttons — the
+   border-darken / sweep / arrow-slide affordances carry the hover instead. */
+.ways-btn:hover,
+.ways-btn:focus-visible {
+    transform: none;
+}
+
+@media (hover: hover) {
+    .ways-card:hover {
+        transform: none;
+    }
+}
+
+/* =========================================================
+   FRONT PAGE — section grounds main.css hardcodes outside
+   the token system. Each block names the warm value it kills.
+   ========================================================= */
+
+/* ---------- Descent hero ----------
+   The video mat and its grade were green-black (#0e120e), and the phase
+   eyebrows a green-grey (#cdd6c5) tuned to sit over foliage footage. */
+
+.d-mat {
+    background: #0b0b0c;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.16); /* was warm-tinted */
+}
+
+.d-grade {
+    background: linear-gradient(to bottom, rgba(10, 10, 11, 0.32), rgba(10, 10, 11, 0.02) 42%, rgba(10, 10, 11, 0.38));
+}
+
+.d-copy .eyebrow {
+    color: var(--travertine);
+    /* Its h2/p siblings carry text-shadows; the eyebrow had none, so its
+       contrast over the film was footage-dependent. Same scrim as the p. */
+    text-shadow: 0 1px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- Philosophy ----------
+   Scoped --ph-* tokens were warm parchment (#ece8e0 ground, #55504a stroke,
+   #8b8478 muted). Same neutralisation as the global tokens: R≈G≈B. */
+
+.philosophy {
+    --ph-bg: #ececeb;
+    --ph-ink: #0e0e0f;
+    --ph-ink-rgb: 14, 14, 15;
+    --ph-stroke: #4a4a4c;
+    --ph-muted: #6b696b; /* 4.6:1 on --ph-bg — the warm original failed AA too */
+}
+
+.philosophy__media {
+    border-radius: var(--radius-media); /* main.css hardcodes 6px */
+}
+
+.philosophy__media {
+    background: #c9c8c7; /* was #cfc9bd */
+}
+
+.philosophy__note {
+    color: #3a3a3c; /* was #3f3a33 */
+}
+
+/* ---------- Homes-by-style scrub ---------- */
+
+.scrub-progress {
+    background: rgba(11, 11, 12, 0.15); /* was brass at 22% */
+    border-radius: 0; /* a drafting rule has square ends */
+}
+
+.scrub-progress i {
+    background: #0b0b0c;
+    border-radius: 0;
+}
+
+.sc-morelink {
+    color: var(--bone); /* was warm gold #e7d9b4 */
+}
+
+.scrub-card .sc-tag {
+    background: rgba(242, 242, 241, 0.92); /* was warm white */
+}
+
+/* Placeholder tile when a home has no images yet — was a forest gradient. */
+.home-ph {
+    background: linear-gradient(135deg, #1a1a1c, #0b0b0c);
+}
+
+/* ---------- How we work ----------
+   The section's scoped tokens were forest green and gold. On true black the
+   two threads run in the logo's platinum ramp instead; the SVG in
+   front-page.php reads these same custom properties (with the warm values as
+   inline fallbacks), so ?palette=warm still shows the gold original. */
+
+.hww {
+    --hww-bg-1: #141415;
+    --hww-bg-2: #000;
+    --hww-ivory: #f0efee;
+    --hww-gold: #b5b2b3; /* 9.98:1 on black */
+    --hww-gold-deep: #b5b2b3;
+    --hww-gold-lo: #949293; /* gradient tail (was #A98F4F) */
+    --hww-gold-hi: #e1e0df; /* gradient head + comet (was #E3D294) */
+    --hww-thread-ivory: #f0efee; /* second thread (was green-cast #E9EDE0) */
+    --hww-muted: #8a888a; /* was green-grey #8C9587 */
+}
+
+.hww-eyebrow-rule {
+    background: rgba(225, 224, 223, 0.35); /* was gold at 50% */
+}
+
+.hww-quote-block {
+    border-top-color: rgba(225, 224, 223, 0.16);
+}
+
+/* The one bright object on the black ground: highlight-platinum fill, squared
+   like every other button in this palette. Hover keeps main.css's outline
+   swap, whose colors already ride the tokens. No shadow (invisible on black,
+   soft-reading anyway) and no lift — controls stay planted. */
+.hww-cta {
+    background: var(--hww-gold-hi);
+    border-color: var(--hww-gold-hi);
+    border-radius: 2px;
+    box-shadow: none;
+}
+
+.hww-cta:hover,
+.hww-cta:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+/* The comet keeps its two solid dots but loses the 7px-blur halo — the one
+   literal glow on the page. CSS filter beats the SVG's filter attribute, and
+   this file only loads with the platinum palette, so the warm original keeps
+   its gold halo. */
+.hww-comet {
+    filter: none;
+}
+
+@media (max-width: 760px) {
+    .hww-steps li {
+        border-left-color: rgba(225, 224, 223, 0.25); /* was gold at 30% */
+    }
+}
+
+/* ---------- Start where you are ---------- */
+
+.ways {
+    background: #ececeb; /* was warm cream #f5f3ed */
+}
+
+.ways-sub {
+    color: var(--hero-ink-soft); /* was warm #6c6860 */
+}
+
+.ways-card__msg {
+    color: #565557; /* was warm #5d5950 */
+}
+
+/* ---------- Closing CTA ----------
+   The section ground is already var(--ink) -> true black, and the pill is
+   already inverted bone. Only the hover sweep was brass: it becomes platinum,
+   and the label flips to ink so it stays 10:1 mid-sweep. */
+
+.ways-btn::before {
+    background: var(--travertine);
+}
+
+.hm-cta--plan .ways-btn:hover,
+.hm-cta--plan .ways-btn:focus-visible {
+    color: #0b0b0c;
+}
+
+/* =========================================================
+   SHARED CHROME — header and chat concierge.
+   main.css hardcodes their colors outside the token system
+   (warm creams #f5f1e8/#fbf9f4/#faf9f6, forest #2c3a2c),
+   so the token flip alone leaves them warm/green.
+   ========================================================= */
+
+/* ---------- Header ----------
+   Was iOS glassmorphism: 18px radius, blur(28px) saturate(1.7), white inset
+   highlight, warm cream tint, 10px pill links. The reference set's headers
+   are square, hairline-ruled, neutral. Keep the frost, lose the candy. */
+
+.hdr {
+    border-radius: 2px;
+    background: rgba(242, 242, 241, 0.88);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(11, 11, 12, 0.12);
+    box-shadow: none;
+}
+
+.hdr.is-dark {
+    background: rgba(0, 0, 0, 0.55);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border-color: rgba(225, 224, 223, 0.16);
+    box-shadow: none;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .hdr {
+        background: rgba(242, 242, 241, 0.96);
+    }
+
+    .hdr.is-dark {
+        background: rgba(11, 11, 12, 0.96);
+    }
+}
+
+.hdr nav a,
+.hdr-cta {
+    border-radius: 2px;
+}
+
+/* Warm off-whites (#fbf9f4 text, #f7f5ef hover text, #f5f1e8 pill fills)
+   normalised into the platinum family. */
+
+.hdr nav a:hover,
+.hdr nav a:focus-visible,
+.hdr-cta:hover,
+.hdr-cta:focus-visible,
+.hdr-menu .is-current > a,
+.hdr-menu .current-menu-item > a,
+.hdr-menu .current_page_item > a {
+    color: #f2f2f1;
+}
+
+.hdr.is-dark .wordmark {
+    color: #f2f2f1;
+}
+
+.hdr.is-dark nav a,
+.hdr.is-dark .hdr-cta {
+    color: #f2f2f1;
+    border-color: rgba(242, 242, 241, 0.6);
+}
+
+.hdr.is-dark nav a:hover,
+.hdr.is-dark nav a:focus-visible,
+.hdr.is-dark .hdr-cta:hover,
+.hdr.is-dark .hdr-cta:focus-visible,
+.hdr.is-dark .hdr-menu .is-current > a,
+.hdr.is-dark .hdr-menu .current-menu-item > a,
+.hdr.is-dark .hdr-menu .current_page_item > a {
+    background: #e1e0df;
+    border-color: #e1e0df;
+    color: var(--hero-ink);
+}
+
+.hdr.is-dark .nav-toggle i {
+    background: #f2f2f1;
+}
+
+.nav-overlay {
+    background: rgba(242, 242, 241, 0.82);
+}
+
+/* ---------- Chat concierge ----------
+   Base states ride var(--hero-forest) and migrate with the tokens, but the
+   hovers hardcode forest green — the only green left on the page — and the
+   panel hardcodes the old warm cream. */
+
+.lh-chat-launcher:hover,
+.lh-chat-launcher:focus-visible {
+    background: #2e2e30;
+}
+
+.lh-chat-form button:hover {
+    background: #2e2e30;
+}
+
+.lh-chat-panel {
+    background: rgba(242, 242, 241, 0.88);
+}
+
+.lh-msg.is-user a {
+    border-color: rgba(242, 242, 241, 0.6);
+}
