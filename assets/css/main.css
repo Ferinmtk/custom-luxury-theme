@@ -1189,17 +1189,24 @@ body.admin-bar .nav-overlay {
     padding: clamp(4.5rem, 12vh, 8rem) var(--pad);
 }
 
+/* Two columns, two rows: type top-left, note bottom-left, image spanning the
+   full height on the right. It was a flex row with the note in a separate
+   full-width strip underneath, which left the bottom-left quarter of the
+   section empty and pushed the sentence under the photograph. Spanning the
+   image across both rows is what squares the composition off. */
 .philosophy__in {
     max-width: 1240px;
     margin: 0 auto;
-    display: flex;
-    gap: clamp(1.75rem, 4vw, 3.5rem);
-    align-items: flex-start;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(240px, 42%, 580px);
+    grid-template-rows: auto 1fr;
+    column-gap: clamp(1.75rem, 4vw, 3.5rem);
+    row-gap: clamp(1.5rem, 4vh, 2.75rem);
 }
 
 .philosophy__type {
-    flex: 1 1 auto;
+    grid-column: 1;
+    grid-row: 1;
     min-width: 0;
 }
 
@@ -1289,8 +1296,12 @@ body.admin-bar .nav-overlay {
 }
 
 .philosophy__figure {
-    flex: 0 0 clamp(240px, 42%, 580px);
+    grid-column: 2;
+    grid-row: 1 / -1; /* full height of the section, alongside type AND note */
     margin: clamp(1.25rem, 4vh, 2.5rem) 0 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .philosophy__index {
@@ -1308,12 +1319,17 @@ body.admin-bar .nav-overlay {
     border-radius: 6px;
     overflow: hidden;
     background: #cfc9bd;
+    flex: 1 1 auto; /* takes the height the spanned grid row gives the figure */
+    min-height: 0;
 }
 
 .philosophy__media img {
     display: block;
     width: 100%;
-    height: clamp(340px, 60vh, 680px);
+    /* Fills the spanned column; the min-height keeps it from collapsing when
+       the type block is short (small viewports, shorter headline copy). */
+    height: 100%;
+    min-height: clamp(340px, 58vh, 660px);
     object-fit: cover;
     /* Landscape source into a portrait slot. Held ABOVE centre so the crop
        spends its height on the house and its lit interior rather than the
@@ -1322,11 +1338,13 @@ body.admin-bar .nav-overlay {
     object-position: center 38%;
 }
 
+/* Bottom-left cell: sits under the type it belongs to, and its top margin is
+   what pushes it away from the headline when the row has slack. */
 .philosophy__foot {
-    max-width: 1240px;
-    margin: clamp(1.5rem, 4vh, 2.5rem) auto 0;
-    display: flex;
-    justify-content: flex-end;
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+    margin: 0;
 }
 
 .philosophy__note {
@@ -1340,22 +1358,28 @@ body.admin-bar .nav-overlay {
 }
 
 @media (max-width: 860px) {
+    /* One column: type, then image, then note — the grid placements above are
+       all reset, or the figure would still try to sit in a second column. */
     .philosophy__in {
-        flex-direction: column;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+    }
+
+    .philosophy__type,
+    .philosophy__figure,
+    .philosophy__foot {
+        grid-column: 1;
+        grid-row: auto;
     }
 
     .philosophy__figure {
-        flex: none;
         width: 100%;
         margin-top: 2rem;
     }
 
     .philosophy__media img {
         height: clamp(240px, 42vh, 360px);
-    }
-
-    .philosophy__foot {
-        justify-content: flex-start;
+        min-height: 0;
     }
 }
 
