@@ -2908,7 +2908,8 @@ body.admin-bar .nav-overlay {
 }
 
 .home-ph::after {
-    content: 'Richard Marcus';
+    /* Follows the Site Title / ACF company name — see inc/enqueue.php. */
+    content: var(--lh-brand-label, "Richard Marcus");
     position: absolute;
     inset: 0;
     display: grid;
@@ -4449,7 +4450,9 @@ body.admin-bar .nav-overlay {
 }
 
 .ab-row-shot .ab-ph::after {
-    content: 'ADU America';
+    /* Was hardcoded to a previous project's company name, which rendered as
+       visible text in any team tile without a photo. Set in inc/enqueue.php. */
+    content: var(--lh-brand-label, "Richard Marcus");
     position: absolute;
     inset: 0;
     display: grid;
@@ -4921,83 +4924,9 @@ body.admin-bar .nav-overlay {
     }
 }
 
-/* ---------- Recent work ---------- */
-
-.ab-work {
-    padding: clamp(3rem, 8vh, 5rem) clamp(1.4rem, 7vw, 6rem) clamp(2rem, 5vh, 3rem);
-}
-
-.ab-work-in {
-    max-width: 1240px;
-    margin: 0 auto;
-}
-
-.ab-work-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.8rem 3rem;
-    padding-bottom: 1.2rem;
-    border-bottom: 1px solid var(--hero-ink);
-    margin-bottom: clamp(1.6rem, 4vh, 2.4rem);
-}
-
-.ab-work-head h2 {
-    font-family: var(--hero-display);
-    font-weight: 400;
-    font-size: clamp(1.5rem, 3vw, 2.3rem);
-    line-height: 1.12;
-    margin: 0;
-}
-
-.ab-work-head p {
-    margin: 0;
-    max-width: 34ch;
-    font-size: 0.95rem;
-    color: var(--hero-ink-soft);
-}
-
-.ab-work-grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: clamp(1.2rem, 2.5vw, 2rem);
-}
-
-.ab-work-grid figure {
-    margin: 0;
-}
-
-.ab-work-grid img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-}
-
-/* Lead with the reason, not the square footage — nobody builds an ADU because
-   they wanted 640 square feet. The spec line is the receipt, not the headline. */
-.ab-work-why {
-    display: block;
-    margin-top: 0.9rem;
-    font-family: var(--hero-display);
-    font-size: 1.22rem;
-    line-height: 1.24;
-    color: var(--hero-ink);
-}
-
-.ab-work-spec {
-    display: block;
-    margin-top: 0.5rem;
-    font-family: var(--nav-sans);
-    font-size: 0.62rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--hero-ink-soft);
-}
+/* The ".ab-work" block that sat here was carried over from a different
+   project (an ADU builder) and styled markup this theme has never had — no
+   template, partial or script references any of its classes. Removed. */
 
 /* ---------- One review ---------- */
 
