@@ -146,12 +146,21 @@ get_header();
                     </figure>
                 <?php endif; ?>
 
-            </div>
+                <?php
+                /*
+                 * The note sits INSIDE the grid, in the left column under the
+                 * type — not in a full-width strip below the section. The type
+                 * block is shorter than the image, and anywhere else this left
+                 * a hole under the headline and stranded the sentence beneath
+                 * the picture it does not belong to.
+                 */
+                ?>
+                <div class="philosophy__foot">
+                    <p class="philosophy__note">
+                        <?php echo esc_html(lh_field('philosophy_note', 'From the first sketch to the last polished detail, for families who expect their home to be as considered as everything else they own.')); ?>
+                    </p>
+                </div>
 
-            <div class="philosophy__foot">
-                <p class="philosophy__note">
-                    <?php echo esc_html(lh_field('philosophy_note', 'From the first sketch to the last polished detail, for families who expect their home to be as considered as everything else they own.')); ?>
-                </p>
             </div>
         </section>
 
