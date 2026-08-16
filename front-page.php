@@ -9,13 +9,39 @@ get_header();
 
     <main id="main">
 
-        <!-- ============ INTRO (above the film) ============ -->
-        <section class="intro">
+        <!-- ============ HERO ============ -->
+        <?php
+        /*
+         * The headline sits ON the picture, not above it. Previously this was a
+         * text block on blank ground with the film starting below the fold —
+         * the one thing none of the reference sites do. In that cohort the hero
+         * owns the first screen outright and the type is an overlay.
+         *
+         * The still is used rather than the film because descent.mp4 is ~15 MB
+         * and is already the payload for the section below; a second video here
+         * would cost the LCP twice for the same story.
+         */
+        $lh_hero_img = lh_field_image('hero_image', 'img/edition/hero-estate.jpg', 'full', array(
+                'alt' => lh_field('hero_image_alt', sprintf(
+                /* translators: %s: company name */
+                        __('A %s residence at dusk', 'luxury-homes'),
+                        lh_company_short()
+                )),
+                'fetchpriority' => 'high',
+                'decoding' => 'async',
+        ));
+        ?>
+        <section class="intro intro--hero">
+            <div class="intro-bg" aria-hidden="true">
+                <?php echo $lh_hero_img; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            </div>
             <div class="intro-in">
-                <span class="eyebrow">Custom Luxury Homes</span>
+                <span class="eyebrow"><?php echo esc_html(lh_field('hero_eyebrow', __('Custom Luxury Homes', 'luxury-homes'))); ?></span>
                 <h1>Every <?php echo esc_html(lh_company_short()); ?> home begins <em>above</em> the land it will
                     belong to.</h1>
+                <p class="intro-sub"><?php echo esc_html(lh_field('hero_sub', __('One at a time, on the Front Range.', 'luxury-homes'))); ?></p>
             </div>
+            <span class="intro-cue" aria-hidden="true"></span>
         </section>
 
         <!-- ============ DESCENT HERO ============ -->
@@ -119,8 +145,8 @@ get_header();
          * and the opposite of the brand.) Set the ACF field "philosophy_image"
          * with a real Richard Marcus photograph before launch.
          */
-        $ph_img = lh_field_image('philosophy_image', 'img/story-dusk.jpg', 'large', array(
-                'alt' => lh_field('philosophy_image_alt', __('A finished home at dusk, lit from within', 'luxury-homes')),
+        $ph_img = lh_field_image('philosophy_image', 'img/edition/interior-living.jpg', 'large', array(
+                'alt' => lh_field('philosophy_image_alt', __('A living room at dusk, lit from within', 'luxury-homes')),
                 'loading' => 'lazy',
                 'decoding' => 'async',
         ));
@@ -164,6 +190,44 @@ get_header();
             </div>
         </section>
 
+        <!-- ============ PROOF ============ -->
+        <?php
+        /*
+         * The strongest trust device across every reference site: Sotheby's
+         * runs "1,100 offices / 86 countries / 26,000 associates / $182B" in
+         * 60px serif, while the builders fall back on "award-winning" and
+         * "40 years" with nothing countable attached.
+         *
+         * DELIBERATELY EMPTY. Every figure comes from ACF and the whole band
+         * disappears until real ones exist — a builder's numbers are the one
+         * thing on this page that must never be estimated. Fill any subset;
+         * the row lays out around however many are set.
+         */
+        $lh_proof = array_values(array_filter(
+                array(
+                        array('n' => lh_field('proof_1_value', ''), 'l' => lh_field('proof_1_label', __('Homes delivered', 'luxury-homes'))),
+                        array('n' => lh_field('proof_2_value', ''), 'l' => lh_field('proof_2_label', __('Years building', 'luxury-homes'))),
+                        array('n' => lh_field('proof_3_value', ''), 'l' => lh_field('proof_3_label', __('Square feet built', 'luxury-homes'))),
+                        array('n' => lh_field('proof_4_value', ''), 'l' => lh_field('proof_4_label', __('Repeat & referral', 'luxury-homes'))),
+                ),
+                static function ($x) {
+                    return '' !== trim((string)$x['n']);
+                }
+        ));
+        if ($lh_proof) :
+            ?>
+            <section class="proof" data-reveal>
+                <dl class="proof-in">
+                    <?php foreach ($lh_proof as $lh_p) : ?>
+                        <div class="proof-item">
+                            <dt class="proof-num"><?php echo esc_html($lh_p['n']); ?></dt>
+                            <dd class="proof-label"><?php echo esc_html($lh_p['l']); ?></dd>
+                        </div>
+                    <?php endforeach; ?>
+                </dl>
+            </section>
+        <?php endif; ?>
+
         <!-- ============ HOMES BY STYLE (pinned horizontal scrub) ============ -->
         <?php
         $scrub_homes = get_posts(array(
@@ -183,16 +247,29 @@ get_header();
                         $scrub_last = array_key_last($scrub_homes);
                         foreach ($scrub_homes as $scrub_i => $lh_home) :
                             $m = lh_home_meta($lh_home->ID);
+                            /*
+                             * Typology and place, not beds and square footage.
+                             * Across every builder reference, project cards carry
+                             * almost no metadata — and the ones that publish bed
+                             * counts are the production builders. The luxury houses
+                             * write "Villa in Chambésy", letting the noun and the
+                             * address do the work. Beds/baths/sq ft still live on
+                             * the single-home page, where someone has asked for them.
+                             */
                             $bits = array();
                             if ($m['location']) {
-                                $bits[] = $m['location'];
+                                $bits[] = sprintf(
+                                /* translators: %s: town or region */
+                                        __('Residence in %s', 'luxury-homes'),
+                                        $m['location']
+                                );
                             }
-                            if ($m['beds']) {
-                                $bits[] = sprintf(_n('%s bed', '%s beds', (int)$m['beds'], 'luxury-homes'), number_format_i18n($m['beds']));
-                            }
-                            if ($m['sqft']) {
-                                /* translators: %s: square footage */
-                                $bits[] = sprintf(__('%s sq ft', 'luxury-homes'), number_format_i18n($m['sqft']));
+                            if ($m['year']) {
+                                $bits[] = sprintf(
+                                /* translators: %s: year the home was completed */
+                                        __('Completed %s', 'luxury-homes'),
+                                        $m['year']
+                                );
                             }
                             $is_last = ($scrub_i === $scrub_last);
                             $home_url = get_permalink($lh_home);
@@ -242,6 +319,40 @@ get_header();
                 </div>
             </section>
         <?php endif; ?>
+
+        <!-- ============ MATERIALS ============ -->
+        <?php
+        /*
+         * The reference builders all carry a craft/interiors band separate from
+         * the project listings — AR Homes runs a nine-slide design gallery,
+         * Cameo splits out "specialty design-builds". Detail photography is
+         * also what a dark palette handles best: close, lit, low-key frames
+         * read as material rather than as real-estate listing shots.
+         */
+        $lh_craft = array(
+                array('img' => 'img/edition/interior-kitchen.jpg', 'cap' => lh_field('craft_cap_1', __('Honed stone, blackened steel, oak', 'luxury-homes'))),
+                array('img' => 'img/edition/night-windows.jpg', 'cap' => lh_field('craft_cap_2', __('Glazing set to catch the last of the light', 'luxury-homes'))),
+        );
+        ?>
+        <section class="craft" id="materials" data-reveal>
+            <div class="craft-in">
+                <header class="craft-head">
+                    <span class="eyebrow"><?php echo esc_html(lh_field('craft_eyebrow', __('Materials', 'luxury-homes'))); ?></span>
+                    <h2><?php echo wp_kses_post(lh_field('craft_heading', __('Chosen in person, <em>not from a catalogue</em>.', 'luxury-homes'))); ?></h2>
+                    <p><?php echo esc_html(lh_field('craft_body', __('Every surface in the house is specified against the light it will actually live in — walked, held, and signed off with you before a single order is placed.', 'luxury-homes'))); ?></p>
+                </header>
+                <div class="craft-grid">
+                    <?php foreach ($lh_craft as $lh_i => $lh_c) : ?>
+                        <figure class="craft-fig craft-fig--<?php echo esc_attr($lh_i + 1); ?>">
+                            <img src="<?php echo lh_asset($lh_c['img']); ?>"
+                                 alt="<?php echo esc_attr($lh_c['cap']); ?>"
+                                 loading="lazy" decoding="async">
+                            <figcaption><?php echo esc_html($lh_c['cap']); ?></figcaption>
+                        </figure>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </section>
 
         <!-- ============ HOW WE WORK — two threads ============ -->
         <?php

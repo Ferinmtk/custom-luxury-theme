@@ -23,11 +23,11 @@
             ?>
             <img class="wordmark__img wordmark__img--on-light"
                  src="<?php echo lh_asset('img/brand/wordmark-dark.png'); ?>"
-                 alt="<?php echo esc_attr(lh_company()); ?>" width="263" height="64"
+                 alt="<?php echo esc_attr(lh_company()); ?>" width="656" height="160"
                  fetchpriority="high" decoding="async">
             <img class="wordmark__img wordmark__img--on-dark"
                  src="<?php echo lh_asset('img/brand/wordmark-light.png'); ?>"
-                 alt="" aria-hidden="true" width="263" height="64" decoding="async">
+                 alt="" aria-hidden="true" width="656" height="160" decoding="async">
         </a>
         <div class="hdr-right">
             <nav class="hdr-nav" aria-label="<?php esc_attr_e('Primary', 'luxury-homes'); ?>">

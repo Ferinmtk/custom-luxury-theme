@@ -11,7 +11,7 @@ add_action('wp_enqueue_scripts', function () {
     // Fonts: Fraunces (hero display) + Marcellus (site display) + Inter (body, incl. 300 for hero).
     wp_enqueue_style(
         'lh-fonts',
-        'https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500;600&family=Marcellus&family=Space+Grotesk:wght@400;500&display=swap',
+        'https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;1,6..96,400;1,6..96,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500;600&family=Marcellus&family=Space+Grotesk:wght@400;500&display=swap',
         array(),
         null
     );
@@ -32,21 +32,33 @@ add_action('wp_enqueue_scripts', function () {
     wp_add_inline_style('lh-main', ':root{--lh-brand-label:"' . $lh_label . '";}');
 
     /*
-     * Platinum & black palette — HOMEPAGE ONLY while the client evaluates the
-     * direction. Overrides loaded AFTER main.css, so the warm scheme is still
-     * intact underneath and this can be switched off without editing a rule.
-     * Inner pages intentionally stay warm-coherent rather than half-swapped;
-     * widen the is_front_page() gate page by page as the migration proceeds.
+     * Design layer — HOMEPAGE ONLY while the client picks a direction. Each
+     * layer loads AFTER main.css and overrides it, so main.css stays the
+     * single warm base and any layer can be dropped without editing a rule.
+     * Inner pages stay warm-coherent rather than half-converted; widen the
+     * is_front_page() gate page by page as the migration proceeds.
      *
-     * To show the client the old homepage: add ?palette=warm to the URL, or
-     * comment out this block.
+     *   (default)          edition.css  — black edition
+     *   ?palette=platinum  platinum.css — the earlier recolour
+     *   ?palette=warm      neither      — the original scheme
+     *
+     * Being able to flip between all three in front of the client is the
+     * point; nothing is thrown away until one is chosen.
      */
-    $lh_platinum = is_front_page()
-        && (!isset($_GET['palette']) || 'warm' !== $_GET['palette']); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only preview toggle, no state change
-    if (apply_filters('lh_use_platinum_palette', $lh_platinum)) {
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only preview toggle, changes no state
+    $lh_palette = isset($_GET['palette']) ? sanitize_key(wp_unslash($_GET['palette'])) : '';
+    $lh_layer = 'edition';
+    if ('warm' === $lh_palette) {
+        $lh_layer = '';
+    } elseif ('platinum' === $lh_palette) {
+        $lh_layer = 'platinum';
+    }
+    $lh_layer = apply_filters('lh_design_layer', is_front_page() ? $lh_layer : '');
+
+    if ($lh_layer && file_exists(get_template_directory() . '/assets/css/' . $lh_layer . '.css')) {
         wp_enqueue_style(
-            'lh-platinum',
-            get_template_directory_uri() . '/assets/css/platinum.css',
+            'lh-' . $lh_layer,
+            get_template_directory_uri() . '/assets/css/' . $lh_layer . '.css',
             array('lh-main'),
             LH_VERSION
         );

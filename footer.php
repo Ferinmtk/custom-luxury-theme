@@ -3,9 +3,16 @@
 
 		<div class="site-footer__brandcol">
 			<a class="site-footer__wordmark" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-				<?php // Stacked lockup — the footer ground is always dark, so only the light file is needed. ?>
-				<img class="site-footer__logo" src="<?php echo lh_asset( 'img/brand/logo-stacked-light.png' ); ?>"
-				     alt="<?php echo esc_attr( lh_company() ); ?>" width="521" height="220" loading="lazy" decoding="async">
+				<?php
+				/*
+				 * The wordmark alone, not the stacked lockup. The client's stacked
+				 * artwork sets the RM monogram in a light metallic square, which on a
+				 * true-black footer reads as a white box floating above the name. The
+				 * signature carries the brand on its own.
+				 */
+				?>
+				<img class="site-footer__logo" src="<?php echo lh_asset( 'img/brand/wordmark-light.png' ); ?>"
+				     alt="<?php echo esc_attr( lh_company() ); ?>" width="656" height="160" loading="lazy" decoding="async">
 			</a>
 			<p class="site-footer__blurb"><?php echo esc_html( lh_field( 'footer_blurb', 'One team, from the first walk of the land to the day we hand you the keys.' ) ); ?></p>
 			<ul class="site-footer__social" aria-label="<?php esc_attr_e( 'Social', 'luxury-homes' ); ?>">

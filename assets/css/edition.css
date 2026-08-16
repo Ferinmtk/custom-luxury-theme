@@ -1,0 +1,819 @@
+/* =========================================================
+   BLACK EDITION — homepage design layer
+   =========================================================
+
+   Loads AFTER main.css on the front page only. main.css is untouched, so
+   removing the enqueue reverts everything. Three schemes are reachable:
+
+     (default)          this file — black edition
+     ?palette=platinum  the earlier recolour (platinum.css)
+     ?palette=warm      the original warm scheme (main.css alone)
+
+   WHY THIS EXISTS
+   The client asked for "platinum and Black" and said the draft was "not edgy
+   sophisticated enough". The previous pass swapped token VALUES but left a
+   page that measured 68.5% near-white — a bright page in grey clothes. Of the
+   eleven references he sent, the only one he commented on was Cadillac F1
+   ("this is the kind of style we may go with"). Measured, that page is:
+   black declared ground, 644/644 elements at radius 0, zero box-shadows, zero
+   non-neutral colour in CSS, content matted to a 64px gutter with the nav bar
+   inset to exactly the same width, and one pinned scroll-scrubbed sequence.
+
+   This file takes the page there. Every rule below traces to one of six
+   measured gaps against that cohort:
+     1. ground was light            -> black is the default
+     2. radius 2-3px on 23 elements -> 0
+     3. ten box-shadows             -> none
+     4. warm literary serif         -> high-contrast Didone
+     5. eyebrows at 0.24-0.32em     -> 0.14em (cohort runs 0.10-0.17em)
+     6. no full-bleed, mats random  -> one committed mat, nav matched
+   ========================================================= */
+
+:root {
+    /* ---- The inversion lever ----
+       main.css builds .intro, .descent, .d-pin and .scrub on
+       `background: var(--hero-white); color: var(--hero-ink)`. Swapping the
+       two tokens inverts all four sections at once, which is why this file
+       is short relative to what it changes. */
+    --hero-white: #0a0a0b;
+    --hero-ink: #f4f3f1;
+    --hero-ink-soft: #9c9a99; /* 7.1:1 on the new ground */
+    --hero-line: rgba(244, 243, 241, 0.13);
+
+    /* Nothing in this identity is green. The old accent was forest. */
+    --hero-forest: #cfcdcb;
+
+    /* ---- Site tokens ---- */
+    --ink: #000;
+    --ink-soft: #0c0c0d;
+    --bone: #f4f3f1;
+    --bone-dim: rgba(244, 243, 241, 0.6);
+    --line: rgba(244, 243, 241, 0.12);
+
+    /* Platinum ramp, sampled from the logo artwork. */
+    --travertine: #b7b4b5;
+    --brass: #8c8a8b;
+    --brass-deep: #6b696a;
+
+    /* ---- Type ----
+       Bodoni Moda is the concession and the argument at once: the automotive
+       cohort uses no serif at all, but his logo carries one and Christie's
+       sets Playfair on pure black. A Didone keeps the serif while trading
+       warmth for contrast — which is the whole brief in one typeface. */
+    --hero-display: "Bodoni Moda", "Didot", "Times New Roman", serif;
+    --display: "Bodoni Moda", "Didot", serif;
+
+    /* ---- The mat ----
+       Cadillac insets every block to a fixed gutter and matches the nav bar to
+       it exactly. That consistency is the point: mixing bleed and mat at
+       random is what reads unfinished. */
+    --mat-gutter: clamp(1rem, 4.4vw, 4rem);
+}
+
+/* =========================================================
+   1. GROUND
+   ========================================================= */
+
+body {
+    background: #000;
+    color: var(--bone);
+}
+
+/* .descent sizes its film from these; a tighter mat on a black surround
+   reads as a framed plate rather than a window cut in a white wall. */
+.descent {
+    --mat: 8.8vw;
+    --mat-v: 14vh;
+}
+
+.philosophy {
+    --ph-bg: #000;
+    --ph-ink: #f4f3f1;
+    --ph-ink-rgb: 244, 243, 241;
+    --ph-stroke: #9c9a99;
+    --ph-muted: #9c9a99;
+}
+
+.ways,
+.hm-cta,
+.hm-cta--plan {
+    background: #000;
+}
+
+.scrub-stage {
+    border-top-color: var(--hero-line);
+    border-bottom-color: var(--hero-line);
+}
+
+/* =========================================================
+   2. RADIUS -> 0, everywhere except true icon circles
+   Ferrari is the precedent: 840 elements at 0, and the only exceptions are
+   circular arrow buttons. Round icons stay round; nothing else does.
+   ========================================================= */
+
+.hdr,
+.hdr nav a,
+.hdr-cta,
+.ways-card,
+.ways-btn,
+.sh-btn,
+.hww-cta,
+.sc-btn,
+.scrub-card .sc-frame, /* main.css sets 3px at 0-2-0 — must match it */
+.d-mat,
+.philosophy__media,
+.hm-cta-media,
+.ways-card__icon,
+.hwb-steps-in .hwb-step,
+.lh-chat-panel,
+.lh-chat-form button,
+.scrub-progress,
+.scrub-progress i {
+    border-radius: 0;
+}
+
+/* =========================================================
+   3. SHADOWS -> none
+   Bentley and Cadillac ship zero box-shadows between them. Separation comes
+   from ground change or a 1px hairline, never from elevation.
+   ========================================================= */
+
+.hdr,
+.d-mat,
+.scrub-card .sc-frame, /* main.css stacks three shadows at 0-2-0 */
+.scrub-card:hover .sc-frame,
+.scrub-card:focus-visible .sc-frame,
+.hm-cta--plan .hm-cta-media,
+.ways-card,
+.ways-card:hover,
+.ways-card__icon,
+.hww-cta,
+.lh-chat-launcher,
+.lh-chat-panel {
+    box-shadow: none;
+}
+
+/* =========================================================
+   4. TYPE
+   Display tracking near zero, label tracking heavy — the cohort's inverted
+   hierarchy. Bodoni's hairlines thin out as it scales, so display weight
+   climbs rather than drops; a 300-weight Didone at 70px on black disappears.
+   ========================================================= */
+
+.intro h1,
+.philosophy__display,
+.scrub-head h2,
+.hww-headline,
+.ways-title,
+.hm-cta-copy h2,
+.d-copy h2 {
+    font-family: var(--hero-display);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+}
+
+.intro h1 {
+    font-size: clamp(2.5rem, 6.6vw, 5.6rem);
+    line-height: 1.02;
+    max-width: 16ch;
+}
+
+.intro h1 em,
+.philosophy .ph-line--ital,
+.hm-cta-copy h2 em,
+.d-copy h2 em {
+    font-style: italic;
+    color: var(--travertine);
+}
+
+/* Eyebrows: 11px at 0.14em. Measured cohort range is 0.10-0.17em — the old
+   0.30em read as wedding stationery, not instrumentation. */
+.eyebrow,
+.hww-eyebrow-text,
+.site-footer__label,
+.alt-label,
+.sc-tag,
+.ways-btn__label,
+.hww-caps,
+.hww-caps-gold {
+    letter-spacing: 0.14em;
+}
+
+.intro .eyebrow,
+.d-copy .eyebrow,
+.hm-cta .eyebrow {
+    color: var(--travertine);
+}
+
+.intro .eyebrow::before,
+.scrub-head .eyebrow::before {
+    background: var(--travertine);
+}
+
+/* =========================================================
+   5. THE MAT — one gutter, and the nav matched to it
+   ========================================================= */
+
+.hdr {
+    left: var(--mat-gutter);
+    right: var(--mat-gutter);
+    top: clamp(0.75rem, 1.6vw, 1rem);
+    background: rgba(10, 10, 11, 0.72);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(244, 243, 241, 0.14);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .hdr,
+    .hdr.is-dark {
+        background: rgba(6, 6, 7, 0.95);
+    }
+}
+
+/* The header is one object now — it no longer inverts, because the page
+   beneath it no longer does. */
+.hdr.is-dark {
+    background: rgba(10, 10, 11, 0.72);
+    border-color: rgba(244, 243, 241, 0.14);
+}
+
+.hdr .wordmark__img--on-light {
+    display: none;
+}
+
+.hdr .wordmark__img--on-dark,
+.hdr.is-dark .wordmark__img--on-dark {
+    display: block;
+}
+
+.hdr nav a,
+.hdr-cta,
+.hdr.is-dark nav a,
+.hdr.is-dark .hdr-cta {
+    color: var(--bone);
+    border-color: rgba(244, 243, 241, 0.34);
+}
+
+.hdr nav a:hover,
+.hdr nav a:focus-visible,
+.hdr-cta:hover,
+.hdr-cta:focus-visible,
+.hdr.is-dark nav a:hover,
+.hdr.is-dark .hdr-cta:hover,
+.hdr-menu .is-current > a,
+.hdr-menu .current-menu-item > a,
+.hdr-menu .current_page_item > a {
+    background: var(--bone);
+    border-color: var(--bone);
+    color: #000;
+}
+
+.hdr .nav-toggle i,
+.hdr.is-dark .nav-toggle i {
+    background: var(--bone);
+}
+
+.nav-overlay {
+    background: rgba(0, 0, 0, 0.94);
+}
+
+/* =========================================================
+   5b. HERO — the headline sits on the picture
+   ========================================================= */
+
+.intro--hero {
+    position: relative;
+    isolation: isolate;
+    min-height: 100svh;
+    display: flex;
+    align-items: flex-end;
+    padding: clamp(7rem, 16vh, 11rem) var(--mat-gutter) clamp(3.5rem, 10vh, 6rem);
+    background: #000;
+    overflow: hidden;
+}
+
+.intro-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+}
+
+.intro-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 58%;
+    /* Enough to keep the type dominant, not so much that the architecture
+       disappears — the scrims below do most of the work, so the picture only
+       needs desaturating. */
+    filter: saturate(0.35) contrast(1.05) brightness(0.82);
+}
+
+/* Two scrims, not one: a floor-to-top wash for overall depth, and a heavier
+   foot so the headline holds regardless of what is behind it. */
+.intro--hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+        linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.45) 42%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+.intro--hero .intro-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.intro-sub {
+    margin: 1.4rem 0 0;
+    max-width: 34ch;
+    font-family: var(--hero-sans);
+    font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+    font-weight: 300;
+    color: var(--bone-dim);
+}
+
+/* A hairline that draws down — the whole scroll affordance, no chevron. */
+.intro-cue {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 1px;
+    height: clamp(2.5rem, 6vh, 4rem);
+    background: linear-gradient(to bottom, rgba(244, 243, 241, 0), rgba(244, 243, 241, 0.6));
+    transform-origin: bottom;
+    animation: intro-cue 2.6s var(--hero-ease) infinite;
+}
+
+@keyframes intro-cue {
+    0%, 100% { transform: scaleY(0.35); opacity: 0.35; }
+    50%      { transform: scaleY(1);    opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .intro-cue {
+        animation: none;
+        transform: scaleY(1);
+    }
+}
+
+/* =========================================================
+   5c. PROOF
+   Numerals are the object here; the labels are captions under them.
+   ========================================================= */
+
+.proof {
+    background: #000;
+    padding: clamp(3.5rem, 10vh, 7rem) var(--mat-gutter);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.proof-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: clamp(2rem, 5vw, 4rem);
+}
+
+.proof-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.proof-num {
+    font-family: var(--hero-display);
+    font-weight: 500;
+    font-size: clamp(2.6rem, 5vw, 4.2rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--bone);
+}
+
+.proof-label {
+    margin: 0;
+    font-family: var(--hero-sans);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--travertine);
+}
+
+/* =========================================================
+   5d. MATERIALS
+   ========================================================= */
+
+.craft {
+    background: #000;
+    padding: clamp(4.5rem, 13vh, 8.5rem) var(--mat-gutter);
+}
+
+.craft-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+}
+
+.craft-head h2 {
+    font-family: var(--hero-display);
+    font-weight: 500;
+    font-size: clamp(1.9rem, 3.6vw, 3.1rem);
+    line-height: 1.06;
+    margin: 0.8rem 0 1.2rem;
+    text-wrap: balance;
+}
+
+.craft-head h2 em {
+    font-style: italic;
+    color: var(--travertine);
+}
+
+.craft-head p {
+    margin: 0;
+    max-width: 42ch;
+    font-family: var(--hero-sans);
+    font-weight: 300;
+    color: var(--bone-dim);
+    line-height: 1.75;
+}
+
+/* Offset pair — the second frame drops, so the pair reads as a composition
+   rather than a two-column grid. */
+.craft-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(0.8rem, 2vw, 1.4rem);
+    align-items: start;
+}
+
+.craft-fig {
+    margin: 0;
+}
+
+.craft-fig--2 {
+    margin-top: clamp(2rem, 7vh, 4.5rem);
+}
+
+/* Barely touched. These frames are already low-key at source — the heavy
+   grade the portfolio needs would crush them to black. Exposure, not a fixed
+   filter, decides how much correction an image wants. */
+.craft-fig img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    filter: saturate(0.55) contrast(1.04);
+    transition: filter 0.7s var(--hero-ease);
+}
+
+.craft-fig:hover img {
+    filter: saturate(0.8) contrast(1.02) brightness(1.08);
+}
+
+.craft-fig figcaption {
+    margin-top: 0.85rem;
+    font-family: var(--hero-sans);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--travertine);
+}
+
+@media (max-width: 860px) {
+    .craft-in {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* =========================================================
+   6. FILM
+   ========================================================= */
+
+.d-mat {
+    background: #000;
+}
+
+/* Deeper at the foot, where the phase copy sits: over a bright frame the
+   eyebrow measured ~1.2:1 before the grade carried it. */
+.d-grade {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.12) 40%, rgba(0, 0, 0, 0.76));
+}
+
+.d-copy .eyebrow {
+    color: var(--bone);
+}
+
+.alt-read,
+.alt-label {
+    color: var(--bone-dim);
+}
+
+/* =========================================================
+   7. PORTFOLIO
+   The source photography is mixed — bright interiors beside dusk exteriors.
+   A shared grade is what makes a set of unrelated images read as one
+   commission. Lifts on hover so the picture, not the chrome, is the reward.
+   ========================================================= */
+
+.scrub-card .sc-frame {
+    border: 1px solid rgba(244, 243, 241, 0.1);
+    background: #0a0a0b;
+}
+
+/* The stand-in homes are bright white-box interiors — the brightest objects
+   in the build. Graded hard so the set reads as one commission on a black
+   ground, and released toward full colour on hover, which makes the picture
+   itself the reward rather than any chrome. */
+.scrub-card img {
+    filter: saturate(0.2) contrast(1.12) brightness(0.62);
+    transition: filter 0.7s var(--hero-ease), transform 0.7s var(--hero-ease);
+}
+
+.scrub-card:hover img,
+.scrub-card:focus-visible img {
+    filter: saturate(0.62) contrast(1.04) brightness(0.9);
+}
+
+/* .scrub-head is absolutely positioned over the track by design. On a light
+   ground the collision was survivable; on black, bright cards sliding under
+   the headline is not. Push the track clear. */
+.scrub-stage {
+    padding-top: clamp(9rem, 26vh, 15rem);
+}
+
+.scrub-head .eyebrow {
+    color: var(--travertine);
+    letter-spacing: 0.14em;
+}
+
+.scrub-card .sc-tag {
+    background: rgba(0, 0, 0, 0.72);
+    border: 1px solid rgba(244, 243, 241, 0.22);
+    color: var(--bone);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.sc-name {
+    font-family: var(--hero-display);
+    font-weight: 500;
+}
+
+.sc-meta {
+    color: var(--bone-dim);
+    letter-spacing: 0.02em;
+}
+
+.sc-btn,
+.sc-morelink {
+    color: var(--bone);
+    border-color: rgba(244, 243, 241, 0.4);
+}
+
+.scrub-progress {
+    background: rgba(244, 243, 241, 0.14);
+}
+
+.scrub-progress i {
+    background: var(--bone);
+}
+
+/* =========================================================
+   8. PHILOSOPHY
+   ========================================================= */
+
+.philosophy__media {
+    background: #0a0a0b;
+}
+
+.philosophy__media img {
+    filter: saturate(0.34) contrast(1.06) brightness(0.9);
+}
+
+.philosophy__note {
+    color: var(--bone-dim);
+}
+
+.ph-line--hollow {
+    -webkit-text-stroke: 0.012em var(--ph-stroke);
+    text-stroke: 0.012em var(--ph-stroke);
+}
+
+/* =========================================================
+   9. HOW WE WORK
+   ========================================================= */
+
+.hww {
+    --hww-bg-1: #060607;
+    --hww-bg-2: #000;
+    --hww-ivory: #f4f3f1;
+    --hww-gold: #b7b4b5;
+    --hww-gold-deep: #b7b4b5;
+    --hww-gold-lo: #868384;
+    --hww-gold-hi: #eceae8;
+    --hww-thread-ivory: #f4f3f1;
+    --hww-muted: #8e8c8d;
+}
+
+.hww-eyebrow-rule {
+    background: rgba(244, 243, 241, 0.28);
+}
+
+.hww-quote-block {
+    border-top-color: rgba(244, 243, 241, 0.14);
+}
+
+/* Inverts on hover rather than lifting — the cohort's button behaviour. */
+.hww-cta {
+    background: transparent;
+    border: 1px solid var(--bone);
+    color: var(--bone);
+    transition: background 0.35s var(--hero-ease), color 0.35s var(--hero-ease);
+}
+
+.hww-cta:hover,
+.hww-cta:focus-visible {
+    background: var(--bone);
+    color: #000;
+    transform: none;
+}
+
+/* The one literal glow on the page. */
+.hww-comet {
+    filter: none;
+}
+
+/* =========================================================
+   10. ENTRY CARDS
+   White cards were the least automotive object on the page. Hairline frames
+   on black, no fill, no lift — the ground carries them.
+   ========================================================= */
+
+.ways-card {
+    background: transparent;
+    border: 1px solid rgba(244, 243, 241, 0.16);
+}
+
+@media (hover: hover) {
+    .ways-card:hover {
+        border-color: rgba(244, 243, 241, 0.5);
+        background: rgba(244, 243, 241, 0.03);
+        transform: none;
+    }
+}
+
+.ways-card__title {
+    font-family: var(--hero-display);
+    font-weight: 500;
+    color: var(--bone);
+}
+
+.ways-card__msg {
+    color: var(--bone-dim);
+}
+
+.ways-card__cta {
+    color: var(--travertine);
+    letter-spacing: 0.14em;
+}
+
+.ways-card__icon {
+    background: transparent;
+    border: 1px solid rgba(244, 243, 241, 0.28);
+}
+
+.ways-card__icon svg {
+    color: var(--bone);
+}
+
+/* The featured card is the inversion instead of a gold fill. */
+.ways-card--gold {
+    background: var(--bone);
+    border-color: var(--bone);
+}
+
+.ways-card--gold .ways-card__title,
+.ways-card--gold .ways-card__cta {
+    color: #000;
+}
+
+.ways-card--gold .ways-card__msg {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.ways-card--gold .ways-card__icon {
+    background: transparent;
+    border-color: rgba(0, 0, 0, 0.35);
+}
+
+.ways-card--gold .ways-card__icon svg {
+    color: #000;
+}
+
+@media (hover: hover) {
+    .ways-card--gold:hover {
+        background: #fff;
+        border-color: #fff;
+    }
+}
+
+.ways-title {
+    color: var(--bone);
+}
+
+.ways-sub {
+    color: var(--bone-dim);
+}
+
+/* =========================================================
+   11. CLOSING CTA
+   ========================================================= */
+
+.hm-cta-media img {
+    filter: saturate(0.16) contrast(1.06) brightness(0.66);
+}
+
+.hm-cta .eyebrow {
+    color: var(--travertine);
+}
+
+/* main.css centres the h2 in --hero-ink; that token now resolves light, but
+   the closing block sets its own colour, so state it. */
+.hm-cta--plan .hm-cta-copy h2,
+.hm-cta-copy h2 {
+    color: var(--bone);
+}
+
+/* The page's one primary button: solid bone, black label, inverting to an
+   outline on hover. main.css sets `color: var(--hero-ink)` here, which after
+   the token inversion painted white text on a white fill — the label vanished
+   entirely. The sweep is retired; the fill itself is the affordance. */
+.ways-btn,
+.hm-cta--plan .ways-btn {
+    background: var(--bone);
+    border: 1px solid var(--bone);
+    color: #000;
+    transition: background 0.35s var(--hero-ease), color 0.35s var(--hero-ease);
+}
+
+.ways-btn::before {
+    display: none;
+}
+
+.ways-btn:hover,
+.ways-btn:focus-visible,
+.hm-cta--plan .ways-btn:hover,
+.hm-cta--plan .ways-btn:focus-visible {
+    background: transparent;
+    color: var(--bone);
+    transform: none;
+}
+
+/* Was a green-grey tuned for the old forest ground. */
+.hm-cta-call {
+    color: var(--bone-dim);
+}
+
+.hm-cta-call a {
+    color: var(--bone);
+}
+
+/* =========================================================
+   12. CHAT CONCIERGE
+   ========================================================= */
+
+.lh-chat-launcher {
+    background: var(--bone);
+    color: #000;
+    border: 1px solid var(--bone);
+}
+
+.lh-chat-launcher:hover,
+.lh-chat-launcher:focus-visible {
+    background: transparent;
+    color: var(--bone);
+}
+
+.lh-chat-panel {
+    background: rgba(8, 8, 9, 0.96);
+    border: 1px solid rgba(244, 243, 241, 0.16);
+}
+
+.lh-chat-form button {
+    background: var(--bone);
+    color: #000;
+}
+
+.lh-chat-form button:hover {
+    background: #fff;
+}
