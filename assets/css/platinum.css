@@ -213,6 +213,16 @@
     background: #c9c8c7; /* was #cfc9bd */
 }
 
+/* The stand-in photograph is a bright daylight exterior — blue sky, saturated
+   planting — and it was the one loud colour left on a black-and-platinum page.
+   Pulling the saturation back lets it read as editorial rather than as a
+   listing photo, without touching the file. It is a grade, not a fix: a real
+   Richard Marcus photograph should replace the asset and can then drop this
+   rule. Lives here (not main.css) so ?palette=warm still shows it ungraded. */
+.philosophy__media img {
+    filter: saturate(0.42) contrast(1.06) brightness(0.98);
+}
+
 .philosophy__note {
     color: #3a3a3c; /* was #3f3a33 */
 }
