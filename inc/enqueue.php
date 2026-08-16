@@ -16,6 +16,28 @@ add_action('wp_enqueue_scripts', function () {
         null
     );
     wp_enqueue_style('lh-main', get_template_directory_uri() . '/assets/css/main.css', array('lh-fonts'), LH_VERSION);
+
+    /*
+     * Platinum & black palette — HOMEPAGE ONLY while the client evaluates the
+     * direction. Overrides loaded AFTER main.css, so the warm scheme is still
+     * intact underneath and this can be switched off without editing a rule.
+     * Inner pages intentionally stay warm-coherent rather than half-swapped;
+     * widen the is_front_page() gate page by page as the migration proceeds.
+     *
+     * To show the client the old homepage: add ?palette=warm to the URL, or
+     * comment out this block.
+     */
+    $lh_platinum = is_front_page()
+        && (!isset($_GET['palette']) || 'warm' !== $_GET['palette']); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only preview toggle, no state change
+    if (apply_filters('lh_use_platinum_palette', $lh_platinum)) {
+        wp_enqueue_style(
+            'lh-platinum',
+            get_template_directory_uri() . '/assets/css/platinum.css',
+            array('lh-main'),
+            LH_VERSION
+        );
+    }
+
     wp_enqueue_script('lh-main', get_template_directory_uri() . '/assets/js/main.js', array(), LH_VERSION, true);
 });
 

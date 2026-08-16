@@ -197,6 +197,40 @@ a {
     color: #fbf9f4;
 }
 
+/* The wordmark is now the client's supplied lockup, not set text. Two files —
+   one per ground — because the header inverts over dark sections; the dark-ground
+   file carries the platinum sheen that flat text cannot. The type rules above
+   still apply to the anchor as the fallback if an image fails to load. */
+.wordmark {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+}
+
+.wordmark__img {
+    display: block;
+    width: auto;
+    height: 30px; /* asset is 2x (64px tall) — retina-sharp at this size */
+}
+
+.wordmark__img--on-dark {
+    display: none;
+}
+
+.hdr.is-dark .wordmark__img--on-light {
+    display: none;
+}
+
+.hdr.is-dark .wordmark__img--on-dark {
+    display: block;
+}
+
+@media (max-width: 600px) {
+    .wordmark__img {
+        height: 26px;
+    }
+}
+
 .hdr nav .hdr-menu {
     display: flex;
     align-items: center;
@@ -2136,6 +2170,16 @@ body.admin-bar .nav-overlay {
     text-transform: uppercase;
     color: var(--bone);
     margin-bottom: 1.1rem;
+    line-height: 0; /* holds the stacked logo below without adding a text baseline gap */
+}
+
+/* Stacked lockup (monogram over wordmark). Capped by width, not height, so the
+   monogram stays legible and the block scales with the footer column. */
+.site-footer__logo {
+    display: block;
+    width: 100%;
+    max-width: 232px;
+    height: auto;
 }
 
 .site-footer__blurb {
@@ -2838,7 +2882,7 @@ body.admin-bar .nav-overlay {
 }
 
 .home-ph::after {
-    content: 'Tester';
+    content: 'Richard Marcus';
     position: absolute;
     inset: 0;
     display: grid;

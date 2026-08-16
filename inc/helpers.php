@@ -35,9 +35,25 @@ function lh_company() {
 		$name = trim( (string) get_bloginfo( 'name' ) );
 	}
 	if ( '' === $name ) {
-		$name = 'Tester';
+		$name = 'Richard Marcus Signature Homes';
 	}
 	return apply_filters( 'lh_company', $name );
+}
+
+/**
+ * Short brand name — for running prose, not the wordmark.
+ *
+ * The legal name is long, and sentences like "Every X home begins above the
+ * land" read badly with the full lockup dropped in. Templates use this for
+ * copy; lh_company() stays the full name for the wordmark, footer and legal
+ * line. Resolution order: ACF "company_name_short" -> theme default.
+ */
+function lh_company_short() {
+	$name = trim( (string) lh_field( 'company_name_short', '' ) );
+	if ( '' === $name ) {
+		$name = 'Richard Marcus';
+	}
+	return apply_filters( 'lh_company_short', $name );
 }
 
 /**
