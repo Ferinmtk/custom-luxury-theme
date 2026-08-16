@@ -1315,9 +1315,11 @@ body.admin-bar .nav-overlay {
     width: 100%;
     height: clamp(340px, 60vh, 680px);
     object-fit: cover;
-    /* Landscape source into a portrait slot: hold the crop left of centre
-       so the people stay in frame alongside the house. */
-    object-position: 35% center;
+    /* Landscape source into a portrait slot. Held ABOVE centre so the crop
+       spends its height on the house and its lit interior rather than the
+       gravel foreground. (Was 35% left-of-centre, tuned for a previous photo
+       that had people standing beside the house.) */
+    object-position: center 38%;
 }
 
 .philosophy__foot {
