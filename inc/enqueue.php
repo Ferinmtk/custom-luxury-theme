@@ -18,6 +18,20 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('lh-main', get_template_directory_uri() . '/assets/css/main.css', array('lh-fonts'), LH_VERSION);
 
     /*
+     * Image-placeholder tiles label themselves with the brand, via CSS
+     * `content:`, which cannot call PHP. Publishing the name as a custom
+     * property is what lets those rules follow lh_company_short() instead of
+     * hardcoding it — one of them was still stamped with a previous project's
+     * company name and rendered it to visitors.
+     *
+     * The value lands inside a CSS string, so quotes and backslashes are
+     * stripped rather than escaped: either would end the string early and
+     * break every rule after it.
+     */
+    $lh_label = preg_replace('/["\\\\]/', '', lh_company_short());
+    wp_add_inline_style('lh-main', ':root{--lh-brand-label:"' . $lh_label . '";}');
+
+    /*
      * Platinum & black palette — HOMEPAGE ONLY while the client evaluates the
      * direction. Overrides loaded AFTER main.css, so the warm scheme is still
      * intact underneath and this can be switched off without editing a rule.
